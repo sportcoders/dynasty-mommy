@@ -1,0 +1,9 @@
+node_modules/
+*.tsbuildinfo
+.vscode/
+package-lock.json
+.jest/
+coverage/
+.env
+.env.local
+.env.*.local
