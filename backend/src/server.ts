@@ -1,7 +1,6 @@
 import app from './app'
+import config from './config/config';
 
-const port = 3000;
-
-app.listen(port, () => {
-    console.log(`Sever listening on port ${port}`);
+app.listen(config.port, () => {
+    console.log(`Sever listening on port ${config.port}`);
 })
