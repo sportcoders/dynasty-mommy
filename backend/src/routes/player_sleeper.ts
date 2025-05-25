@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { getPlayerById } from '../controller/player_sleeper'
+import { getPlayersById } from '../controller/player_sleeper'
 const player_sleeper_router = Router()
 
-player_sleeper_router.route('/').get((req, res) => {
-    getPlayerById(req, res)
+
+
+//GET: Get player by sleeper id, can get multiple players by seperating player_id with "&"
+player_sleeper_router.route('/:player_id').get((req, res) => {
+    getPlayersById(req, res)
 })
 
 

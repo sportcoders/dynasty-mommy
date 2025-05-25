@@ -1,10 +1,18 @@
-import json
 import requests
 import os
 from dotenv import load_dotenv
 import pymongo
 
-def init_db(db:pymongo.MongoClient, response):
+def init_db():
+    load_dotenv()
+    URI = os.getenv("DB_URI")
+    client = pymongo.MongoClient(URI)
+    response = requests.get('https://api.sleeper.app/v1/players/nba')
+    db = client['test']
+    if 'sleeper' in db.list_collection_names():
+        drop = db['sleeper']
+        drop.drop()
+    db = db['sleeper']
     players = response.json()
     insert_list = [{'id':player['player_id'], 
                             'first_name':player['first_name'], 
@@ -22,10 +30,4 @@ def init_db(db:pymongo.MongoClient, response):
     
 
 if __name__ =='__main__':
-    load_dotenv()
-    URI = os.getenv("DB_URI")
-    client = pymongo.MongoClient(URI)
-    response = requests.get('https://api.sleeper.app/v1/players/nba')
-    db = client['test']
-    collection= db['sleeper']
-    init_db(collection,response)
+    init_db()
