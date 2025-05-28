@@ -1,20 +1,23 @@
 import './App.css'
-import { getLeaguesForUser } from './services/sleeper'
+import { getLeaguesForUser, getUser } from './services/sleeper'
 import { useEffect, useState } from 'react'
-import type { League } from './services/sleeper/types'
+import type { League, User } from './services/sleeper/types'
 
 function App() {
-  const [leagues, setLeagues] = useState<League[]>([])
-  const [error, setError] = useState<string | null>(null)
+  const [leagues, setLeagues] = useState<League[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const leagues = await getLeaguesForUser('1030058668634619904', '2025')
-        setLeagues(leagues)
+        const leagues = await getLeaguesForUser('1090899317067526144', '2024');
+        const user = await getUser('jordannfung');
+        setLeagues(leagues);
+        setUser(user);
       } catch (error) {
-        setError('Error fetching leagues')
-        console.error('Error fetching leagues:', error)
+        setError('Error fetching user')
+        console.error('Error fetching user:', error)
       }
     }
     fetchData()
@@ -32,6 +35,7 @@ function App() {
           </li>
         ))}
       </ul>
+      <p>{user?.username} id is {user?.user_id}</p>
     </>
   )
 }
