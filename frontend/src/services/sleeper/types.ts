@@ -4,3 +4,10 @@ export interface League {
     season: string;
     avatar:string;
 }
+
+export interface User {
+    username: string;
+    user_id: string;
+    display_name: string;
+    avatar: string;
+}

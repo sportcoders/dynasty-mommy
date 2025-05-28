@@ -1,5 +1,5 @@
 import './App.css'
-import { getLeaguesForUser } from './services/sleeper'
+import { getLeaguesForUser, getUser } from './services/sleeper'
 import { useEffect, useState } from 'react'
 import type { League } from './services/sleeper/types'
 import { TextField, Select, RadioGroup, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress } from '@mui/material'
@@ -24,11 +24,13 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const leagues = await getLeaguesForUser('1030058668634619904', '2025')
-        setLeagues(leagues)
+        const leagues = await getLeaguesForUser('1090899317067526144', '2024');
+        const user = await getUser('jordannfung');
+        setLeagues(leagues);
+        // setUser(user);
       } catch (error) {
-        setError('Error fetching leagues')
-        console.error('Error fetching leagues:', error)
+        setError('Error fetching user')
+        console.error('Error fetching user:', error)
       }
     }
     fetchData()
