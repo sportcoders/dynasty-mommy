@@ -7,19 +7,23 @@ permissions:
 
 jobs:
   build:
-    runs-on:ubuntu-latest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
 
     steps:
-    -uses: actions/checkout@v4
-    -name: Setup Node 22.16.0
-    uses: actions/setup-node@v4
-    with:
-      node-verion: '22.16.0'
-  
-    working-directory: ./backend
-    -name: Install dependencies
-    run: npm i #add package-lock.json to use ci, for clean install, repeatable builds
-    
-    -name: Test with Jest
-    run: npm test
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Setup Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test with Jest
+        run: npm test
