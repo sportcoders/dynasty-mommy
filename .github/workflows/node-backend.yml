@@ -18,7 +18,7 @@ jobs:
   
     working-directory: ./backend
     -name: Install dependencies
-    run: npm i #add pack-lock.json to use ci, for clean install, repeatable builds
+    run: npm i #add package-lock.json to use ci, for clean install, repeatable builds
     
     -name: Test with Jest
     run: npm test
