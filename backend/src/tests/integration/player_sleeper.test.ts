@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals'
+import { expect } from '@jest/globals'
 import app from '../../app'
 import supertest from 'supertest';
 import { HttpError, HttpSuccess } from '../../constants/constants';

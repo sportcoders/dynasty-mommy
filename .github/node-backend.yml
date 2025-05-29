@@ -1,0 +1,25 @@
+name: Node Integration Test
+
+on:[push]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on:ubuntu-latest
+
+    steps:
+    -uses: actions/checkout@v4
+    -name: Setup Node 22.16.0
+    uses: actions/setup-node@v4
+    with:
+      node-verion: '22.16.0'
+  
+    working-directory: ./backend
+    -name: Install dependencies
+    run: npm i #add pack-lock.json to use ci, for clean install, repeatable builds
+    
+    -name: Test with Jest
+    run: npm test
+
