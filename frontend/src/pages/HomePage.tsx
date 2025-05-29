@@ -1,6 +1,6 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getLeaguesForUser, getUser } from '../services/sleeper'
+import { getAvatarThumbnail, getLeaguesForUser, getUser } from '../services/sleeper'
 import { useEffect, useState } from 'react'
 import type { League } from '../services/sleeper/types'
 import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton } from '@mui/material'
@@ -151,6 +151,12 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                 setLoading(false)
                 return
             }
+            for (const league of leagues) {
+                if (league.avatar) {
+                    const blob = await getAvatarThumbnail(league.avatar)
+                    league.avatar = URL.createObjectURL(blob)
+                }
+            }
             setLeagues(leagues)
         } catch (err) {
             setError('Error fetching leagues')
@@ -197,7 +203,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                     <ListItem>
                         <ListItemButton sx={{ borderRadius: 5 }} onClick={() => handleNavigateToLeague(league.league_id)} key={league.league_id}>
                             <ListItemAvatar>
-                                <Avatar src='/react.svg'></Avatar>
+                                <Avatar src={league.avatar ? league.avatar : '/react.svg'}></Avatar>
                             </ListItemAvatar>
                             <ListItemText
                                 primary={league.name}
