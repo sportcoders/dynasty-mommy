@@ -1,6 +1,6 @@
 name: Node Integration Test
 
-on:[push]
+on: [push]
 
 permissions:
   contents: read
