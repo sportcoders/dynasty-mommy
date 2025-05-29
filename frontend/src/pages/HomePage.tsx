@@ -3,8 +3,7 @@
 import { getLeaguesForUser, getUser } from '../services/sleeper'
 import { useEffect, useState } from 'react'
 import type { League } from '../services/sleeper/types'
-import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon } from '@mui/material'
-
+import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton } from '@mui/material'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
     //function tha takes in those parameters and returns void
@@ -139,7 +138,13 @@ function SleeperLeagues({ searchType, value, season }: SleeperLeaguesProps) {
 
     if (loading) return <CircularProgress />
 
-    if (error) return <div style={{ color: 'red' }}>{error}</div>
+    if (error) {
+        return (
+            <Snackbar open={error ? true : false}
+                message={error}
+            />
+        )
+    }
 
     if (leagues.length === 0) return <div>No leagues found.</div>
 
@@ -161,12 +166,5 @@ function SleeperLeagues({ searchType, value, season }: SleeperLeaguesProps) {
             )
             }
         </List>
-        // <ul>
-        //     {leagues.map((league) => (
-        //         <li key={league.league_id}>
-        //             <strong>{league.name}</strong> (Season: {league.season})
-        //         </li>
-        //     ))}
-        // </ul>
     )
 }
