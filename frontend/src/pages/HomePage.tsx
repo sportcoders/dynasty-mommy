@@ -1,8 +1,9 @@
-import '../App.css'
+// import '../App.css'
+// import '../styles/main.scss'
 import { getLeaguesForUser, getUser } from '../services/sleeper'
 import { useEffect, useState } from 'react'
 import type { League } from '../services/sleeper/types'
-import { TextField, Select, RadioGroup, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress } from '@mui/material'
+import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon } from '@mui/material'
 
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
@@ -23,7 +24,7 @@ export default function Home() {
     }
 
     return (
-        <>
+        <Stack>
             <h1>Sleeper League Search</h1>
             <SleeperAccount onSearch={handleSearch} />
             {searchParams && (
@@ -33,7 +34,7 @@ export default function Home() {
                     season={searchParams.season}
                 />
             )}
-        </>
+        </Stack>
     )
 }
 
@@ -59,37 +60,46 @@ function SleeperAccount({ onSearch }: SleeperAccountProps) {
         onSearch(searchType, searchParams.trim(), season)
     }
     return (
-        <div>
-            <FormControl sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>Find Leauge By</InputLabel>
+        <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'inline', minWidth: 1 / 4, minHeight: 1 / 2 }}>
+            <FormControl fullWidth>
+                <FormLabel>Find Leauge By</FormLabel>
                 <RadioGroup
                     value={searchType}
                     onChange={handleSearchTypeChange}>
                     <FormControlLabel value='Username' control={<Radio />} label="Username" />
                     <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
                 </RadioGroup>
-                <TextField label={searchType} required variant='outlined' onChange={handleTextFieldEntry}></TextField>
-                <Select
-                    label='Year'
-                    value={season}
-                    onChange={handleSeasonChange}
-                    MenuProps={{
-                        PaperProps: {
-                            style: {
-                                maxHeight: 48 * 4 + 8, // 4 items visible at a time
-                                //48 is default height if menu item in MUI
-                                //"+8 is for padding"
-                                //maxHeight = default height for menu item * number of items to show + padding
-                            },
-                        },
-                    }}>
-                    {validYears.map((year) => {
-                        return <MenuItem key={year} value={year}>{year}</MenuItem>;
-                    })}
-                </Select>
+                <Box sx={{ m: 2 }} display='flex' gap={1}>
+                    <TextField label={searchType} required variant='outlined' onChange={handleTextFieldEntry}></TextField>
+                    <FormControl>
+                        <InputLabel id='select-season-input-label'>Year</InputLabel>
+                        <Select
+                            labelId='select-season-input-label'
+                            value={season}
+                            label="Year"
+                            onChange={handleSeasonChange}
+                            MenuProps={{
+                                sx: {
+                                    minWidth: 100
+                                },
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 48 * 4 + 8, // 4 items visible at a time
+                                        //48 is default height if menu item in MUI
+                                        //"+8 is for padding"
+                                        //maxHeight = default height for menu item * number of items to show + padding
+                                    },
+                                },
+                            }}>
+                            {validYears.map((year) => {
+                                return <MenuItem key={year} value={year}>{year}</MenuItem>;
+                            })}
+                        </Select>
+                    </FormControl>
+                </Box>
+                <Button onClick={handleSubmit} variant="contained" sx={{ m: 1 }}>Submit</Button>
             </FormControl>
-            <Button onClick={handleSubmit}>Submit</Button>
-        </div>
+        </Box>
     )
 }
 
@@ -98,6 +108,9 @@ function SleeperLeagues({ searchType, value, season }: SleeperLeaguesProps) {
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
 
+    const handleNavigateToLeague = (id: string) => {
+        console.log(id)
+    }
     useEffect(() => {
         async function fetchLeagues() {
             setLoading(true)
@@ -131,12 +144,29 @@ function SleeperLeagues({ searchType, value, season }: SleeperLeaguesProps) {
     if (leagues.length === 0) return <div>No leagues found.</div>
 
     return (
-        <ul>
-            {leagues.map((league) => (
-                <li key={league.league_id}>
-                    <strong>{league.name}</strong> (Season: {league.season})
-                </li>
-            ))}
-        </ul>
+        <List>
+            {leagues.map((league) =>
+            (
+                <ListItem>
+                    <ListItemButton sx={{ borderRadius: 5 }} onClick={() => handleNavigateToLeague(league.league_id)} key={league.league_id}>
+                        <ListItemAvatar>
+                            <Avatar src='/react.svg'></Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={league.name}
+                        ></ListItemText>
+                    </ListItemButton>
+                </ListItem>
+            )
+            )
+            }
+        </List>
+        // <ul>
+        //     {leagues.map((league) => (
+        //         <li key={league.league_id}>
+        //             <strong>{league.name}</strong> (Season: {league.season})
+        //         </li>
+        //     ))}
+        // </ul>
     )
 }
