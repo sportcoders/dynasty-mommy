@@ -1,0 +1,47 @@
+// Core NBA Colors (Shared)
+$nba-red: #C8102E;
+$nba-blue: #1D428A;
+$nba-white: #FFFFFF;
+$nba-black: #000000;
+$nba-gold: #FFC72C;
+
+// Light Mode Colors
+$light-bg: #F5F6FA;
+$light-primary: $nba-blue;
+$light-secondary: $nba-red;
+$light-text-primary: #1A1A1A;
+$light-text-secondary: #4A4A4A;
+$light-accent: $nba-gold;
+$light-surface: $nba-white;
+$light-border: #D1D1D1;
+
+// Dark Mode Colors
+$dark-bg: #0D1B2A;
+$dark-primary: #2E5DA6;
+$dark-secondary: #E03A3E;
+$dark-text-primary: #E5E5E5;
+$dark-text-secondary: #B0B0B0;
+$dark-accent: #FFB81C;
+$dark-surface: #1C2B3A;
+$dark-border: #3A4B5C;
+$theme-light: (
+    bg: $light-bg,
+    primary: $light-primary,
+    secondary: $light-secondary,
+    text-primary: $light-text-primary,
+    text-secondary: $light-text-secondary,
+    accent: $light-accent,
+    surface: $light-surface,
+    border: $light-border
+);
+
+$theme-dark: (
+    bg: $dark-bg,
+    primary: $dark-primary,
+    secondary: $dark-secondary,
+    text-primary: $dark-text-primary,
+    text-secondary: $dark-text-secondary,
+    accent: $dark-accent,
+    surface: $dark-surface,
+    border: $dark-border
+);
