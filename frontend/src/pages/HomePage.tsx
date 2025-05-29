@@ -134,7 +134,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
     const [year, setYear] = useState<string>(season)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-
+    const blobUrls: string[] = [];
     const handleNavigateToLeague = (id: string) => {
         console.log(id)
     }
@@ -155,9 +155,14 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                 if (league.avatar) {
                     const blob = await getAvatarThumbnail(league.avatar)
                     league.avatar = URL.createObjectURL(blob)
+                    blobUrls.push(league.avatar)
                 }
             }
+            /**TODO: STORE IN LOCAL STORAGE SO USER DOESN'T HAVE TO CALL API EVERY TIME */
             setLeagues(leagues)
+            return () => {
+                blobUrls.forEach((url) => URL.revokeObjectURL(url))
+            }
         } catch (err) {
             setError('Error fetching leagues')
             console.error(err)
@@ -180,7 +185,6 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
         )
     }
 
-    if (leagues.length === 0) return <div>No leagues found.</div>
 
     return (
         <>
@@ -197,23 +201,28 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                     <SelectSeasonForm updateSeason={setYear} selectedYear={year} label_name={'Change Year'} width={150} />
                 </FormControl>
             </Box>
-            <List>
-                {leagues.map((league) =>
-                (
-                    <ListItem>
-                        <ListItemButton sx={{ borderRadius: 5 }} onClick={() => handleNavigateToLeague(league.league_id)} key={league.league_id}>
-                            <ListItemAvatar>
-                                <Avatar src={league.avatar ? league.avatar : '/react.svg'}></Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={league.name}
-                            ></ListItemText>
-                        </ListItemButton>
-                    </ListItem>
-                )
-                )
-                }
-            </List>
+            {leagues.length == 0 ? <Snackbar open={leagues.length == 0 ? true : false}
+                message="No Leagues Found"
+            />
+                :
+                <List>
+                    {leagues.map((league) =>
+                    (
+                        <ListItem>
+                            <ListItemButton sx={{ borderRadius: 5 }} onClick={() => handleNavigateToLeague(league.league_id)} key={league.league_id}>
+                                <ListItemAvatar>
+                                    <Avatar src={league.avatar ? league.avatar : '/react.svg'}></Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={league.name}
+                                ></ListItemText>
+                            </ListItemButton>
+                        </ListItem>
+                    )
+                    )
+                    }
+                </List>
+            }
         </>
     )
 }
