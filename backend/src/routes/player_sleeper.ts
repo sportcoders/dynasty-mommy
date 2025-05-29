@@ -5,8 +5,8 @@ const player_sleeper_router = Router()
 
 
 //GET: Get player by sleeper id, can get multiple players by seperating player_id with "&"
-player_sleeper_router.route('/:player_id').get((req, res) => {
-    getPlayersById(req, res)
+player_sleeper_router.route('/:player_id').get((req, res, next) => {
+    getPlayersById(req, res, next)
 })
 
 
