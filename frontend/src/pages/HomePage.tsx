@@ -66,6 +66,33 @@ function SelectSeasonForm({ updateSeason, selectedYear, label_name, width }: Sel
     )
 
 }
+
+interface displayLeaguesProps {
+    leagues: League[]
+    displayAvatar?: boolean
+    onLeagueClick: (league_id: string) => void
+}
+function DisplayLeagues({ leagues, onLeagueClick, displayAvatar }: displayLeaguesProps) {
+    return (
+        <List>
+            {leagues.map((league) =>
+            (
+                <ListItem>
+                    <ListItemButton sx={{ borderRadius: 5 }} onClick={() => onLeagueClick(league.league_id)} key={league.league_id}>
+                        <ListItemAvatar>
+                            {displayAvatar && <Avatar src={league.avatar && league.avatar}></Avatar>}
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={league.name}
+                        ></ListItemText>
+                    </ListItemButton>
+                </ListItem>
+            )
+            )
+            }
+        </List>
+    )
+}
 export default function Home() {
     const [searchParams, setSearchParams] = useState<{ searchType: string; value: string; season: string } | null>(null)
     //search params is either a dict that has those types or null
@@ -205,24 +232,9 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                 message="No Leagues Found"
             />
                 :
-                <List>
-                    {leagues.map((league) =>
-                    (
-                        <ListItem>
-                            <ListItemButton sx={{ borderRadius: 5 }} onClick={() => handleNavigateToLeague(league.league_id)} key={league.league_id}>
-                                <ListItemAvatar>
-                                    <Avatar src={league.avatar ? league.avatar : '/react.svg'}></Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={league.name}
-                                ></ListItemText>
-                            </ListItemButton>
-                        </ListItem>
-                    )
-                    )
-                    }
-                </List>
+                <DisplayLeagues onLeagueClick={handleNavigateToLeague} displayAvatar={true} leagues={leagues} />
             }
         </>
     )
 }
+
