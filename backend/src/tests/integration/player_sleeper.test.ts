@@ -20,7 +20,7 @@ describe('player_sleeper', () => {
         expect(response.status).toBe(HttpSuccess.OK)
         expect(response.body.missing_values).toBeFalsy()
 
-        const playersRet = response.body.players[0]
+        const playersRet = response.body.players
 
         expect(playersRet.length).toBe(1)
 
@@ -54,7 +54,7 @@ describe('player_sleeper', () => {
         expect(response.statusCode).toBe(HttpSuccess.PARTIAL_CONTENT)
         expect(response.body.missing_values).toBeTruthy()
         expect(response.body.missing_ids).toContain(missingId)
-        const player = response.body.players[1][0]
+        const player = response.body.players[0]
         delete player._id
         delete player.__v
         expect(player).toEqual(players[0])
