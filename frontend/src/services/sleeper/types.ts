@@ -21,3 +21,7 @@ export interface Player {
     first_name: string;
     last_name: string
 }
+
+export interface Players {
+    players: Player[];
+}

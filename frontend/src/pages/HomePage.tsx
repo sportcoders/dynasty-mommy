@@ -1,8 +1,8 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getAvatarThumbnail, getLeaguesForUser, getUser } from '../services/sleeper'
+import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer } from '../services/sleeper'
 import { useEffect, useState } from 'react'
-import type { League } from '../services/sleeper/types'
+import type { League, Players, Player } from '../services/sleeper/types'
 import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton } from '@mui/material'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
@@ -101,6 +101,22 @@ export default function Home() {
         //setting values to later be used in call
     }
 
+    const [players, setPlayers] = useState<Players | null>(null)
+
+    useEffect(() => {
+        const fetchPlayers = async () => {
+            try {
+                const player = await getPlayer('1081') // Example player ID
+                setPlayers(player)
+            } catch (error) {
+                console.error('Error fetching player:', error)
+            }
+        }
+
+        fetchPlayers();
+    }, []);
+
+    // console.log(players);
 
     return (
         <Stack>
@@ -116,6 +132,18 @@ export default function Home() {
                 ) :
                 <SleeperAccount onSearch={handleSearch} />
             }
+            {players ? 
+            players.players.map((p) => (
+                <Box key={p.first_name + p.last_name} sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
+                    <h3>{p.first_name} {p.last_name}</h3>
+                </Box>
+
+            )) : 
+            (
+                <Box sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
+                    <CircularProgress />
+                </Box>
+            )}
         </Stack>
     )
 }
