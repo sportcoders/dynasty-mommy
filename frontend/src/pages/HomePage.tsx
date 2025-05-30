@@ -106,8 +106,8 @@ export default function Home() {
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const player = await getPlayer('1081') // Example player ID
-                setPlayers(player)
+                const players = await getPlayer('1081&1240')
+                setPlayers(players)
             } catch (error) {
                 console.error('Error fetching player:', error)
             }
@@ -116,7 +116,7 @@ export default function Home() {
         fetchPlayers();
     }, []);
 
-    // console.log(players);
+    console.log(players);
 
     return (
         <Stack>
@@ -132,14 +132,12 @@ export default function Home() {
                 ) :
                 <SleeperAccount onSearch={handleSearch} />
             }
-            {players ? 
-            players.players.map((p) => (
-                <Box key={p.first_name + p.last_name} sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
-                    <h3>{p.first_name} {p.last_name}</h3>
+            {players ? players.players.map((player: Player) => (
+                <Box key={player.first_name + player.last_name} sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
+                    {/* Render player info here */}
+                    {player.first_name} {player.last_name}
                 </Box>
-
-            )) : 
-            (
+            )) : (
                 <Box sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
                     <CircularProgress />
                 </Box>
