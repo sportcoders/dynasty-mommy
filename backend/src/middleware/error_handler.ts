@@ -8,8 +8,10 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
     if (err instanceof MongooseError) {
         res.status(HttpError.INTERNAL_SERVER_ERROR)
     }
-    if (err instanceof AppError) {
+    else if (err instanceof AppError) {
         res.status(err.statusCode).json({ message: err.message })
     }
-    res.status(HttpError.INTERNAL_SERVER_ERROR).json({ errorType: typeof err, message: err.message })
+    else {
+        res.status(HttpError.INTERNAL_SERVER_ERROR).json({ errorType: typeof err, message: err.message })
+    }
 }
