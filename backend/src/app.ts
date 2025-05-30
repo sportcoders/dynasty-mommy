@@ -6,9 +6,7 @@ import { invalid_endpoint } from './errors/endpoint_not_found';
 import cors from 'cors'
 const app = express();
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-}))
+app.use(cors())
 app.use(express.json())
 app.use(logger)
 app.use('/sleeper_player', player_sleeper_router)
