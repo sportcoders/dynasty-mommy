@@ -1,0 +1,19 @@
+FROM node:22-slim
+
+#sets directory for container
+WORKDIR /backend
+
+#copies form where docker file is located
+COPY package*.json .
+
+RUN npm install
+
+#copies everything from backend into workdir, from backend because dockerfile is in backend
+COPY . .
+
+RUN npm run build
+
+ENV PORT=8000
+EXPOSE 8000
+
+CMD ["npm","start"]
