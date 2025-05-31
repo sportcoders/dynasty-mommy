@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import User from "../models/user"
-import { hashed_pw, verify_pw } from "../utils/bcrypt"
+import { compareSync, hash } from "bcrypt"
 import { createToken, Token } from "../utils/jwt"
 import { HttpSuccess, HttpError } from "../constants/constants"
 import { AppError } from "../errors/app_error"
+import config from "../config/config"
 
 export async function login(req: Request, res: Response, next: NextFunction) {
     const password: string = req.body.password
@@ -20,7 +21,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "User Not Found" });
         }
 
-        if (!verify_pw(password, user.password)) {
+        if (!compareSync(password, user.password)) {
             return res.status(HttpError.UNAUTHORIZED)
         }
         else {
@@ -47,10 +48,8 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         if (check) {
             throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "User Already Exists" })
         }
-
-        const hashed_password = await hashed_pw(password)
-
-        const user = await User.create({ email: email, passwod: hashed_password })
+        const hashed_pw = await hash(password, config.salt_rounds)
+        const user = await User.create({ email: email, passwod: hashed_pw })
 
     }
     //hash pwd
