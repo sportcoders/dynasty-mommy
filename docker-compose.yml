@@ -1,0 +1,7 @@
+services:
+  backend:
+    build: /backend
+    env_file:
+      - /backend/.env
+    ports:
+      - "${PORT}:${PORT}"
