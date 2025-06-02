@@ -1,7 +1,7 @@
 // import '../App.css'
 // import '../styles/main.scss'
 import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer, getLeagueInfo, apiGet } from '../services/sleeper'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { League, Players, Player, LeagueInfo } from '../services/sleeper/types'
 import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
 type SleeperAccountProps = {
@@ -233,7 +233,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
     const [year, setYear] = useState<string>(season)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    const blobUrls: string[] = [];
+    const blobUrls: string[] = []
     const handleNavigateToLeague = (id: string) => {
         console.log(id)
     }
@@ -253,15 +253,14 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
             for (const league of leagues) {
                 if (league.avatar) {
                     const blob = await getAvatarThumbnail(league.avatar)
-                    league.avatar = URL.createObjectURL(blob)
-                    blobUrls.push(league.avatar)
+                    const url = URL.createObjectURL(blob)
+                    league.avatar = url
+                    blobUrls.push(url)
                 }
             }
             /**TODO: STORE IN LOCAL STORAGE SO USER DOESN'T HAVE TO CALL API EVERY TIME */
             setLeagues(leagues)
-            return () => {
-                blobUrls.forEach((url) => URL.revokeObjectURL(url))
-            }
+
         } catch (err) {
             setError('Error fetching leagues')
             console.error(err)
@@ -271,6 +270,13 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
     }
     useEffect(() => {
         fetchLeagues()
+        return () => {
+            document.querySelectorAll<HTMLImageElement>('img[src^="blob:"]').forEach((img) => {
+                img.src = ''
+            })
+            // console.log('Revoking:', blobUrls)
+            blobUrls.forEach((url) => URL.revokeObjectURL(url))
+        }
     }, [searchType, value, year])
 
     if (loading) return <CircularProgress />
