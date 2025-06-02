@@ -1,9 +1,9 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer } from '../services/sleeper'
+import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer, getLeagueInfo, apiGet } from '../services/sleeper'
 import { useEffect, useState } from 'react'
-import type { League, Players, Player } from '../services/sleeper/types'
-import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton } from '@mui/material'
+import type { League, Players, Player, LeagueInfo } from '../services/sleeper/types'
+import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
     //function tha takes in those parameters and returns void
@@ -93,6 +93,51 @@ function DisplayLeagues({ leagues, onLeagueClick, displayAvatar }: displayLeague
         </List>
     )
 }
+
+function ViewLeagueInfo({ league_id }: { league_id: string }) {
+    const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null)
+
+    useEffect(() => {
+        const loadLeagueInfo = async () => {
+            try {
+                const response = await getLeagueInfo(league_id)
+
+                setLeagueInfo(response)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        loadLeagueInfo()
+    }, [])
+
+    return (<>
+        {leagueInfo ?
+            <Box>
+                <h1>{leagueInfo.name}</h1>
+                <h3>{leagueInfo.status}</h3>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Stat</TableCell>
+                            <TableCell>Points Per</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.entries(leagueInfo.scoring_settings).map(([string, value]) => (
+                            <TableRow>
+                                <TableCell>{string}</TableCell>
+                                <TableCell>{value}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+
+            </Box>
+            :
+            <CircularProgress />}
+    </>)
+}
 export default function Home() {
     const [searchParams, setSearchParams] = useState<{ searchType: string; value: string; season: string } | null>(null)
     //search params is either a dict that has those types or null
@@ -142,6 +187,7 @@ export default function Home() {
                     <CircularProgress />
                 </Box>
             )}
+            <ViewLeagueInfo league_id="1215921738601218048" />
         </Stack>
     )
 }
