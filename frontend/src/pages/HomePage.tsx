@@ -1,6 +1,6 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer, getLeagueInfo } from '../services/sleeper'
+import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer, getLeagueInfo, getPlayersForRosters } from '../services/sleeper'
 import { useEffect, useState } from 'react'
 import type { League, Players, Player, LeagueInfo } from '../services/sleeper/types'
 import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
@@ -122,12 +122,12 @@ export default function Home() {
         //setting values to later be used in call
     }
 
-    const [players, setPlayers] = useState<Players | null>(null)
+    const [players, setPlayers] = useState<Player[] | null>(null)
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const players = await getPlayer('1081&1240')
+                const players = await getPlayersForRosters('1206147191521935360')
                 setPlayers(players)
             } catch (error) {
                 console.error('Error fetching player:', error)
@@ -137,7 +137,9 @@ export default function Home() {
         fetchPlayers();
     }, []);
 
-    console.log(players);
+    useEffect(() => {
+        console.log(players)
+    }, [players])
 
     return (
         <Stack>
@@ -153,16 +155,7 @@ export default function Home() {
                 ) :
                 <SleeperAccount onSearch={handleSearch} />
             }
-            {players ? players.players.map((player: Player) => (
-                <Box key={player.first_name + player.last_name} sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
-                    {/* Render player info here */}
-                    {player.first_name} {player.last_name}
-                </Box>
-            )) : (
-                <Box sx={{ m: 2, p: 2, border: '1px solid black', borderRadius: 2 }}>
-                    <CircularProgress />
-                </Box>
-            )}
+           
             <ViewLeagueInfo league_id="1215921738601218048" />
         </Stack>
     )
