@@ -1,9 +1,10 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer } from '../services/sleeper'
+import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer, getLeagueInfo } from '../services/sleeper'
 import { useEffect, useState } from 'react'
-import type { League, Players, Player } from '../services/sleeper/types'
-import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton } from '@mui/material'
+import type { League, Players, Player, LeagueInfo } from '../services/sleeper/types'
+import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
+import { DisplayLeaguesList } from '../components/DisplayLeaguesList'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
     //function tha takes in those parameters and returns void
@@ -67,31 +68,51 @@ function SelectSeasonForm({ updateSeason, selectedYear, label_name, width }: Sel
 
 }
 
-interface displayLeaguesProps {
-    leagues: League[]
-    displayAvatar?: boolean
-    onLeagueClick: (league_id: string) => void
-}
-function DisplayLeagues({ leagues, onLeagueClick, displayAvatar }: displayLeaguesProps) {
-    return (
-        <List>
-            {leagues.map((league) =>
-            (
-                <ListItem>
-                    <ListItemButton sx={{ borderRadius: 5 }} onClick={() => onLeagueClick(league.league_id)} key={league.league_id}>
-                        <ListItemAvatar>
-                            {displayAvatar && <Avatar src={league.avatar && league.avatar}></Avatar>}
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={league.name}
-                        ></ListItemText>
-                    </ListItemButton>
-                </ListItem>
-            )
-            )
+
+
+function ViewLeagueInfo({ league_id }: { league_id: string }) {
+    const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null)
+
+    useEffect(() => {
+        const loadLeagueInfo = async () => {
+            try {
+                const response = await getLeagueInfo(league_id)
+
+                setLeagueInfo(response)
             }
-        </List>
-    )
+            catch (error) {
+                console.log(error)
+            }
+        }
+        loadLeagueInfo()
+    }, [])
+
+    return (<>
+        {leagueInfo ?
+            <Box>
+                <h1>{leagueInfo.name}</h1>
+                <h3>{leagueInfo.status}</h3>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Stat</TableCell>
+                            <TableCell>Points Per</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.entries(leagueInfo.scoring_settings).map(([string, value]) => (
+                            <TableRow>
+                                <TableCell>{string}</TableCell>
+                                <TableCell>{value}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+
+            </Box>
+            :
+            <CircularProgress />}
+    </>)
 }
 export default function Home() {
     const [searchParams, setSearchParams] = useState<{ searchType: string; value: string; season: string } | null>(null)
@@ -142,6 +163,7 @@ export default function Home() {
                     <CircularProgress />
                 </Box>
             )}
+            <ViewLeagueInfo league_id="1215921738601218048" />
         </Stack>
     )
 }
@@ -187,7 +209,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
     const [year, setYear] = useState<string>(season)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    const blobUrls: string[] = [];
+    const blobUrls: string[] = []
     const handleNavigateToLeague = (id: string) => {
         console.log(id)
     }
@@ -207,15 +229,14 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
             for (const league of leagues) {
                 if (league.avatar) {
                     const blob = await getAvatarThumbnail(league.avatar)
-                    league.avatar = URL.createObjectURL(blob)
-                    blobUrls.push(league.avatar)
+                    const url = URL.createObjectURL(blob)
+                    league.avatar = url
+                    blobUrls.push(url)
                 }
             }
             /**TODO: STORE IN LOCAL STORAGE SO USER DOESN'T HAVE TO CALL API EVERY TIME */
             setLeagues(leagues)
-            return () => {
-                blobUrls.forEach((url) => URL.revokeObjectURL(url))
-            }
+
         } catch (err) {
             setError('Error fetching leagues')
             console.error(err)
@@ -225,6 +246,13 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
     }
     useEffect(() => {
         fetchLeagues()
+        return () => {
+            document.querySelectorAll<HTMLImageElement>('img[src^="blob:"]').forEach((img) => {
+                img.src = ''
+            })
+            // console.log('Revoking:', blobUrls)
+            blobUrls.forEach((url) => URL.revokeObjectURL(url))
+        }
     }, [searchType, value, year])
 
     if (loading) return <CircularProgress />
@@ -258,7 +286,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                 message="No Leagues Found"
             />
                 :
-                <DisplayLeagues onLeagueClick={handleNavigateToLeague} displayAvatar={true} leagues={leagues} />
+                <DisplayLeaguesList onLeagueClick={handleNavigateToLeague} displayAvatar={true} leagues={leagues} />
             }
         </>
     )
