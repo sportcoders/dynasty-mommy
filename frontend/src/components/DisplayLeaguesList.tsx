@@ -1,5 +1,5 @@
 import { Avatar, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material"
-import type { League } from "../services/sleeper"
+import type { League } from "@services/sleeper"
 
 interface displayLeaguesListProps {
     /**
