@@ -13,7 +13,7 @@ export type SelectSeasonProps = {
     label_name?: string
     width?: number
 }
-export default function SelectSeasonForm({ updateSeason, selectedYear, label_name, width }: SelectSeasonProps) {
+export default function SelectSeasonDropDown({ updateSeason, selectedYear, label_name, width }: SelectSeasonProps) {
     /**
      * @returns drop down menu with years ranging from 2017(year sleeper was launched) to current year
      * updateSeason will update the usestate value parent component
