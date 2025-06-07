@@ -6,6 +6,7 @@ import type { League, Players, Player, LeagueInfo } from '../services/sleeper/ty
 import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
 import { DisplayLeaguesList } from '../components/DisplayLeaguesList'
 import DisplayTeamsInLeauge from '@components/DisplayTeamsInLeague'
+import { Navigate, useNavigate } from '@tanstack/react-router'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
     //function tha takes in those parameters and returns void
@@ -205,8 +206,14 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const blobUrls: string[] = []
+    const navigate = useNavigate()
     const handleNavigateToLeague = (id: string) => {
-        console.log(id)
+        const params = new URLSearchParams()
+        params.append('league', id)
+        navigate({
+            to: `/LeaguesHome/${id}`,
+            // search: (prev) => ({ ...prev, league: id })
+        })
     }
     async function fetchLeagues() {
         setLoading(true)

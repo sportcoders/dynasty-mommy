@@ -11,20 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LeaguesHomeImport } from './routes/LeaguesHome'
-import { Route as HomeImport } from './routes/Home'
+import { Route as IndexImport } from './routes/index'
+import { Route as LeaguesHomeLeaugeIdImport } from './routes/LeaguesHome.$leaugeId'
 
 // Create/Update Routes
 
-const LeaguesHomeRoute = LeaguesHomeImport.update({
-  id: '/LeaguesHome',
-  path: '/LeaguesHome',
+const IndexRoute = IndexImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const HomeRoute = HomeImport.update({
-  id: '/Home',
-  path: '/Home',
+const LeaguesHomeLeaugeIdRoute = LeaguesHomeLeaugeIdImport.update({
+  id: '/LeaguesHome/$leaugeId',
+  path: '/LeaguesHome/$leaugeId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,18 +32,18 @@ const HomeRoute = HomeImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/Home': {
-      id: '/Home'
-      path: '/Home'
-      fullPath: '/Home'
-      preLoaderRoute: typeof HomeImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/LeaguesHome': {
-      id: '/LeaguesHome'
-      path: '/LeaguesHome'
-      fullPath: '/LeaguesHome'
-      preLoaderRoute: typeof LeaguesHomeImport
+    '/LeaguesHome/$leaugeId': {
+      id: '/LeaguesHome/$leaugeId'
+      path: '/LeaguesHome/$leaugeId'
+      fullPath: '/LeaguesHome/$leaugeId'
+      preLoaderRoute: typeof LeaguesHomeLeaugeIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -52,38 +52,38 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/Home': typeof HomeRoute
-  '/LeaguesHome': typeof LeaguesHomeRoute
+  '/': typeof IndexRoute
+  '/LeaguesHome/$leaugeId': typeof LeaguesHomeLeaugeIdRoute
 }
 
 export interface FileRoutesByTo {
-  '/Home': typeof HomeRoute
-  '/LeaguesHome': typeof LeaguesHomeRoute
+  '/': typeof IndexRoute
+  '/LeaguesHome/$leaugeId': typeof LeaguesHomeLeaugeIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/Home': typeof HomeRoute
-  '/LeaguesHome': typeof LeaguesHomeRoute
+  '/': typeof IndexRoute
+  '/LeaguesHome/$leaugeId': typeof LeaguesHomeLeaugeIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/Home' | '/LeaguesHome'
+  fullPaths: '/' | '/LeaguesHome/$leaugeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/Home' | '/LeaguesHome'
-  id: '__root__' | '/Home' | '/LeaguesHome'
+  to: '/' | '/LeaguesHome/$leaugeId'
+  id: '__root__' | '/' | '/LeaguesHome/$leaugeId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  HomeRoute: typeof HomeRoute
-  LeaguesHomeRoute: typeof LeaguesHomeRoute
+  IndexRoute: typeof IndexRoute
+  LeaguesHomeLeaugeIdRoute: typeof LeaguesHomeLeaugeIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  HomeRoute: HomeRoute,
-  LeaguesHomeRoute: LeaguesHomeRoute,
+  IndexRoute: IndexRoute,
+  LeaguesHomeLeaugeIdRoute: LeaguesHomeLeaugeIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -96,15 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/Home",
-        "/LeaguesHome"
+        "/",
+        "/LeaguesHome/$leaugeId"
       ]
     },
-    "/Home": {
-      "filePath": "Home.tsx"
+    "/": {
+      "filePath": "index.tsx"
     },
-    "/LeaguesHome": {
-      "filePath": "LeaguesHome.tsx"
+    "/LeaguesHome/$leaugeId": {
+      "filePath": "LeaguesHome.$leaugeId.tsx"
     }
   }
 }
