@@ -113,7 +113,7 @@ function ViewLeagueInfo({ league_id }: { league_id: string }) {
             </Box>
             :
             <CircularProgress />}
-        <DisplayTeamsInLeauge league_id={'1215921738601218048'} onTeamClick={(team_id: string) => console.log(team_id)} />
+        {/* <DisplayTeamsInLeauge league_id={'1215921738601218048'} onTeamClick={(team_id: string) => console.log(team_id)} /> */}
     </>)
 }
 export default function Home() {
