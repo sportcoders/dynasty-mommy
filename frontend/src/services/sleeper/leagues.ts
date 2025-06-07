@@ -46,6 +46,7 @@ interface TeamSettings {
         losses: number,
         ties: number
     }
+    roster_id: number
 }
 export interface TeamInfo {
     record: {
@@ -58,6 +59,7 @@ export interface TeamInfo {
     username: string | null,
     display_name: string | null,
     avatar: string | null
+    roster_id: number
 }
 export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
     const rosters = await apiGet<TeamSettings[]>(`/league/${leagueId}/rosters`)
@@ -77,6 +79,7 @@ export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
             display_name: user ? user.display_name : null,
             username: user ? user.username : null,
             avatar: user ? user.avatar : null,
+            roster_id: roster.roster_id
         }
     })
 
