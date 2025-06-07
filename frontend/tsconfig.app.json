@@ -34,7 +34,10 @@
       ],
       "@pages/*": [
         "pages/*"
-      ]
+      ],
+      "@routes/*": [
+        "routes/*"
+      ],
     },
   },
   "include": [
