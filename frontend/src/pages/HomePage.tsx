@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import type { League, Players, Player, LeagueInfo } from '../services/sleeper/types'
 import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
 import { DisplayLeaguesList } from '../components/DisplayLeaguesList'
+import DisplayTeamsInLeauge from '@components/DisplayTeamsInLeague'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
     //function tha takes in those parameters and returns void
@@ -112,6 +113,7 @@ function ViewLeagueInfo({ league_id }: { league_id: string }) {
             </Box>
             :
             <CircularProgress />}
+        <DisplayTeamsInLeauge league_id={'1215921738601218048'} onTeamClick={(team_id: string) => console.log(team_id)} />
     </>)
 }
 export default function Home() {
@@ -155,7 +157,7 @@ export default function Home() {
                 ) :
                 <SleeperAccount onSearch={handleSearch} />
             }
-           
+
             <ViewLeagueInfo league_id="1215921738601218048" />
         </Stack>
     )
