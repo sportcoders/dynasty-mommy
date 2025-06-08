@@ -1,3 +1,4 @@
+import DisplayTeamsInLeauge from "@components/DisplayTeamsInLeague";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, CircularProgress, Icon, Stack, Typography } from "@mui/material";
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 import { type TeamInfo, getTeamInfo } from "@services/sleeper";
@@ -30,42 +31,43 @@ export default function LeagueHome() {
     }, [])
 
     return (
-        <Stack>
-            <h1>
-                League
-            </h1>
-            {teams ?
-                <div>
-                    {teams!.map((team) =>
-                        <Accordion expanded={expanded == team.roster_id}
-                            onChange={handleAccordionChange(team.roster_id)}
-                            square={false}
-                            sx={{
-                                borderRadius: '5px',
-                                minHeight: '60px'
-                            }}>
-                            <AccordionSummary sx={{ minHeight: '30px' }}>
-                                <Icon></Icon>
-                                <Box display="flex" alignItems="center" gap={1}>
-                                    <Typography variant="subtitle1" fontWeight="bold">
-                                        {team.team_name ? team.team_name : team.display_name}
-                                    </Typography>
+        <DisplayTeamsInLeauge league_id={leaugeId} />
+        // <Stack>
+        //     <h1>
+        //         League
+        //     </h1>
+        //     {teams ?
+        //         <div>
+        //             {teams!.map((team) =>
+        //                 <Accordion expanded={expanded == team.roster_id}
+        //                     onChange={handleAccordionChange(team.roster_id)}
+        //                     square={false}
+        //                     sx={{
+        //                         borderRadius: '5px',
+        //                         minHeight: '60px'
+        //                     }}>
+        //                     <AccordionSummary sx={{ minHeight: '30px' }}>
+        //                         <Icon></Icon>
+        //                         <Box display="flex" alignItems="center" gap={1}>
+        //                             <Typography variant="subtitle1" fontWeight="bold">
+        //                                 {team.team_name ? team.team_name : team.display_name}
+        //                             </Typography>
 
-                                    <Typography variant="body2" color="textSecondary">
-                                        ({team.record.wins} - {team.record.ties} - {team.record.losses})
-                                    </Typography>
-                                </Box>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Box display='flex' alignItems='center' justifyContent='center'>
-                                    <Button>Compare</Button>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    )}
-                </div>
-                :
-                <CircularProgress />}
-        </Stack>
+        //                             <Typography variant="body2" color="textSecondary">
+        //                                 ({team.record.wins} - {team.record.ties} - {team.record.losses})
+        //                             </Typography>
+        //                         </Box>
+        //                     </AccordionSummary>
+        //                     <AccordionDetails>
+        //                         <Box display='flex' alignItems='center' justifyContent='center'>
+        //                             <Button>Compare</Button>
+        //                         </Box>
+        //                     </AccordionDetails>
+        //                 </Accordion>
+        //             )}
+        //         </div>
+        //         :
+        //         <CircularProgress />}
+        // </Stack>
     )
 }

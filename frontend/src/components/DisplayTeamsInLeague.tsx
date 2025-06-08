@@ -4,12 +4,12 @@ import { getTeamInfo, getPlayersForRosters } from "@services/sleeper";
 import type { TeamInfo, Player } from "@services/sleeper";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
-    onTeamClick: (team_id: string) => void,
-    displayAvatar?: boolean,
-    displayRecord?: boolean
+    // onTeamClick: (team_id: string) => void,
+    // displayAvatar?: boolean,
+    // displayRecord?: boolean
 }
 
-export default function DisplayTeamsInLeauge({ league_id, onTeamClick, displayAvatar }: DisplayTeamsInLeaugeProps) {
+export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeaugeProps) {
     const [teams, setTeams] = useState<TeamInfo[] | null>(null)
     const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
     const [error, setError] = useState("")
@@ -68,7 +68,7 @@ export default function DisplayTeamsInLeauge({ league_id, onTeamClick, displayAv
                         <Icon></Icon>
                         <Box display="flex" alignItems="center" gap={1}>
                             <Typography variant="subtitle1" fontWeight="bold">
-                                {team.display_name}
+                                {team.team_name ? team.team_name : team.display_name}
                             </Typography>
 
                             <Typography variant="body2" color="textSecondary">
