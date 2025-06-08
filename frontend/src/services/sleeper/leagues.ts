@@ -16,15 +16,25 @@ export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo> => {
     return await apiGet<LeagueInfo>(`/league/${leagueId}`)
 }
 
-export const getPlayersForRosters = async (leagueId: string): Promise<Player[]> => {
-    const roster = await getRosters(leagueId)
-    const playerIds = roster.flatMap(roster => roster.players)
+export const getPlayersForRosters = async (leagueId: string): Promise<Record<string, Player[]>> => {
+    const rosters = await getRosters(leagueId)
+    const playerIds = rosters.flatMap(roster => roster.players)
     const uniquePlayerIds = Array.from(new Set(playerIds))
     const idsString = uniquePlayerIds.join('&')
 
     const res: Players = await getPlayer(idsString);
 
-    return res.players;
+    const playerMap: Record<string, Player> = {}
+    for (const player of res.players) {
+        playerMap[player.id] = player;
+    }
+
+    const ownerToPlayers: Record<string, Player[]> = {};
+    for (const roster of rosters) {
+        ownerToPlayers[roster.owner_id] = roster.players.map(pid => playerMap[pid]).filter(Boolean)
+    }
+
+    return ownerToPlayers;
 }
 
 interface leagueUser {
@@ -86,3 +96,4 @@ export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
     return res
 
 }
+
