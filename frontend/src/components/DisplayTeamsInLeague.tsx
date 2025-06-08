@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { useEffect, useState, type SyntheticEvent } from "react";
-import { getTeamInfo } from "@services/sleeper";
-import type { TeamInfo } from "@services/sleeper";
+import { getTeamInfo, getPlayersForRosters } from "@services/sleeper";
+import type { TeamInfo, Player } from "@services/sleeper";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
     onTeamClick: (team_id: string) => void,
@@ -11,6 +11,7 @@ interface DisplayTeamsInLeaugeProps {
 
 export default function DisplayTeamsInLeauge({ league_id, onTeamClick, displayAvatar }: DisplayTeamsInLeaugeProps) {
     const [teams, setTeams] = useState<TeamInfo[] | null>(null)
+    const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
     const [error, setError] = useState("")
     const [expanded, setExpanded] = useState<number | false>()
 
@@ -30,9 +31,27 @@ export default function DisplayTeamsInLeauge({ league_id, onTeamClick, displayAv
                 setError("An error occured")
             }
         }
+
+        const fetchPlayers = async () => {
+            try {
+                const res = await getPlayersForRosters(league_id)
+                console.log(res)
+                if (res)
+                    setPlayers(res)
+
+
+            } catch (e) {
+                setError("An error occured")
+            }
+        }
+
         fetchTeams()
-    }, [])
+        fetchPlayers()
+
+    }, [league_id])
+
     if (!teams) return <CircularProgress />
+    if (!players) return <CircularProgress />
 
     return (
         <div>
@@ -58,7 +77,13 @@ export default function DisplayTeamsInLeauge({ league_id, onTeamClick, displayAv
                         </Box>
                     </AccordionSummary>
                     <AccordionDetails>
-                        DISPLAY ROSTER HERE
+                        <List>
+                            {players![team.user_id!].map(player => (
+                                <ListItem>
+                                    <ListItemText primary={`${player.first_name} ${player.last_name}`} />
+                                </ListItem>
+                            ))}
+                        </List>
                     </AccordionDetails>
                 </Accordion>
             )}
