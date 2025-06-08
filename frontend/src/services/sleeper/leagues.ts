@@ -78,14 +78,13 @@ export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
     console.log(users)
     //returns array of dict, dict constains users
     const res: TeamInfo[] = rosters.map((roster) => {
-        let team_name = ""
         const user = users.find(u => u.user_id == roster.owner_id)
 
         return {
             // players: roster.players,
             record: roster.settings,
             user_id: user ? user.user_id : null,
-            team_name: team_name,
+            team_name: user ? user.metadata.team_name : "Unassigned",
             display_name: user ? user.display_name : null,
             username: user ? user.username : null,
             avatar: user ? user.avatar : null,
