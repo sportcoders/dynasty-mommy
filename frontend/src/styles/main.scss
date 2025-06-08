@@ -1,0 +1,17 @@
+// @import 'base';
+// @import 'variables';
+// @import 'themes';
+// @use 'variables';
+
+body {
+    color: grey;
+}
+
+div {
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    justify-self: center;
+}
