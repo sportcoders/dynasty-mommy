@@ -1,13 +1,13 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getAvatarThumbnail, getLeaguesForUser, getUser, getPlayer, getLeagueInfo, getPlayersForRosters } from '../services/sleeper'
+import { getAvatarThumbnail, getLeaguesForUser } from '../services/sleeper'
 import { useEffect, useState } from 'react'
-import type { League, Players, Player, LeagueInfo } from '@services/sleeper/types'
-import { TextField, Select, RadioGroup, Box, FormControl, InputLabel, FormLabel, FormControlLabel, Radio, MenuItem, type SelectChangeEvent, Button, CircularProgress, Stack, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemButton, ListItemIcon, Snackbar, type SnackbarCloseReason, IconButton, TableHead, Table, TableRow, TableCell, TableBody } from '@mui/material'
+import type { League } from '@services/sleeper/types'
+import { TextField, RadioGroup, Box, FormControl, FormLabel, FormControlLabel, Radio, Button, CircularProgress, Stack, Snackbar } from '@mui/material'
 import { DisplayLeaguesList } from '../components/DisplayLeaguesList'
-import DisplayTeamsInLeauge from '@components/DisplayTeamsInLeague'
-import { Navigate, useNavigate, useRouter } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
+import SelectSeasonDropDown from '@components/SelectSeasonDropDown'
 type SleeperAccountProps = {
     onSearch: (searchType: string, value: string, season: string) => void
     //function tha takes in those parameters and returns void
@@ -19,105 +19,7 @@ type SleeperLeaguesProps = {
     back: () => void
 }
 
-type SelectSeasonProps = {
-    updateSeason: (season: string) => void
-    selectedYear?: string
-    label_name?: string
-    width?: number
-}
-function SelectSeasonForm({ updateSeason, selectedYear, label_name, width }: SelectSeasonProps) {
-    const currentDate: Date = new Date()
-    const currentYear = currentDate.getFullYear()
-    const validYears = Array.from({ length: currentYear - 2000 + 1 }, (_, i) => i + 2000).reverse();
 
-    const [season, setSeason] = useState<string>('')
-
-    const handleSeasonChange = (event: SelectChangeEvent) => {
-        setSeason((event.target.value))
-        //update season for component that called it
-        updateSeason(event.target.value)
-    }
-    useEffect(() => {
-        setSeason(selectedYear ? selectedYear : String(currentYear))
-        updateSeason(selectedYear ? selectedYear : String(currentYear))
-    }, [selectedYear])
-    return (
-        <FormControl>
-            <InputLabel id='select-season-input-label'>{label_name ? label_name : "Year"}</InputLabel>
-            <Select
-                labelId='select-season-input-label'
-                value={season}
-                label={label_name ? label_name : "Year"}
-                onChange={handleSeasonChange}
-                sx={
-                    { ...(width && { minWidth: width }) }
-                }
-                MenuProps={{
-                    PaperProps: {
-                        style: {
-                            maxHeight: 48 * 4 + 8, // 4 items visible at a time
-                            //48 is default height if menu item in MUI
-                            //"+8 is for padding"
-                            //maxHeight = default height for menu item * number of items to show + padding
-                        },
-                    },
-                }}>
-                {validYears.map((year) => {
-                    return <MenuItem key={year} value={year}>{year}</MenuItem>;
-                })}
-            </Select>
-        </FormControl>
-    )
-
-}
-
-
-
-function ViewLeagueInfo({ league_id }: { league_id: string }) {
-    const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null)
-
-    useEffect(() => {
-        const loadLeagueInfo = async () => {
-            try {
-                const response = await getLeagueInfo(league_id)
-
-                setLeagueInfo(response)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        loadLeagueInfo()
-    }, [])
-
-    return (<>
-        {leagueInfo ?
-            <Box>
-                <h1>{leagueInfo.name}</h1>
-                <h3>{leagueInfo.status}</h3>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Stat</TableCell>
-                            <TableCell>Points Per</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {Object.entries(leagueInfo.scoring_settings).map(([string, value]) => (
-                            <TableRow>
-                                <TableCell>{string}</TableCell>
-                                <TableCell>{value}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-
-            </Box>
-            :
-            <CircularProgress />}
-        {/* <DisplayTeamsInLeauge league_id={'1215921738601218048'} onTeamClick={(team_id: string) => console.log(team_id)} /> */}
-    </>)
-}
 export default function Home() {
     const [searchParams, setSearchParams] = useState<{ searchType: string; value: string; season: string } | null>(null)
     //search params is either a dict that has those types or null
@@ -125,25 +27,6 @@ export default function Home() {
         setSearchParams({ searchType, value, season })
         //setting values to later be used in call
     }
-
-    const [players, setPlayers] = useState<Player[] | null>(null)
-
-    useEffect(() => {
-        const fetchPlayers = async () => {
-            try {
-                const players = await getPlayersForRosters('1206147191521935360')
-                setPlayers(players)
-            } catch (error) {
-                console.error('Error fetching player:', error)
-            }
-        }
-
-        fetchPlayers();
-    }, []);
-
-    useEffect(() => {
-        console.log(players)
-    }, [players])
 
     return (
         <Stack>
@@ -160,7 +43,6 @@ export default function Home() {
                 <SleeperAccount onSearch={handleSearch} />
             }
 
-            <ViewLeagueInfo league_id="1215921738601218048" />
         </Stack>
     )
 }
@@ -193,7 +75,7 @@ function SleeperAccount({ onSearch }: SleeperAccountProps) {
                 </RadioGroup>
                 <Box sx={{ m: 2 }} display='flex' gap={1}>
                     <TextField label={searchType} required variant='outlined' onChange={handleTextFieldEntry}></TextField>
-                    <SelectSeasonForm updateSeason={setSeason} />
+                    <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
                 </Box>
                 <Button onClick={handleSubmit} variant="contained" sx={{ m: 1 }}>Submit</Button>
             </FormControl>
@@ -280,7 +162,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                 />
                 <FormControl>
 
-                    <SelectSeasonForm updateSeason={setYear} selectedYear={year} label_name={'Change Year'} width={150} />
+                    <SelectSeasonDropDown updateSeason={setYear} selectedYear={year} label_name={'Change Year'} width={150} />
                 </FormControl>
             </Box>
             {leagues.length == 0 ? <Snackbar open={leagues.length == 0 ? true : false}
