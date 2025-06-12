@@ -1,4 +1,4 @@
-import { type League, getLeaguesForUser, getAvatarThumbnail } from "@services/sleeper"
+import { type League, sleeper_getLeagues, sleeper_getAvatarThumbnail } from "@services/sleeper"
 import { useState, useEffect } from "react"
 
 export default function useGetSleeperLeagues(searchType: string, year: string, searchText: string) {
@@ -15,7 +15,7 @@ export default function useGetSleeperLeagues(searchType: string, year: string, s
             try {
                 let leagues: League[] = []
                 if (searchType === 'Username') {
-                    leagues = await getLeaguesForUser(searchText, year)
+                    leagues = await sleeper_getLeagues(searchText, year)
                 } else if (searchType === 'League ID') {
                     setError('Search by League ID not implemented yet')
                     setLoading(false)
@@ -23,7 +23,7 @@ export default function useGetSleeperLeagues(searchType: string, year: string, s
                 }
                 for (const league of leagues) {
                     if (league.avatar) {
-                        const blob = await getAvatarThumbnail(league.avatar)
+                        const blob = await sleeper_getAvatarThumbnail(league.avatar)
                         const url = URL.createObjectURL(blob)
                         league.avatar = url
                     }
