@@ -1,6 +1,6 @@
 // import '../App.css'
 // import '../styles/main.scss'
-import { getAvatarThumbnail, getLeaguesForUser } from '../services/sleeper'
+import { sleeper_getAvatarThumbnail, getLeaguesForUser } from '../services/sleeper'
 import { useEffect, useState } from 'react'
 import type { League } from '@services/sleeper/types'
 import { TextField, RadioGroup, Box, FormControl, FormLabel, FormControlLabel, Radio, Button, CircularProgress, Stack, Snackbar } from '@mui/material'
@@ -111,7 +111,7 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
             }
             for (const league of leagues) {
                 if (league.avatar) {
-                    const blob = await getAvatarThumbnail(league.avatar)
+                    const blob = await sleeper_getAvatarThumbnail(league.avatar)
                     const url = URL.createObjectURL(blob)
                     league.avatar = url
                     blobUrls.push(url)
