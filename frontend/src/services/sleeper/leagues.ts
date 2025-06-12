@@ -1,5 +1,5 @@
 import { sleeper_apiGet } from './apiClient';
-import { getPlayer } from './player'
+import { sleeper_getPlayer } from './player'
 import type { League, LeagueInfo, Roster, User, Player, Players } from './types';
 
 export const getLeaguesForUser = async (username: string, season: string): Promise<League[]> => {
@@ -22,7 +22,7 @@ export const getPlayersForRosters = async (leagueId: string): Promise<Record<str
     const uniquePlayerIds = Array.from(new Set(playerIds))
     const idsString = uniquePlayerIds.join('&')
 
-    const res: Players = await getPlayer(idsString);
+    const res: Players = await sleeper_getPlayer(idsString);
 
     const playerMap: Record<string, Player> = {}
     for (const player of res.players) {
