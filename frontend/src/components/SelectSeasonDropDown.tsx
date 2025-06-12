@@ -21,7 +21,7 @@ export default function SelectSeasonDropDown({ updateSeason, selectedYear, label
      */
     const currentDate: Date = new Date()
     const currentYear = currentDate.getFullYear()
-    const validYears = Array.from({ length: currentYear - 2017 + 1 }, (_, i) => i + 2000).reverse();
+    const validYears = Array.from({ length: currentYear - 2017 + 1 }, (_, i) => i + 2017).reverse();
 
 
     const handleSeasonChange = (event: SelectChangeEvent) => {
