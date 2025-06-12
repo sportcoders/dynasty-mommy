@@ -1,7 +1,7 @@
 const BASE_URL = 'https://api.sleeper.app/v1';
 const SERVER_BASE_URL = 'http://localhost:8000'
 const AVATAR_URL = 'https://sleepercdn.com/avatars'
-export const apiGet = async <T>(endpoint: string): Promise<T> => {
+export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${BASE_URL}${endpoint}`);
 
     if (!response.ok) {
