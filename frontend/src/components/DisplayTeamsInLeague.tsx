@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { useEffect, useState, type SyntheticEvent } from "react";
-import { getTeamInfo, getPlayersForRosters } from "@services/sleeper";
+import { getTeamInfo, sleeper_getPlayers } from "@services/sleeper";
 import type { TeamInfo, Player } from "@services/sleeper";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
@@ -34,7 +34,7 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
 
         const fetchPlayers = async () => {
             try {
-                const res = await getPlayersForRosters(league_id)
+                const res = await sleeper_getPlayers(league_id)
                 console.log(res)
                 if (res)
                     setPlayers(res)
