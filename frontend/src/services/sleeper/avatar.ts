@@ -1,7 +1,7 @@
-import { avatarGet } from "./apiClient";
+import { sleeper_avatarGet } from "./apiClient";
 
 export async function sleeper_getAvatarThumbnail(avatar_id: string): Promise<Blob> {
-    return await avatarGet(`/thumbs/${avatar_id}`)
+    return await sleeper_avatarGet(`/thumbs/${avatar_id}`)
 }
 
 function blobToBase64(blob: Blob): Promise<string> {

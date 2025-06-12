@@ -17,7 +17,7 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
     return response.json() as Promise<T>
 }
 
-export const avatarGet = async <T>(endpoint: string): Promise<T> => {
+export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${AVATAR_URL}${endpoint}`)
 
 
