@@ -1,23 +1,8 @@
 import { Box, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress } from "@mui/material"
-import { type LeagueInfo, getLeagueInfo } from "@services/sleeper"
-import { useState, useEffect } from "react"
+import useGetLeagueInfo from "../hooks/useGetLeagueInfo"
 
-export function ViewLeagueInfo({ league_id }: { league_id: string }) {
-    const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null)
-
-    useEffect(() => {
-        const loadLeagueInfo = async () => {
-            try {
-                const response = await getLeagueInfo(league_id)
-
-                setLeagueInfo(response)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        loadLeagueInfo()
-    }, [])
+export default function ViewLeagueInfo({ league_id }: { league_id: string }) {
+    const leagueInfo = useGetLeagueInfo(league_id)
 
     return (<>
         {leagueInfo ?
