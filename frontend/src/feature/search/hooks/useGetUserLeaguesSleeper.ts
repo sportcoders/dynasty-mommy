@@ -15,17 +15,16 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
      */
     const [leagues, setLeagues] = useState<League[]>([])
     const [loading, setLoading] = useState<boolean>(true)
-    const [error, setError] = useState("")
-    const blobUrls: string[] = []
+    const [error, setError] = useState<string | null>("")
     useEffect(() => {
         async function fetchLeagues() {
             setLoading(true)
-            setError("")
+            setError(null)
             setLeagues([])
             try {
                 let leagues: League[] = []
                 if (searchType === 'Username') {
-                    leagues = await sleeper_getLeagues(value, season)
+                    leagues = await sleeper_getLeagues(searchType, season)
                 } else if (searchType === 'League ID') {
                     setError('Search by League ID not implemented yet')
                     setLoading(false)
@@ -36,7 +35,6 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
                         const blob = await sleeper_getAvatarThumbnail(league.avatar)
                         const url = URL.createObjectURL(blob)
                         league.avatar = url
-                        blobUrls.push(url)
                     }
                 }
                 /**TODO: STORE IN LOCAL STORAGE SO USER DOESN'T HAVE TO CALL API EVERY TIME */
@@ -50,10 +48,8 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
             }
         }
         fetchLeagues()
-
         return () => {
-            blobUrls.forEach((url) => URL.revokeObjectURL(url))
-
+            leagues.forEach((league) => URL.revokeObjectURL(league.avatar))
         }
     }, [searchType, value, season])
 
