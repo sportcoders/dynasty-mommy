@@ -1,9 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { useEffect, useState, type SyntheticEvent } from "react";
 import { getTeamInfo, sleeper_getPlayers } from "@services/sleeper";
 import type { TeamInfo, Player } from "@services/sleeper";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
 import useGetPlayersSleeper from "@feature/leagues/hooks/useGetPlayersSleeper";
+import DisplayRosterByPosition from "./DisplayRosterByPosition";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
     // onTeamClick: (team_id: string) => void,
@@ -81,13 +82,26 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
                         </Box>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <List>
+                        <Box
+                            display="grid"
+                            gridTemplateColumns="repeat(5, 1fr)"
+                            gap={2}
+                        >
+                            {["PG", "SG", "SF", "PF", "C"].map((position) => (
+                                <DisplayRosterByPosition
+                                    key={position}
+                                    roster={players[team.user_id!] as Player[]}
+                                    position={position}
+                                />
+                            ))}
+                        </Box>
+                        {/* <List>
                             {players![team.user_id!].map(player => (
                                 <ListItem>
                                     <ListItemText primary={`${player.first_name} ${player.last_name}`} />
                                 </ListItem>
                             ))}
-                        </List>
+                        </List> */}
                     </AccordionDetails>
                 </Accordion>
             )}
