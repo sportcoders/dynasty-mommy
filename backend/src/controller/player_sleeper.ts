@@ -3,10 +3,11 @@ import { AppError } from "../errors/app_error";
 import Player_Sleeper from "../models/player_sleeper"
 import { NextFunction, Request, Response } from 'express';
 
-const verifyID = (p_id: string) => {
-    if (p_id.match(/^\d{4}$/))
-        return Player_Sleeper.findOne({ id: p_id }).lean()
-    throw new AppError({ statusCode: HttpError.UNPROCESSABLE_ENTITY, message: "Invalid ID Format" })
+const verifyIDs = (ids: string[]) => {
+    const valid = ids.filter(id => /^\d{4}$/.test(id))
+    if (valid.length !== ids.length)
+        throw new AppError({ statusCode: HttpError.UNPROCESSABLE_ENTITY, message: "Invalid ID Format" })
+    return valid
 }
 export const getPlayersById = async function (req: Request, res: Response, next: NextFunction) {
     const ids = req.params.player_id
@@ -14,9 +15,8 @@ export const getPlayersById = async function (req: Request, res: Response, next:
         return res.status(404).send({ message: "No Ids Provided" })
     }
     try {
-        const player_ids = ids.split("&");
-        const promises = player_ids.map(p_id => verifyID(p_id));
-        const players = await Promise.all(promises);
+        const player_ids = verifyIDs(ids.split("&"))
+        const players = await Player_Sleeper.find({ id: { $in: player_ids } }).lean()
         const missing_ids: string[] = [];
         if (!players) {
             return res.status(404).json({ detail: "No players found" })
