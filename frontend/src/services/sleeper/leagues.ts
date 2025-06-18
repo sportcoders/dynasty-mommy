@@ -31,7 +31,17 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 
     return ownerToPlayers;
 }
+export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[]> => {
+    const rosters = await sleeper_getRosters(leagueId)
+    const roster = rosters.filter((roster) => roster.owner_id == owner_id)
+    const playerIds = roster.flatMap((roster) => roster.players)
 
+    const queryString = playerIds.join("&")
+
+    const players = await sleeper_getPlayer(queryString)
+
+    return players.players
+}
 export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo> => {
     return await sleeper_apiGet<LeagueInfo>(`/league/${leagueId}`)
 }
@@ -39,7 +49,7 @@ export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo> => {
 interface leagueUser {
     user_id: string,
     username: string,
-    display_name: string, 
+    display_name: string,
     avatar: string
     metadata: {
         team_name: string
@@ -72,10 +82,14 @@ export interface TeamInfo {
 }
 
 export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
-    const rosters = await sleeper_apiGet<TeamSettings[]>(`/league/${leagueId}/rosters`)
-    const users = await sleeper_apiGet<leagueUser[]>(`/league/${leagueId}/users`)
-    console.log(rosters)
-    console.log(users)
+    const promises = await Promise.allSettled([
+        sleeper_apiGet<TeamSettings[]>(`/league/${leagueId}/rosters`),
+        sleeper_apiGet<leagueUser[]>(`/league/${leagueId}/users`)
+    ])
+    const [rosters, users]: [TeamSettings[], leagueUser[]] = promises.map((result) =>
+        result.status == 'fulfilled' ? result.value : []
+    ) as [TeamSettings[], leagueUser[]]
+
     //returns array of dict, dict constains users
     const res: TeamInfo[] = rosters.map((roster) => {
         const user = users.find(u => u.user_id == roster.owner_id)
