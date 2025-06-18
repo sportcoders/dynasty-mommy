@@ -5,6 +5,7 @@ import type { TeamInfo, Player } from "@services/sleeper";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
 import useGetPlayersSleeper from "@feature/leagues/hooks/useGetPlayersSleeper";
 import DisplayRosterByPosition from "./DisplayRosterByPosition";
+import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOnRosterSleeper";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
     // onTeamClick: (team_id: string) => void,
@@ -15,7 +16,8 @@ interface DisplayTeamsInLeaugeProps {
 export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeaugeProps) {
     const { teams, error: team_error, loading: team_loading } = useGetLeagueTeamsSleeper(league_id)
     // const [teams, setTeams] = useState<TeamInfo[] | null>(null)
-    const { players, error: player_error, loading: player_loading } = useGetPlayersSleeper(league_id)
+    // const { players, error: player_error, loading: player_loading } = useGetPlayersSleeper(league_id)
+    const { players: roster, error: roster_error, loading: roster_loading, setOwnerId } = useGetPlayersOnRosterSleeper(league_id)
     // const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
     // const [error, setError] = useState("")
     const [expanded, setExpanded] = useState<number | false>()
@@ -56,7 +58,7 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
     // }, [league_id])
     // if (team_loading || player_loading) return <CircularProgress />
     if (!teams) return <CircularProgress />
-    if (!players) return <CircularProgress />
+    // if (!roster) return <CircularProgress />
 
     return (
         <div>
@@ -68,8 +70,10 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
                     sx={{
                         borderRadius: '5px',
                         minHeight: '60px'
-                    }}>
-                    <AccordionSummary sx={{ minHeight: '30px' }}>
+                    }}
+                >
+                    <AccordionSummary sx={{ minHeight: '30px' }}
+                        onClick={() => setOwnerId(team.user_id!)}>
                         <Icon></Icon>
                         <Box display="flex" alignItems="center" gap={1}>
                             <Typography variant="subtitle1" fontWeight="bold">
@@ -82,7 +86,7 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
                         </Box>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Box
+                        {roster && <Box
                             display="grid"
                             gridTemplateColumns="repeat(5, 1fr)"
                             gap={2}
@@ -90,11 +94,13 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
                             {["PG", "SG", "SF", "PF", "C"].map((position) => (
                                 <DisplayRosterByPosition
                                     key={position}
-                                    roster={players[team.user_id!] as Player[]}
+                                    roster={roster}
                                     position={position}
                                 />
                             ))}
-                        </Box>
+                        </Box>}
+                        {roster_loading && <CircularProgress />}
+                        {roster_error && <Typography>An error has occurred</Typography>}
                         {/* <List>
                             {players![team.user_id!].map(player => (
                                 <ListItem>
