@@ -1,12 +1,21 @@
-import { type League, sleeper_getLeagues, sleeper_getAvatarThumbnail } from "@services/sleeper"
-import { useState, useEffect } from "react"
+import { sleeper_getAvatarThumbnail, sleeper_getLeagues } from "@services/sleeper";
+import type { League } from "@services/sleeper/types";
+import { useEffect, useState } from "react";
 
-export default function useGetSleeperLeagues(searchType: string, year: string, searchText: string) {
+export default function useGetUserLeaguesSleeper(searchType: string, value: string, season: string) {
+    /**
+     * Custom React hook that retrieves user league data from the Sleeper API based on the specified search type.
+     * 
+     * @param {string} searchType - The type of search to perform, username or league id
+     * CURRENTLY ONLY LEAGUE ID IS SUPPORTED
+     * @param {string} value - The value to search based on the given search type, for searchType username, the value is the username
+     * @param {string} season - The fantasy season which the user would like to view their teams for
+     * 
+     * @returns {object} - object containg list of leagues, error and loading state
+     */
     const [leagues, setLeagues] = useState<League[]>([])
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
-
-
+    const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<string | null>("")
     useEffect(() => {
         async function fetchLeagues() {
             setLoading(true)
@@ -15,7 +24,7 @@ export default function useGetSleeperLeagues(searchType: string, year: string, s
             try {
                 let leagues: League[] = []
                 if (searchType === 'Username') {
-                    leagues = await sleeper_getLeagues(searchText, year)
+                    leagues = await sleeper_getLeagues(searchType, season)
                 } else if (searchType === 'League ID') {
                     setError('Search by League ID not implemented yet')
                     setLoading(false)
@@ -42,7 +51,7 @@ export default function useGetSleeperLeagues(searchType: string, year: string, s
         return () => {
             leagues.forEach((league) => URL.revokeObjectURL(league.avatar))
         }
-    }, [searchType, searchText, year])
+    }, [searchType, value, season])
 
     return { leagues, loading, error }
 }

@@ -27,6 +27,9 @@
       "@routes/*": [
         "routes/*"
       ],
+      "@feature/*": [
+        "feature/*"
+      ],
     }
   }
 }

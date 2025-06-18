@@ -2,6 +2,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, I
 import { useEffect, useState, type SyntheticEvent } from "react";
 import { getTeamInfo, sleeper_getPlayers } from "@services/sleeper";
 import type { TeamInfo, Player } from "@services/sleeper";
+import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
+import useGetPlayersSleeper from "@feature/leagues/hooks/useGetPlayersSleeper";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
     // onTeamClick: (team_id: string) => void,
@@ -10,46 +12,48 @@ interface DisplayTeamsInLeaugeProps {
 }
 
 export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeaugeProps) {
-    const [teams, setTeams] = useState<TeamInfo[] | null>(null)
-    const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
-    const [error, setError] = useState("")
+    const { teams, error: team_error, loading: team_loading } = useGetLeagueTeamsSleeper(league_id)
+    // const [teams, setTeams] = useState<TeamInfo[] | null>(null)
+    const { players, error: player_error, loading: player_loading } = useGetPlayersSleeper(league_id)
+    // const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
+    // const [error, setError] = useState("")
     const [expanded, setExpanded] = useState<number | false>()
 
     const handleAccordionChange = (panel: number) => (event: SyntheticEvent, newExpanded: boolean) => {
         setExpanded(newExpanded ? panel : false)
     }
-    useEffect(() => {
-        const fetchTeams = async () => {
-            try {
-                const res = await getTeamInfo(league_id)
-                console.log(res)
-                if (res)
-                    setTeams(res)
-                setError("")
-            }
-            catch (e) {
-                setError("An error occured")
-            }
-        }
+    // useEffect(() => {
+    //     const fetchTeams = async () => {
+    //         try {
+    //             const res = await getTeamInfo(league_id)
+    //             console.log(res)
+    //             if (res)
+    //                 setTeams(res)
+    //             setError("")
+    //         }
+    //         catch (e) {
+    //             setError("An error occured")
+    //         }
+    //     }
 
-        const fetchPlayers = async () => {
-            try {
-                const res = await sleeper_getPlayers(league_id)
-                console.log(res)
-                if (res)
-                    setPlayers(res)
+    //     const fetchPlayers = async () => {
+    //         try {
+    //             const res = await sleeper_getPlayers(league_id)
+    //             console.log(res)
+    //             if (res)
+    //                 setPlayers(res)
 
 
-            } catch (e) {
-                setError("An error occured")
-            }
-        }
+    //         } catch (e) {
+    //             setError("An error occured")
+    //         }
+    //     }
 
-        fetchTeams()
-        fetchPlayers()
+    //     fetchTeams()
+    //     fetchPlayers()
 
-    }, [league_id])
-
+    // }, [league_id])
+    // if (team_loading || player_loading) return <CircularProgress />
     if (!teams) return <CircularProgress />
     if (!players) return <CircularProgress />
 
