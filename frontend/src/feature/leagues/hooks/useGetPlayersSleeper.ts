@@ -10,7 +10,7 @@ export default function useGetPlayersSleeper(league_id: string) {
      * @returns {object} - An object containing the players, error and loading state
      */
     const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
-    const [error, setError] = useState("")
+    const [error, setError] = useState<string | null>()
     const [loading, setLoading] = useState<boolean>(true)
 
     useEffect(() => {
