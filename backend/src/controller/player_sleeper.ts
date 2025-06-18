@@ -17,20 +17,16 @@ export const getPlayersById = async function (req: Request, res: Response, next:
     try {
         const player_ids = verifyIDs(ids.split("&"))
         const players = await Player_Sleeper.find({ id: { $in: player_ids } }).lean()
-        const missing_ids: string[] = [];
-        if (!players) {
+        if (players.length == 0) {
             return res.status(404).json({ detail: "No players found" })
             //log that ids were in valid format but does not exist in database
         }
-        players.forEach((res, index) => {
-            if (!res) {
-                missing_ids.push(player_ids[index]);
-            }
-        });
+        const foundIds = players.map(p => p.id);
+        const missing_ids = player_ids.filter(id => !foundIds.includes(id));
         if (missing_ids.length > 0) {
             return res.status(206).json({
                 missing_values: true,
-                players: players.filter(player => player !== null),
+                players: players,
                 missing_ids: missing_ids
             })
         }
