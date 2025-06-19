@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Snackbar, Stack, TextField } from '@mui/material'
 import { useRouter } from '@tanstack/react-router'
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
@@ -7,18 +6,6 @@ import SelectSeasonDropDown from '@components/SelectSeasonDropDown'
 import useSearchParamsSleeper from '@feature/search/hooks/useSearchParamsSleeper'
 import useGetUserLeaguesSleeper from '@feature/search/hooks/useGetUserLeaguesSleeper'
 
-/** React Typed Props for SleeperAccount function */
-type SleeperAccountProps = {
-    onSearch: (searchType: string, value: string, season: string) => void
-}
-
-/** React Typed Props for SleeperLeagues function */
-type SleeperLeaguesProps = {
-    searchType: string
-    value: string
-    season: string
-    back: () => void
-}
 type SleeperSearchComponentProps = {
     searchType: string
     season: string
