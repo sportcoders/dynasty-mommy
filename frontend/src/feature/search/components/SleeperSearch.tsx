@@ -19,6 +19,17 @@ type SleeperLeaguesProps = {
     season: string
     back: () => void
 }
+type SleeperSearchComponentProps = {
+    searchType: string
+    season: string
+    searchText: string
+    validParams: boolean
+    handleTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    setSeason: (s: string) => void
+    handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    checkValidParams: () => void
+    setParamsFalse: () => void
+}
 
 /**
  * SleeperSearch is a component for the Sleeper League Search feature.
@@ -33,24 +44,44 @@ type SleeperLeaguesProps = {
  * @returns The rendered search interface for Sleeper leagues.
  */
 export default function SleeperSearch() {
-    const [searchParams, setSearchParams] = useState<{ searchType: string; value: string; season: string } | null>(null)
-    const handleSearch = (searchType: string, value: string, season: string) => {
-        setSearchParams({ searchType, value, season })
-    }
+    const {
+        searchType,
+        season,
+        searchText,
+        validParams,
+        handleTextChange,
+        setSeason,
+        handleSearchTypeChange,
+        checkValidParams,
+        setParamsFalse
+    } = useSearchParamsSleeper();
 
     return (
         <Stack>
             <h1>Sleeper League Search</h1>
-            {searchParams ?
+            {validParams ?
                 (
                     <SleeperLeagues
-                        searchType={searchParams.searchType}
-                        value={searchParams.value}
-                        season={searchParams.season}
-                        back={() => setSearchParams(null)}
-                    />
+                        searchType={searchType}
+                        season={season}
+                        searchText={searchText}
+                        validParams={validParams}
+                        handleTextChange={handleTextChange}
+                        setSeason={setSeason}
+                        handleSearchTypeChange={handleSearchTypeChange}
+                        checkValidParams={checkValidParams}
+                        setParamsFalse={setParamsFalse} />
                 ) :
-                <SleeperAccount onSearch={handleSearch} />
+                <SleeperAccount
+                    searchType={searchType}
+                    season={season}
+                    searchText={searchText}
+                    validParams={validParams}
+                    handleTextChange={handleTextChange}
+                    setSeason={setSeason}
+                    handleSearchTypeChange={handleSearchTypeChange}
+                    checkValidParams={checkValidParams}
+                    setParamsFalse={setParamsFalse} />
             }
 
         </Stack>
@@ -64,23 +95,17 @@ export default function SleeperSearch() {
  * 
  * @returns The rendered form for searching league(s) via username/league id and season year.
  */
-function SleeperAccount({ onSearch }: SleeperAccountProps) {
-
-    const {
-        searchType, 
-        season, 
-        searchText,
-        validParams,
-        handleTextChange,
-        setSeason,
-        handleSearchTypeChange
-    } = useSearchParamsSleeper();
+function SleeperAccount({ searchType,
+    season,
+    searchText,
+    handleTextChange,
+    setSeason,
+    handleSearchTypeChange,
+    checkValidParams }: SleeperSearchComponentProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (validParams) {
-            onSearch(searchType, searchText.trim(), season)
-        }
+        checkValidParams()
     }
 
     return (
@@ -94,7 +119,7 @@ function SleeperAccount({ onSearch }: SleeperAccountProps) {
                     <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
                 </RadioGroup>
                 <Box sx={{ m: 2 }} display='flex' gap={1}>
-                    <TextField label={searchType} required variant='outlined' onChange={handleTextChange}></TextField>
+                    <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText}></TextField>
                     <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
                 </Box>
                 <Button onClick={handleSubmit} variant="contained" sx={{ m: 1 }}>Submit</Button>
@@ -110,11 +135,14 @@ function SleeperAccount({ onSearch }: SleeperAccountProps) {
  * 
  * @returns The rendered leagues list.
  */
-function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps) {
-    const [year, setYear] = useState<string>(season)
-    const { leagues, loading, error } = useGetUserLeaguesSleeper(searchType, value, year)
+function SleeperLeagues({ searchType,
+    season,
+    searchText,
+    setSeason,
+    setParamsFalse: back }: SleeperSearchComponentProps) {
+    const { leagues, loading, error } = useGetUserLeaguesSleeper(searchType, searchText, season)
     const router = useRouter()
-    
+
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
@@ -141,11 +169,11 @@ function SleeperLeagues({ searchType, value, season, back }: SleeperLeaguesProps
                     disabled
                     id="outlined-disabled"
                     label={searchType}
-                    defaultValue={value}
+                    defaultValue={searchText}
                 />
                 <FormControl>
 
-                    <SelectSeasonDropDown updateSeason={setYear} selectedYear={year} label_name={'Change Year'} width={150} />
+                    <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} label_name={'Change Year'} width={150} />
                 </FormControl>
             </Box>
             {leagues.length == 0 ? <Snackbar open={leagues.length == 0 ? true : false}
