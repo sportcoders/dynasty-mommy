@@ -24,7 +24,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: di
         <List>
             {leagues.map((league) =>
             (
-                <ListItem>
+                <ListItem key={league.league_id}>
                     <ListItemButton sx={{ borderRadius: 5 }} onClick={() => onLeagueClick(league.league_id)} key={league.league_id}>
                         <ListItemAvatar>
                             {displayAvatar && <Avatar src={league.avatar && league.avatar}></Avatar>}

@@ -1,6 +1,6 @@
 import { sleeper_getAvatarThumbnail, sleeper_getLeagues } from "@services/sleeper";
 import type { League } from "@services/sleeper/types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useGetUserLeaguesSleeper(searchType: string, value: string, season: string) {
     /**
@@ -16,15 +16,18 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
     const [leagues, setLeagues] = useState<League[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>("")
+    const blobUrls = useRef<string[]>([])
+
     useEffect(() => {
-        async function fetchLeagues() {
+        const fetchLeagues = async () => {
             setLoading(true)
             setError(null)
             setLeagues([])
+
             try {
                 let leagues: League[] = []
                 if (searchType === 'Username') {
-                    leagues = await sleeper_getLeagues(searchType, season)
+                    leagues = await sleeper_getLeagues(value, season)
                 } else if (searchType === 'League ID') {
                     setError('Search by League ID not implemented yet')
                     setLoading(false)
@@ -35,8 +38,10 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
                         const blob = await sleeper_getAvatarThumbnail(league.avatar)
                         const url = URL.createObjectURL(blob)
                         league.avatar = url
+                        blobUrls.current.push(url)
                     }
                 }
+
                 /**TODO: STORE IN LOCAL STORAGE SO USER DOESN'T HAVE TO CALL API EVERY TIME */
                 setLeagues(leagues)
 
@@ -47,9 +52,14 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
                 setLoading(false)
             }
         }
+
         fetchLeagues()
+
         return () => {
-            leagues.forEach((league) => URL.revokeObjectURL(league.avatar))
+            // leagues.forEach((league) => URL.revokeObjectURL(league.avatar))
+
+            blobUrls.current.forEach((url) => URL.revokeObjectURL(url));
+            blobUrls.current = [];
         }
     }, [searchType, value, season])
 

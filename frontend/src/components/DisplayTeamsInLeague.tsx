@@ -64,7 +64,7 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
         <div>
 
             {teams!.map((team) =>
-                <Accordion expanded={expanded == team.roster_id}
+                <Accordion key={team.user_id} expanded={expanded == team.roster_id}
                     onChange={handleAccordionChange(team.roster_id)}
                     square={false}
                     sx={{
