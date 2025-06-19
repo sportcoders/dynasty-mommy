@@ -19,17 +19,21 @@ export default function useSearchParamsSleeper() {
     const [searchText, setSearchText] = useState("")
     const [validParams, setValidParams] = useState<boolean>(false)
 
-    useEffect(() => {
-        if (season && searchText) {
-            setValidParams(true)
-        }
-    }, [season, searchText])
+
     const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchType(event.target.value)
     }
     const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(event.target.value)
     }
+    const checkValidParams = () => {
+        if (season && searchText) {
+            setValidParams(true)
+        }
+    }
+    const setParamsFalse = () => {
+        setValidParams(false)
+    }
 
-    return { validParams, searchText, season, handleTextChange, setSeason, searchType, handleSearchTypeChange }
+    return { validParams, searchText, season, handleTextChange, setSeason, searchType, handleSearchTypeChange, checkValidParams, setParamsFalse }
 }
