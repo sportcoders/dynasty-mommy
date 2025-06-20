@@ -65,35 +65,10 @@ export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHome
                         </Box>}
                         {roster_loading && <CircularProgress />}
                         {roster_error && <Typography>An error has occurred</Typography>}
-                        {/* <List>
-                            {players![team.user_id!].map(player => (
-                                <ListItem>
-                                    <ListItemText primary={`${player.first_name} ${player.last_name}`} />
-                                </ListItem>
-                            ))}
-                        </List> */}
                     </AccordionDetails>
                 </Accordion>
             )}
         </div>
-        // <List>
-        //     {teams!.map((team) =>
-        //     (
-        //         <ListItem>
-        //             <ListItemButton sx={{ borderRadius: 5 }} onClick={() => onTeamClick(String(team.roster_id))} key={team.user_id}>
-        //                 <ListItemAvatar>
-        //                     {/* {displayAvatar && <Avatar src={team.avatar && team.avatar}></Avatar>} */}
-        //                 </ListItemAvatar>
-        //                 <ListItemText
-        //                     primary={team.display_name}
-        //                     secondary={true ? `${team.record.wins} - ${team.record.ties} - ${team.record.losses}` : undefined}
-        //                 ></ListItemText>
-        //             </ListItemButton>
-        //         </ListItem>
-        //     )
-        //     )
-        //     }
-        // </List>
 
     )
 }
