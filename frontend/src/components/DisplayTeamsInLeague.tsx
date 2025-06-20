@@ -6,6 +6,7 @@ import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSl
 import useGetPlayersSleeper from "@feature/leagues/hooks/useGetPlayersSleeper";
 import DisplayRosterByPosition from "./DisplayRosterByPosition";
 import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOnRosterSleeper";
+import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
 interface DisplayTeamsInLeaugeProps {
     league_id: string,
     // onTeamClick: (team_id: string) => void,
@@ -15,54 +16,20 @@ interface DisplayTeamsInLeaugeProps {
 
 export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeaugeProps) {
     const { teams, error: team_error, loading: team_loading } = useGetLeagueTeamsSleeper(league_id)
-    // const [teams, setTeams] = useState<TeamInfo[] | null>(null)
-    // const { players, error: player_error, loading: player_loading } = useGetPlayersSleeper(league_id)
     const { players: roster, error: roster_error, loading: roster_loading, setOwnerId } = useGetPlayersOnRosterSleeper(league_id)
-    // const [players, setPlayers] = useState<Record<string, Player[]> | null>(null)
-    // const [error, setError] = useState("")
+    const { leagueInfo, loading, error } = useGetLeagueInfo(league_id)
+
     const [expanded, setExpanded] = useState<number | false>()
 
     const handleAccordionChange = (panel: number) => (event: SyntheticEvent, newExpanded: boolean) => {
         setExpanded(newExpanded ? panel : false)
     }
-    // useEffect(() => {
-    //     const fetchTeams = async () => {
-    //         try {
-    //             const res = await getTeamInfo(league_id)
-    //             console.log(res)
-    //             if (res)
-    //                 setTeams(res)
-    //             setError("")
-    //         }
-    //         catch (e) {
-    //             setError("An error occured")
-    //         }
-    //     }
 
-    //     const fetchPlayers = async () => {
-    //         try {
-    //             const res = await sleeper_getPlayers(league_id)
-    //             console.log(res)
-    //             if (res)
-    //                 setPlayers(res)
-
-
-    //         } catch (e) {
-    //             setError("An error occured")
-    //         }
-    //     }
-
-    //     fetchTeams()
-    //     fetchPlayers()
-
-    // }, [league_id])
-    // if (team_loading || player_loading) return <CircularProgress />
     if (!teams) return <CircularProgress />
-    // if (!roster) return <CircularProgress />
 
     return (
         <div>
-
+            <Typography variant="h2">{leagueInfo?.name}</Typography>
             {teams!.map((team) =>
                 <Accordion key={team.user_id} expanded={expanded == team.roster_id}
                     onChange={handleAccordionChange(team.roster_id)}
