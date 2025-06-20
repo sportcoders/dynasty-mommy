@@ -1,17 +1,17 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { useState, type SyntheticEvent } from "react";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
-import DisplayRosterByPosition from "./DisplayRosterByPosition";
+import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOnRosterSleeper";
 import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
-interface DisplayTeamsInLeaugeProps {
+interface SleeperLeaguesHomePage {
     league_id: string,
     // onTeamClick: (team_id: string) => void,
     // displayAvatar?: boolean,
     // displayRecord?: boolean
 }
 
-export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeaugeProps) {
+export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHomePage) {
     const { teams, error: team_error, loading: team_loading } = useGetLeagueTeamsSleeper(league_id)
     const { players: roster, error: roster_error, loading: roster_loading, setOwnerId } = useGetPlayersOnRosterSleeper(league_id)
     const { leagueInfo, loading, error } = useGetLeagueInfo(league_id)

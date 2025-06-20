@@ -1,4 +1,4 @@
-import DisplayTeamsInLeauge from "@components/DisplayTeamsInLeague";
+import SleeperLeaguesHomePage from "@feature/leagues/components/SleeperLeaguesHomePage";
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 import { getRouteApi } from '@tanstack/react-router'
 
@@ -7,6 +7,6 @@ export default function LeagueHome() {
     const { leaugeId } = route.useParams()
 
     return (
-        <DisplayTeamsInLeauge league_id={leaugeId} />
+        <SleeperLeaguesHomePage league_id={leaugeId} />
     )
 }
