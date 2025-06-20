@@ -1,4 +1,5 @@
-import { getTeamInfo, sleeper_getAvatarThumbnail, type TeamInfo } from "@services/sleeper";
+import { getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
+import { type TeamInfo } from "@services/sleeper";
 import { useEffect, useState } from "react";
 const getAvatar = async (avatar_id: string) => {
     const blob = await sleeper_getAvatarThumbnail(avatar_id)
