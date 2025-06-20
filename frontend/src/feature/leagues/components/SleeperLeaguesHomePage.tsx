@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, CircularProgress, Grid, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { useState, type SyntheticEvent } from "react";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
@@ -38,7 +38,7 @@ export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHome
                 >
                     <AccordionSummary sx={{ minHeight: '30px' }}
                         onClick={() => setOwnerId(team.user_id!)}>
-                        <Icon></Icon>
+                        {team.avatar ? <Avatar src={team.avatar} /> : <Avatar />}
                         <Box display="flex" alignItems="center" gap={1}>
                             <Typography variant="subtitle1" fontWeight="bold">
                                 {team.team_name ? team.team_name : team.display_name}

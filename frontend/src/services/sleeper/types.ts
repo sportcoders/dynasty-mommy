@@ -31,6 +31,7 @@ export interface Players {
 export interface LeagueInfo {
     name: string,
     status: string,
+    avatar: string,
     settings: {
         num_teams: number,
 
