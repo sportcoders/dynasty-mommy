@@ -1,9 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
-import { useEffect, useState, type SyntheticEvent } from "react";
-import { getTeamInfo, sleeper_getPlayers } from "@services/sleeper";
-import type { TeamInfo, Player } from "@services/sleeper";
+import { useState, type SyntheticEvent } from "react";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
-import useGetPlayersSleeper from "@feature/leagues/hooks/useGetPlayersSleeper";
 import DisplayRosterByPosition from "./DisplayRosterByPosition";
 import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOnRosterSleeper";
 import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
@@ -25,7 +22,7 @@ export default function DisplayTeamsInLeauge({ league_id }: DisplayTeamsInLeauge
         setExpanded(newExpanded ? panel : false)
     }
 
-    if (!teams) return <CircularProgress />
+    if (!teams || !leagueInfo) return <CircularProgress />
 
     return (
         <div>
