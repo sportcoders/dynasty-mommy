@@ -3,16 +3,19 @@ import os
 from dotenv import load_dotenv
 import pymongo
 
+DB_NAME = 'test'
+COLLECTION_NAME = 'sleeper'
+
 def init_db():
     load_dotenv()
     URI = os.getenv("DB_URI")
     client = pymongo.MongoClient(URI)
     response = requests.get('https://api.sleeper.app/v1/players/nba')
-    db = client['test']
-    if 'sleeper' in db.list_collection_names():
-        drop = db['sleeper']
+    db = client[DB_NAME]
+    if COLLECTION_NAME in db.list_collection_names():
+        drop = db[COLLECTION_NAME]
         drop.drop()
-    db = db['sleeper']
+    db = db[COLLECTION_NAME]
     players = response.json()
     insert_list = [{'id':player['player_id'], 
                             'first_name':player['first_name'], 
