@@ -26,7 +26,10 @@ export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHome
 
     return (
         <div>
-            <Typography variant="h2">{leagueInfo?.name}</Typography>
+            <Box display='flex' alignItems={'center'} gap={2}>
+                <Avatar src={leagueInfo.avatar} sx={{ width: 60, height: 60 }} />
+                <Typography variant="h2">{leagueInfo?.name}</Typography>
+            </Box>
             {teams!.map((team) =>
                 <Accordion key={team.user_id} expanded={expanded == team.roster_id}
                     onChange={handleAccordionChange(team.roster_id)}
