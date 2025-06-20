@@ -1,6 +1,6 @@
 import { sleeper_apiGet } from './apiClient';
 import { sleeper_getPlayer } from './player'
-import type { League, LeagueInfo, Roster, User, Player, Players } from './types';
+import type { League, LeagueInfo, Roster, User, Player } from './types';
 
 export const sleeper_getLeagues = async (username: string, season: string): Promise<League[]> => {
     const user: User = await sleeper_apiGet(`/user/${username}`)
@@ -11,27 +11,32 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> =>
     return await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
 }
 
-export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]>> => {
+export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]> | null> => {
     const rosters = await sleeper_getRosters(leagueId)
     const playerIds = rosters.flatMap(roster => roster.players)
     const uniquePlayerIds = Array.from(new Set(playerIds))
     const idsString = uniquePlayerIds.join('&')
 
-    const res: Players = await sleeper_getPlayer(idsString);
+    const res = await sleeper_getPlayer(idsString);
 
-    const playerMap: Record<string, Player> = {}
-    for (const player of res.players) {
-        playerMap[player.id] = player;
-    }
+    if (res) {
+        const playerMap: Record<string, Player> = {}
 
-    const ownerToPlayers: Record<string, Player[]> = {};
-    for (const roster of rosters) {
-        ownerToPlayers[roster.owner_id] = roster.players.map(pid => playerMap[pid]).filter(Boolean)
-    }
+        for (const player of res) {
+            playerMap[player.id] = player;
+        }
 
-    return ownerToPlayers;
+        const ownerToPlayers: Record<string, Player[]> = {};
+        for (const roster of rosters) {
+            ownerToPlayers[roster.owner_id] = roster.players.map(pid => playerMap[pid]).filter(Boolean)
+        }
+
+        return ownerToPlayers;
+    } 
+
+    return null
 }
-export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[]> => {
+export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[] | null> => {
     const rosters = await sleeper_getRosters(leagueId)
     console.log(rosters)
     const roster = rosters.filter((roster) => roster.owner_id == owner_id)
@@ -40,9 +45,9 @@ export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: st
 
     const queryString = playerIds.join("&")
 
-    const players = await sleeper_getPlayer(queryString)
+    const players: Player[] | null = await sleeper_getPlayer(queryString)
 
-    return players.players
+    return players
 }
 export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo> => {
     return await sleeper_apiGet<LeagueInfo>(`/league/${leagueId}`)
