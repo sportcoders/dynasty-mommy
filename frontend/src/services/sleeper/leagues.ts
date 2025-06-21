@@ -7,8 +7,23 @@ export const sleeper_getLeagues = async (username: string, season: string): Prom
     return sleeper_apiGet<League[]>(`/user/${user.user_id}/leagues/nba/${season}`);
 }
 
-export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> => {
-    return await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
+/**
+ * Function to get rosters from the Sleeper API.
+ *  
+ * @param leagueId the numerical league id
+ * @returns an array of Roster objects or null
+ */
+export const sleeper_getRosters = async (leagueId: string): Promise<Roster[] | null> => {
+    const res = await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
+
+    if (res) {
+        return res.map((roster: Roster) => ({
+            owner_id: roster.owner_id,
+            players: roster.players
+        }))
+    }
+
+    return null
 }
 
 /**
@@ -19,14 +34,22 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> =>
  */
 export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]> | null> => {
     const rosters = await sleeper_getRosters(leagueId)
+
+    if (!rosters) {
+        return null
+    }
+
     const playerIds = rosters.flatMap(roster => roster.players)
     const uniquePlayerIds = Array.from(new Set(playerIds))
     const idsString = uniquePlayerIds.join('&')
 
     const res = await sleeper_getPlayer(idsString);
 
-    if (res) {
-        const playerMap: Record<string, Player> = {}
+    if (!res) {
+        return null
+    }
+
+    const playerMap: Record<string, Player> = {}
 
         for (const player of res) {
             playerMap[player.id] = player;
@@ -38,9 +61,6 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
         }
 
         return ownerToPlayers;
-    } 
-
-    return null
 }
 
 /**
@@ -52,6 +72,11 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
  */
 export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[] | null> => {
     const rosters = await sleeper_getRosters(leagueId)
+
+    if (!rosters) {
+        return null
+    }
+
     const roster = rosters.filter((roster) => roster.owner_id == owner_id)
     const playerIds = roster.flatMap((roster) => roster.players)
 
