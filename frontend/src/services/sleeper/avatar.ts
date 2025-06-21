@@ -7,8 +7,13 @@ import { sleeper_avatarGet } from "./apiClient";
  * @returns a Blob object of the avatar or null
  */
 export async function sleeper_getAvatarThumbnail(avatar_id: string): Promise<Blob | null> {
-    const avatar: Blob | null = await sleeper_avatarGet(`/thumbs/${avatar_id}`)
+    try {
+        const avatar: Blob = await sleeper_avatarGet(`/thumbs/${avatar_id}`)
 
-    return avatar
+        return avatar   
+    } catch (error) {
+        console.error('Failed to fetch avatar:', error);
+        return null; 
+    }
 }
 

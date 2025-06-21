@@ -1,7 +1,13 @@
 import { serverGet } from "./apiClient";
 import type { Player, Players} from "./types";
 
-export const sleeper_getPlayer = async (playerId: string): Promise<Player[] | null> => {
+/**
+ * Function to get Player object(s) from the backend API.
+ * 
+ * @param playerId the numerical player id
+ * @returns an array of Player objects
+ */
+export const sleeper_getPlayer = async (playerId: string): Promise<Player[]> => {
     try {
         const players = await serverGet<Players>(`/sleeper_player/${playerId}`);
         return players.players.map((player: Player) => ({
@@ -12,6 +18,6 @@ export const sleeper_getPlayer = async (playerId: string): Promise<Player[] | nu
         }));
     } catch (error) {
         console.error('Failed to fetch player(s):', error);
-        return null;
+        return [];
     }
 };

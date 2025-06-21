@@ -1,29 +1,64 @@
 import { sleeper_apiGet } from './apiClient';
 import { sleeper_getPlayer } from './player'
-import type { League, LeagueInfo, Roster, User, Player, Players, TeamInfo } from '@services/sleeper/types';
+import { sleeper_getUser } from "@services/sleeper";
+import type { League, LeagueInfo, Roster, Player, TeamInfo } from '@services/sleeper/types';
 
+
+/**
+ * Function to get leauges form a user from the Sleeper API.
+ * 
+ * @param username the username input
+ * @param season the season year input
+ * @returns an array of Leage objects 
+ */
 export const sleeper_getLeagues = async (username: string, season: string): Promise<League[]> => {
-    const user: User = await sleeper_apiGet(`/user/${username}`)
-    return sleeper_apiGet<League[]>(`/user/${user.user_id}/leagues/nba/${season}`);
+    const user = await sleeper_getUser(username)
+
+    if (!user) {
+        return []
+    }
+
+    try {
+        const leagues = await sleeper_apiGet<League[]>(`/user/${user.user_id}/leagues/nba/${season}`);
+
+        if (leagues.length === 0) {
+            return []
+        }
+        
+        return leagues.map((league: League) => ({
+            league_id: league.league_id,
+            name: league.name,
+            season: league.season,
+            avatar: league.avatar
+        }))
+    } catch (error) {
+        console.error('Failed to fetch leagues:', error);
+        return []; 
+    }
 }
 
 /**
  * Function to get rosters from the Sleeper API.
  *  
  * @param leagueId the numerical league id
- * @returns an array of Roster objects or null
+ * @returns an array of Roster objects
  */
-export const sleeper_getRosters = async (leagueId: string): Promise<Roster[] | null> => {
-    const rosters = await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
+export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> => {
+    try {
+        const rosters = await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
 
-    if (rosters) {
+        if (rosters.length === 0) {
+            return [] 
+        }
+
         return rosters.map((roster: Roster) => ({
             owner_id: roster.owner_id,
             players: roster.players
-        }))
+        }))  
+    } catch (error) {
+        console.error('Failed to fetch rosters:', error);
+        return []; 
     }
-
-    return null
 }
 
 /**
@@ -35,7 +70,7 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[] | n
 export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]> | null> => {
     const rosters = await sleeper_getRosters(leagueId)
 
-    if (!rosters) {
+    if (rosters.length === 0) {
         return null
     }
 
@@ -45,7 +80,7 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 
     const players = await sleeper_getPlayer(idsString);
 
-    if (!players) {
+    if (players.length === 0) {
         return null
     }
 
@@ -73,7 +108,7 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[] | null> => {
     const rosters = await sleeper_getRosters(leagueId)
 
-    if (!rosters) {
+    if (rosters.length === 0) {
         return null
     }
 
@@ -86,8 +121,37 @@ export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: st
 
     return players
 }
-export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo> => {
-    return await sleeper_apiGet<LeagueInfo>(`/league/${leagueId}`)
+
+/**
+ * Function to get league info from the Sleeper API.
+ * 
+ * @param leagueId the numerical league id
+ * @returns a LeagueInfo object or null
+ */
+export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo | null> => {
+    try {
+        const leagueInfo = await sleeper_apiGet<LeagueInfo>(`/league/${leagueId}`)
+
+        if (!leagueInfo) {
+            return null;
+        }
+
+        return {
+            name: leagueInfo.name,
+            status: leagueInfo.status,
+            avatar: leagueInfo.avatar,
+            settings: {
+                num_teams: leagueInfo.settings.num_teams
+            },
+            sport: leagueInfo.sport,
+            scoring_settings: leagueInfo.scoring_settings,
+            roster_positions: leagueInfo.roster_positions
+        }
+    } catch (error) {
+        console.error('Failed to fetch league info:', error);
+        return null; 
+    }
+
 }
 
 interface leagueUser {
