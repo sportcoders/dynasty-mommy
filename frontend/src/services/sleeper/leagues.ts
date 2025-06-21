@@ -11,6 +11,12 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> =>
     return await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
 }
 
+/**
+ * Function to get players from the combination of the Sleeper API and backend API.
+ * 
+ * @param leagueId the numerical id of the league
+ * @returns a record with owner ids and its corresponding array of Player objects or null
+ */
 export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]> | null> => {
     const rosters = await sleeper_getRosters(leagueId)
     const playerIds = rosters.flatMap(roster => roster.players)
@@ -36,6 +42,14 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 
     return null
 }
+
+/**
+ * Function to get players for a certain team in a league from the combination of the Sleeper API and backend API.
+ * 
+ * @param leagueId the numerical id of the league
+ * @param owner_id the numerical id of the team's owner
+ * @returns an array of Player objects or null
+ */
 export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[] | null> => {
     const rosters = await sleeper_getRosters(leagueId)
     const roster = rosters.filter((roster) => roster.owner_id == owner_id)
