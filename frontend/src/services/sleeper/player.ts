@@ -3,8 +3,8 @@ import type { Player, Players} from "./types";
 
 export const sleeper_getPlayer = async (playerId: string): Promise<Player[] | null> => {
     try {
-        const res = await serverGet<Players>(`/sleeper_player/${playerId}`);
-        return res.players.map((player: Player) => ({
+        const players = await serverGet<Players>(`/sleeper_player/${playerId}`);
+        return players.players.map((player: Player) => ({
             id: player.id,
             first_name: player.first_name,
             last_name: player.last_name,

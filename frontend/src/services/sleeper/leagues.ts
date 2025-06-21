@@ -14,10 +14,10 @@ export const sleeper_getLeagues = async (username: string, season: string): Prom
  * @returns an array of Roster objects or null
  */
 export const sleeper_getRosters = async (leagueId: string): Promise<Roster[] | null> => {
-    const res = await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
+    const rosters = await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
 
-    if (res) {
-        return res.map((roster: Roster) => ({
+    if (rosters) {
+        return rosters.map((roster: Roster) => ({
             owner_id: roster.owner_id,
             players: roster.players
         }))
@@ -43,15 +43,15 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
     const uniquePlayerIds = Array.from(new Set(playerIds))
     const idsString = uniquePlayerIds.join('&')
 
-    const res = await sleeper_getPlayer(idsString);
+    const players = await sleeper_getPlayer(idsString);
 
-    if (!res) {
+    if (!players) {
         return null
     }
 
     const playerMap: Record<string, Player> = {}
 
-        for (const player of res) {
+        for (const player of players) {
             playerMap[player.id] = player;
         }
 
