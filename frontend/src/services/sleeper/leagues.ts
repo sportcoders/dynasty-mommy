@@ -1,6 +1,6 @@
 import { sleeper_apiGet } from './apiClient';
 import { sleeper_getPlayer } from './player'
-import type { League, LeagueInfo, Roster, User, Player, Players } from './types';
+import type { League, LeagueInfo, Roster, User, Player, Players, TeamInfo } from '@services/sleeper/types';
 
 export const sleeper_getLeagues = async (username: string, season: string): Promise<League[]> => {
     const user: User = await sleeper_apiGet(`/user/${username}`)
@@ -69,19 +69,7 @@ interface TeamSettings {
     }
     roster_id: number
 }
-export interface TeamInfo {
-    record: {
-        wins: number,
-        losses: number,
-        ties: number
-    },
-    team_name: string,
-    user_id: string | null,
-    username: string | null,
-    display_name: string | null,
-    avatar: string | null
-    roster_id: number
-}
+
 
 export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
     const promises = await Promise.allSettled([

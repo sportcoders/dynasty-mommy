@@ -31,6 +31,7 @@ export interface Players {
 export interface LeagueInfo {
     name: string,
     status: string,
+    avatar: string,
     settings: {
         num_teams: number,
 
@@ -57,4 +58,17 @@ export interface LeagueInfo {
         ftm: number,
     },
     roster_positions: String[]
+}
+export interface TeamInfo {
+    record: {
+        wins: number,
+        losses: number,
+        ties: number
+    },
+    team_name: string,
+    user_id: string | null,
+    username: string | null,
+    display_name: string | null,
+    avatar: string | null
+    roster_id: number
 }
