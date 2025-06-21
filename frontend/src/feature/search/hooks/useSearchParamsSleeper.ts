@@ -1,5 +1,11 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
+interface SearchParamsSleeperStorage {
+    searchType: string,
+    season: string,
+    searchText: string
+}
+const SESSION_STORAGE_PARAMS_KEY = 'SearchParamsSleeper'
 export default function useSearchParamsSleeper() {
     /**
      * Custom React hook to manage search params for finding sleeper leagues
@@ -18,7 +24,32 @@ export default function useSearchParamsSleeper() {
     const [season, setSeason] = useState<string>('')
     const [searchText, setSearchText] = useState("")
     const [validParams, setValidParams] = useState<boolean>(false)
+    const savedParams = useRef<SearchParamsSleeperStorage | null>(null)
 
+    useEffect(() => {
+        const storage = sessionStorage.getItem(SESSION_STORAGE_PARAMS_KEY)
+        if (storage) {
+            try {
+                const params: SearchParamsSleeperStorage = JSON.parse(storage)
+                if (params) {
+                    savedParams.current = params
+                    setSearchText(params.searchText)
+                    setSeason(params.season)
+                    setSearchType(params.searchType)
+                    setValidParams(true)
+                }
+            }
+            catch (e) {
+                console.error("Item not found in storage")
+            }
+        }
+
+        return () => {
+            if (savedParams.current) {
+                sessionStorage.setItem(SESSION_STORAGE_PARAMS_KEY, JSON.stringify(savedParams.current))
+            }
+        }
+    }, [])
 
     const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchType(event.target.value)
@@ -29,10 +60,17 @@ export default function useSearchParamsSleeper() {
     const checkValidParams = () => {
         if (season && searchText) {
             setValidParams(true)
+            savedParams.current = {
+                searchText: searchText,
+                season: season,
+                searchType: searchType
+            }
         }
     }
     const setParamsFalse = () => {
         setValidParams(false)
+        savedParams.current = null
+        sessionStorage.removeItem(SESSION_STORAGE_PARAMS_KEY)
     }
 
     return { validParams, searchText, season, handleTextChange, setSeason, searchType, handleSearchTypeChange, checkValidParams, setParamsFalse }
