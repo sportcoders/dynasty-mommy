@@ -38,9 +38,7 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 }
 export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[] | null> => {
     const rosters = await sleeper_getRosters(leagueId)
-    console.log(rosters)
     const roster = rosters.filter((roster) => roster.owner_id == owner_id)
-    console.log(roster)
     const playerIds = roster.flatMap((roster) => roster.players)
 
     const queryString = playerIds.join("&")
