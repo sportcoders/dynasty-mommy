@@ -1,8 +1,10 @@
 import os
+import re
 import pymongo
 from playwright.sync_api import sync_playwright
 from playwright_stealth import Stealth
 from dotenv import load_dotenv
+pattern = re.compile(r'^([.A-Za-z-\']+) ([.A-Za-z- ]+)')
 
 DB_NAME = 'test'
 CAT_ROTO_RANKING_COLLECTION = 'fantasy_pro_ranking_cat_roto'
@@ -18,15 +20,20 @@ def getRankingsFromTable(page, db):
             rank = cells[0].inner_text() #fantasy pro ranking
             player_info = cells[2].inner_text() #player info
             name, teaminfo = player_info.split("(")
+            name = name.strip()
+            
+            names_match = pattern.search(name)
+            print(names_match)
+            first_name, last_name = names_match[1], names_match[2]
+            print(first_name, last_name)
             teaminfo = teaminfo.split(")")[0]
             team, positions = teaminfo.split('-')
-            team.strip()
-            positions.strip()
+            positions = positions.strip()
             positions = positions.split(',')
             print(rank, name, team, positions)
             insert_list.append({"rank":rank, 
                                 "name":name,
-                                "team":team,
+                                "team":team.strip(),
                                 "position":positions
                                 })
     # print(insert_list)
@@ -51,7 +58,7 @@ def main():
         # )
         page = browser.new_page()
         page.goto('https://www.fantasypros.com/nba/rankings/dynasty-overall.php')
-        page.wait_for_selector('table', timeout=5000)
+        page.wait_for_selector('table', timeout=10000)
 
         getRankingsFromTable(page, db[CAT_ROTO_RANKING_COLLECTION])
         button = page.locator('.select-advanced__button').nth(1)
