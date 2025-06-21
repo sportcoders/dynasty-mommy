@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Snackbar, Stack, TextField } from '@mui/material'
+import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import { useRouter } from '@tanstack/react-router'
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList'
@@ -44,8 +44,19 @@ export default function SleeperSearch() {
     } = useSearchParamsSleeper();
 
     return (
-        <Stack>
-            <h1>Sleeper League Search</h1>
+        // <>
+
+        <Stack sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100%' }} spacing={4}>
+            <Typography
+                variant='h4'
+                component='label'
+                sx={{
+                    fontWeight: '600',
+                    display: 'block',
+                    letterSpacing: '0.05em'
+                }}>
+                Sleeper League Search
+            </Typography>
             {validParams ?
                 (
                     <SleeperLeagues
@@ -72,6 +83,7 @@ export default function SleeperSearch() {
             }
 
         </Stack>
+        // </>
     )
 }
 
@@ -96,20 +108,24 @@ function SleeperAccount({ searchType,
     }
 
     return (
-        <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'inline', minWidth: 1 / 4, minHeight: 1 / 2 }}>
-            <FormControl fullWidth>
-                <FormLabel>Find Leauge By</FormLabel>
+        <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'flex', minWidth: 1 / 4, maxHeight: 3 / 4, maxWidth: 3 / 4, alignItems: 'center', justifyItems: 'center' }}>
+            <FormControl fullWidth sx={{ alignItems: 'center' }}>
+                <FormLabel >Find Leauge By</FormLabel>
                 <RadioGroup
+                    row
                     value={searchType}
-                    onChange={handleSearchTypeChange}>
+                    onChange={handleSearchTypeChange}
+                >
                     <FormControlLabel value='Username' control={<Radio />} label="Username" />
                     <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
                 </RadioGroup>
-                <Box sx={{ m: 2 }} display='flex' gap={1}>
-                    <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText}></TextField>
-                    <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
+                <Box sx={{ m: 2, width: '100%' }} display='flex' gap={1}>
+                    <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText} sx={{ flex: 3 }} ></TextField>
+                    <Box sx={{ flex: 1 }}>
+                        <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
+                    </Box>
                 </Box>
-                <Button onClick={handleSubmit} variant="contained" sx={{ m: 1 }}>Submit</Button>
+                <Button onClick={handleSubmit} variant="contained" sx={{ m: 1, width: '100%' }}>Submit</Button>
             </FormControl>
         </Box>
     )
