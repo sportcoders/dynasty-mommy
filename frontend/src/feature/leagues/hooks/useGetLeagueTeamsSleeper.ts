@@ -1,6 +1,11 @@
-import { getTeamInfo, type TeamInfo } from "@services/sleeper";
+import { getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
+import { type TeamInfo } from "@services/sleeper";
 import { useEffect, useState } from "react";
-
+const getAvatar = async (avatar_id: string) => {
+    const blob = await sleeper_getAvatarThumbnail(avatar_id)
+    const url = URL.createObjectURL(blob)
+    return url
+}
 export default function useGetLeagueTeamsSleeper(league_id: string) {
     /**
      * Custom React hook to retrieve the teams in a sleeper league
@@ -19,8 +24,12 @@ export default function useGetLeagueTeamsSleeper(league_id: string) {
                 setError("")
                 setLoading(true)
                 const res = await getTeamInfo(league_id)
-                if (res)
-                    setTeams(res)
+                if (res) {
+                    const reqAvatars = await Promise.allSettled(res.map((team) => (team && team.avatar) && getAvatar(team.avatar)))
+                    const resAvatars = reqAvatars.map((result) => result.status == 'fulfilled' ? result.value : "")
+                    const teams_with_avatar = res.map((team, index) => ({ ...team, avatar: resAvatars[index] }))
+                    setTeams(teams_with_avatar)
+                }
             }
             catch (e: any) {
                 setError("An error occured")
@@ -31,6 +40,10 @@ export default function useGetLeagueTeamsSleeper(league_id: string) {
             }
         }
         fetchTeams()
+        return () => {
+            if (teams)
+                teams.forEach((team) => team.avatar && URL.revokeObjectURL(team.avatar));
+        }
     }, [league_id])
 
     return { loading, error, teams }
