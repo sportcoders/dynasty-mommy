@@ -103,21 +103,25 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
  * 
  * @param leagueId the numerical id of the league
  * @param owner_id the numerical id of the team's owner
- * @returns an array of Player objects or null
+ * @returns an array of Player objects
  */
-export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[] | null> => {
+export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: string): Promise<Player[]> => {
     const rosters = await sleeper_getRosters(leagueId)
 
     if (rosters.length === 0) {
-        return null
+        return []
     }
 
     const roster = rosters.filter((roster) => roster.owner_id == owner_id)
-    const playerIds = roster.flatMap((roster) => roster.players)
+    const playerIds = roster.flatMap((roster) => roster.players) 
+
+    if (playerIds.length === 0) {
+        return []
+    }
 
     const queryString = playerIds.join("&")
 
-    const players: Player[] | null = await sleeper_getPlayer(queryString)
+    const players: Player[] = await sleeper_getPlayer(queryString) || []
 
     return players
 }
@@ -128,7 +132,7 @@ export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: st
  * @param leagueId the numerical league id
  * @returns a LeagueInfo object or null
  */
-export const getLeagueInfo = async (leagueId: string): Promise<LeagueInfo | null> => {
+export const sleeper_getLeagueInfo = async (leagueId: string): Promise<LeagueInfo | null> => {
     try {
         const leagueInfo = await sleeper_apiGet<LeagueInfo>(`/league/${leagueId}`)
 
@@ -176,8 +180,13 @@ interface TeamSettings {
     roster_id: number
 }
 
-
-export const getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
+/**
+ * Function to get team info from the Sleeper API.
+ * 
+ * @param leagueId the numerical league id
+ * @returns an array of TeamInfo objects
+ */
+export const sleeper_getTeamInfo = async (leagueId: string): Promise<TeamInfo[]> => {
     const promises = await Promise.allSettled([
         sleeper_apiGet<TeamSettings[]>(`/league/${leagueId}/rosters`),
         sleeper_apiGet<leagueUser[]>(`/league/${leagueId}/users`)
