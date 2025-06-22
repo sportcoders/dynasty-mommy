@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Snackbar, Stack, TextField } from '@mui/material'
+import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Paper, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import { useRouter } from '@tanstack/react-router'
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList'
@@ -44,8 +44,28 @@ export default function SleeperSearch() {
     } = useSearchParamsSleeper();
 
     return (
-        <Stack>
-            <h1>Sleeper League Search</h1>
+        <Stack sx={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100%',
+        }} spacing={4}>
+            <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                    fontWeight: 600,
+                    display: 'block',
+                    letterSpacing: '0.02em',
+                    textAlign: 'center',
+                    color: 'primary.main',
+                    mb: 1,
+                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: 'none'
+                }}
+            >
+                Sleeper League Search
+            </Typography>
             {validParams ?
                 (
                     <SleeperLeagues
@@ -72,6 +92,7 @@ export default function SleeperSearch() {
             }
 
         </Stack>
+        // </>
     )
 }
 
@@ -96,22 +117,131 @@ function SleeperAccount({ searchType,
     }
 
     return (
-        <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'inline', minWidth: 1 / 4, minHeight: 1 / 2 }}>
+        // <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'flex', minWidth: 1 / 4, maxHeight: 3 / 4, maxWidth: 3 / 4, alignItems: 'center', justifyItems: 'center' }}>
+        //     <FormControl fullWidth sx={{ alignItems: 'center' }}>
+        //         <FormLabel >Find Leauge By</FormLabel>
+        //         <RadioGroup
+        //             row
+        //             value={searchType}
+        //             onChange={handleSearchTypeChange}
+        //         >
+        //             <FormControlLabel value='Username' control={<Radio />} label="Username" />
+        //             <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
+        //         </RadioGroup>
+        //         <Box sx={{ m: 2, width: '100%' }} display='flex' gap={1}>
+        //             <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText} sx={{ flex: 3 }} ></TextField>
+        //             <Box sx={{ flex: 1 }}>
+        //                 <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
+        //             </Box>
+        //         </Box>
+        //         <Button onClick={handleSubmit} variant="contained" sx={{ m: 1, width: '100%' }}>Submit</Button>
+        //     </FormControl>
+        // </Box>
+        <Paper
+            elevation={3}
+            sx={{
+                borderRadius: 3,
+                p: 4,
+                m: 2,
+                maxWidth: 600,
+                mx: 'auto',
+                background: '#f8f9fa',
+                border: '1px solid',
+                borderColor: 'divider'
+            }}
+        >
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+                <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
+                    Find League
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Search by username or league ID
+                </Typography>
+            </Box>
+
             <FormControl fullWidth>
-                <FormLabel>Find Leauge By</FormLabel>
+
                 <RadioGroup
+                    row
                     value={searchType}
-                    onChange={handleSearchTypeChange}>
-                    <FormControlLabel value='Username' control={<Radio />} label="Username" />
-                    <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
+                    onChange={handleSearchTypeChange}
+                    sx={{
+                        mb: 3,
+                        justifyContent: 'center',
+                        '& .MuiFormControlLabel-root': {
+                            mx: 2
+                        }
+                    }}
+                >
+                    <FormControlLabel
+                        value='Username'
+                        control={<Radio />}
+                        label="Username"
+                        sx={{
+                            '& .MuiFormControlLabel-label': {
+                                fontWeight: 500
+                            }
+                        }}
+                    />
+                    <FormControlLabel
+                        value='Leauge ID'
+                        control={<Radio />}
+                        label="League ID"
+                        sx={{
+                            '& .MuiFormControlLabel-label': {
+                                fontWeight: 500
+                            }
+                        }}
+                    />
                 </RadioGroup>
-                <Box sx={{ m: 2 }} display='flex' gap={1}>
-                    <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText}></TextField>
-                    <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
+
+                <Box sx={{ mb: 3 }} display='flex' gap={2}>
+                    <TextField
+                        label={searchType}
+                        required
+                        variant='outlined'
+                        onChange={handleTextChange}
+                        value={searchText}
+                        sx={{
+                            flex: 2,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2
+                            }
+                        }}
+                    />
+                    <Box sx={{ flex: 1 }}>
+                        <SelectSeasonDropDown
+                            updateSeason={setSeason}
+                            selectedYear={season}
+                        />
+                    </Box>
                 </Box>
-                <Button onClick={handleSubmit} variant="contained" sx={{ m: 1 }}>Submit</Button>
+
+                <Button
+                    onClick={handleSubmit}
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    sx={{
+                        py: 1.5,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontSize: '1.1rem',
+                        fontWeight: 600,
+                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                        '&:hover': {
+                            background: 'linear-gradient(45deg, #1976D2 30%, #1BA8D1 90%)',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 6px 10px 2px rgba(33, 203, 243, .3)',
+                        },
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    Search League
+                </Button>
             </FormControl>
-        </Box>
+        </Paper>
     )
 }
 
@@ -149,27 +279,112 @@ function SleeperLeagues({ searchType,
     }
 
     return (
-        <>
-            <Box display='inline-flex' sx={{ maxHeight: "15px", m: 2 }} gap={1}>
-                <Button variant="outlined" sx={{ maxHeight: "15px", py: 3.5 }} onClick={back}>Back</Button>
-                <TextField
-                    disabled
-                    id="outlined-disabled"
-                    label={searchType}
-                    defaultValue={searchText}
-                />
-                <FormControl>
 
-                    <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} label_name={'Change Year'} width={150} />
-                </FormControl>
+
+        <Paper
+            elevation={3}
+            sx={{
+                borderRadius: 3,
+                m: 2,
+                maxWidth: 800,
+                mx: 'auto',
+                background: '#f8f9fa',
+                border: '1px solid',
+                borderColor: 'divider'
+            }}
+        >
+            {/* Search/Filter Section */}
+            <Box
+                display="flex"
+                alignItems="center"
+                sx={{
+                    p: 3,
+                    gap: 2,
+                    borderBottom: '1px solid',
+                    borderColor: 'divider'
+                }}
+            >
+                <Button
+                    variant="outlined"
+                    onClick={back}
+                    sx={{
+                        height: '56px', // Standard Material-UI TextField height
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        px: 3,
+                        borderColor: 'primary.main',
+                        color: 'primary.main',
+                        '&:hover': {
+                            borderColor: 'primary.dark',
+                            backgroundColor: 'primary.main',
+                            color: 'white',
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 2px 8px rgba(33, 150, 243, 0.3)'
+                        },
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    Back
+                </Button>
+
+                <Box display="flex" gap={2} sx={{ flex: 1 }}>
+                    <TextField
+                        disabled
+                        label={searchType}
+                        value={searchText}
+                        sx={{
+                            flex: 2,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: 'white'
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontWeight: 500
+                            }
+                        }}
+                    />
+
+                    <FormControl sx={{ flex: 1, minWidth: 150 }}>
+                        <SelectSeasonDropDown
+                            updateSeason={setSeason}
+                            selectedYear={season}
+                            label_name="Change Year"
+                            width={150}
+                        />
+                    </FormControl>
+                </Box>
             </Box>
-            {leagues.length == 0 ? <Snackbar open={leagues.length == 0 ? true : false}
-                message="No Leagues Found"
-            />
-                :
-                <DisplayLeaguesList onLeagueClick={handleNavigateToLeague} displayAvatar={true} leagues={leagues} />
-            }
-        </>
+
+            {/* Results Section */}
+            {leagues.length === 0 ? (
+                <Box
+                    sx={{
+                        p: 4,
+                        textAlign: 'center',
+                        backgroundColor: '#fff3cd',
+                        color: '#856404'
+                    }}
+                >
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            fontWeight: 500
+                        }}
+                    >
+                        No Leagues Found
+                    </Typography>
+                </Box>
+            ) : (
+                <Box sx={{ p: 2 }}>
+                    <DisplayLeaguesList
+                        onLeagueClick={handleNavigateToLeague}
+                        displayAvatar={true}
+                        leagues={leagues}
+                    />
+                </Box>
+            )}
+        </Paper>
     )
 }
 

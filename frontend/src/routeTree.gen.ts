@@ -11,10 +11,17 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthImport } from './routes/auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as LeaguesLeaugeIdImport } from './routes/leagues.$leaugeId'
 
 // Create/Update Routes
+
+const AuthRoute = AuthImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -39,6 +46,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
     '/leagues/$leaugeId': {
       id: '/leagues/$leaugeId'
       path: '/leagues/$leaugeId'
@@ -53,36 +67,41 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/leagues/$leaugeId': typeof LeaguesLeaugeIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/leagues/$leaugeId': typeof LeaguesLeaugeIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/leagues/$leaugeId': typeof LeaguesLeaugeIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leagues/$leaugeId'
+  fullPaths: '/' | '/auth' | '/leagues/$leaugeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leagues/$leaugeId'
-  id: '__root__' | '/' | '/leagues/$leaugeId'
+  to: '/' | '/auth' | '/leagues/$leaugeId'
+  id: '__root__' | '/' | '/auth' | '/leagues/$leaugeId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   LeaguesLeaugeIdRoute: typeof LeaguesLeaugeIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   LeaguesLeaugeIdRoute: LeaguesLeaugeIdRoute,
 }
 
@@ -97,11 +116,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/auth",
         "/leagues/$leaugeId"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/auth": {
+      "filePath": "auth.tsx"
     },
     "/leagues/$leaugeId": {
       "filePath": "leagues.$leaugeId.tsx"
