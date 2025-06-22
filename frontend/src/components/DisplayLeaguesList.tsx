@@ -21,22 +21,62 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: di
      * @returns List component that displays all leagues it was passed
      */
     return (
-        <List>
-            {leagues.map((league) =>
-            (
-                <ListItem key={league.league_id}>
-                    <ListItemButton sx={{ borderRadius: 5 }} onClick={() => onLeagueClick(league.league_id)} key={league.league_id}>
+        <List sx={{ p: 0 }}>
+            {leagues.map((league) => (
+                <ListItem key={league.league_id} sx={{ p: 0, mb: 1 }}>
+                    <ListItemButton
+                        sx={{
+                            borderRadius: 2,
+                            p: 2,
+                            backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid',
+                            borderColor: 'rgba(224, 224, 224, 0.3)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(33, 150, 243, 0.8)',
+                                backdropFilter: 'blur(15px)',
+                                color: 'white',
+                                transform: 'translateY(-1px)',
+                                boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)',
+                                borderColor: 'rgba(33, 150, 243, 0.5)',
+                                '& .MuiListItemText-primary': {
+                                    color: 'white'
+                                },
+                                '& .MuiAvatar-root': {
+                                    boxShadow: '0 2px 8px rgba(255, 255, 255, 0.4)'
+                                }
+                            },
+                            transition: 'all 0.3s ease'
+                        }}
+                        onClick={() => onLeagueClick(league.league_id)}
+                    >
                         <ListItemAvatar>
-                            {displayAvatar && <Avatar src={league.avatar}></Avatar>}
+                            {displayAvatar && (
+                                <Avatar
+                                    src={league.avatar}
+                                    sx={{
+                                        width: 48,
+                                        height: 48,
+                                        border: '2px solid',
+                                        borderColor: 'rgba(224, 224, 224, 0.4)',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                                    }}
+                                />
+                            )}
                         </ListItemAvatar>
                         <ListItemText
                             primary={league.name}
-                        ></ListItemText>
+                            sx={{
+                                '& .MuiListItemText-primary': {
+                                    fontWeight: 500,
+                                    fontSize: '1.1rem',
+                                    transition: 'color 0.3s ease'
+                                }
+                            }}
+                        />
                     </ListItemButton>
                 </ListItem>
-            )
-            )
-            }
+            ))}
         </List>
     )
 }

@@ -32,7 +32,7 @@ export default function SelectSeasonDropDown({ updateSeason, selectedYear, label
         updateSeason(selectedYear ? selectedYear : String(currentYear))
     }, [selectedYear])
     return (
-        <FormControl>
+        <FormControl fullWidth>
             <InputLabel id='select-season-input-label'>{label_name ? label_name : "Year"}</InputLabel>
             <Select
                 labelId='select-season-input-label'
