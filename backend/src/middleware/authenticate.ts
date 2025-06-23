@@ -4,9 +4,6 @@ import { AppError } from "../errors/app_error";
 import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../utils/jwt";
 
-export interface CustomRequest extends Request {
-    token: string | JwtPayload
-}
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header("Authorization")?.replace('Bearer ', '')
 
@@ -16,8 +13,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
     if (!payload) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
 
-
-    (req as CustomRequest).token = payload;
+    if (typeof payload !== 'string') {
+        const id = payload.id;
+        req.user = { email: payload.id };
+    }
     console.log(payload)
 
     // req.userId = payload.userId;
