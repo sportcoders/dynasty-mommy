@@ -57,3 +57,18 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         next(err)
     }
 }
+
+export async function addLeagueToUser(req: Request, res: Response, next: NextFunction) {
+    try {
+        const user = await User.findOne({ email: req.user?.email })
+        if (!user) {
+            throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "User not found" })
+        }
+        user.leagues.push(req.body.league)
+        await user.save()
+        // const update = await User.findOneAndUpdate({ email: req.user?.email }, { $push: { leagues: req.body.leagues } })
+    }
+    catch (err) {
+        next(err)
+    }
+}
