@@ -1,16 +1,11 @@
-import { expect } from '@jest/globals'
+import { describe, expect, it } from '@jest/globals'
 import app from '../../app'
 import supertest from 'supertest';
 import { HttpError, HttpSuccess } from '../../constants/constants';
 import Player_Sleeper from '../../models/player_sleeper';
 import { players } from './utils';
-import { User } from '../../types/user';
 
-declare module 'express-serve-static-core' {
-    interface Request {
-        user?: User;
-    }
-}
+
 const api = supertest(app)
 
 const loadPlayers = async () => {
