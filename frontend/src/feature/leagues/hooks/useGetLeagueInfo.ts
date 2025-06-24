@@ -1,7 +1,11 @@
-import { type LeagueInfo, getLeagueInfo, sleeper_getAvatarThumbnail } from "@services/sleeper"
+import { type LeagueInfo, sleeper_getLeagueInfo, sleeper_getAvatarThumbnail } from "@services/sleeper"
 import { useState, useEffect } from "react"
 const getAvatar = async (avatar_id: string) => {
     const blob = await sleeper_getAvatarThumbnail(avatar_id)
+    if (!blob) {
+        return null
+    } 
+
     const url = URL.createObjectURL(blob)
     return url
 }
@@ -21,9 +25,15 @@ export default function useGetLeagueInfo(league_id: string) {
         const loadLeagueInfo = async () => {
             setLoading(true)
             try {
-                const response = await getLeagueInfo(league_id)
+                const response = await sleeper_getLeagueInfo(league_id)
+
+                if (!response) {
+                    setError('Failed to fetch league info.')
+                    return
+                }
+
                 if (response.avatar) {
-                    response.avatar = await getAvatar(response.avatar)
+                    response.avatar = await getAvatar(response.avatar) || ""
                 }
                 setLeagueInfo(response)
             }

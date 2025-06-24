@@ -1,8 +1,12 @@
-import { getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
+import { sleeper_getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
 import { type TeamInfo } from "@services/sleeper";
 import { useEffect, useState } from "react";
 const getAvatar = async (avatar_id: string) => {
     const blob = await sleeper_getAvatarThumbnail(avatar_id)
+    if (!blob) {
+        return null
+    } 
+
     const url = URL.createObjectURL(blob)
     return url
 }
@@ -23,7 +27,7 @@ export default function useGetLeagueTeamsSleeper(league_id: string) {
             try {
                 setError("")
                 setLoading(true)
-                const res = await getTeamInfo(league_id)
+                const res = await sleeper_getTeamInfo(league_id)
                 if (res) {
                     const reqAvatars = await Promise.allSettled(res.map((team) => (team && team.avatar) && getAvatar(team.avatar)))
                     const resAvatars = reqAvatars.map((result) => result.status == 'fulfilled' ? result.value : "")

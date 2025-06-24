@@ -34,7 +34,6 @@ export interface LeagueInfo {
     avatar: string,
     settings: {
         num_teams: number,
-
     }
     sport: string,
     scoring_settings: {
@@ -57,7 +56,7 @@ export interface LeagueInfo {
         tpm: number,
         ftm: number,
     },
-    roster_positions: String[]
+    roster_positions: string[]
 }
 export interface TeamInfo {
     record: {

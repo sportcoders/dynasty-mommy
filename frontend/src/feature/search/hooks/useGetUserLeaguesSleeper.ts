@@ -36,9 +36,12 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
                 for (const league of leagues) {
                     if (league.avatar) {
                         const blob = await sleeper_getAvatarThumbnail(league.avatar)
-                        const url = URL.createObjectURL(blob)
-                        league.avatar = url
-                        blobUrls.current.push(url)
+
+                        if (blob) {
+                            const url = URL.createObjectURL(blob)
+                            league.avatar = url
+                            blobUrls.current.push(url)
+                        }
                     }
                 }
 
