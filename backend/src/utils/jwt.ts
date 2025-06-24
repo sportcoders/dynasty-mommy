@@ -1,4 +1,4 @@
-import jwt, { SignOptions } from 'jsonwebtoken'
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
 import config from '../config/config'
 const defaults = {
     audience: ['user'],
@@ -24,12 +24,21 @@ export const createToken = (payload: Token, options = accessTokenDefaults) => {
 
 export const verifyToken = (token: string) => {
     try {
-        const payload = jwt.verify(
+        const decoded = jwt.verify(
             token,
             config.JWT_SECRET,
             { ...defaults }
         );
-        return { payload }
+        if (typeof decoded === 'string') {
+            return { error: "Invalid token format" }
+        }
+        const payload = decoded as Token & JwtPayload;
+
+        return {
+            payload: {
+                id: payload.id
+            }
+        };
     }
     catch (error) {
         return {
