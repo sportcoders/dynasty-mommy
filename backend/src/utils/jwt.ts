@@ -1,7 +1,7 @@
 import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
 import config from '../config/config'
 const defaults = {
-    audience: ['user'],
+    audience: 'user',
 }
 
 const accessTokenDefaults: SignOptions = {
@@ -31,6 +31,9 @@ export const verifyToken = (token: string) => {
         );
         if (typeof decoded === 'string') {
             return { error: "Invalid token format" }
+        }
+        if (!decoded || typeof decoded !== 'object' || !('id' in decoded)) {
+            return { error: "Token missing required properties" }
         }
         const payload = decoded as Token & JwtPayload;
 
