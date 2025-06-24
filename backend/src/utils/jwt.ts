@@ -1,7 +1,7 @@
-import jwt, { SignOptions } from 'jsonwebtoken'
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'
 import config from '../config/config'
 const defaults = {
-    audience: ['user'],
+    audience: 'user',
 }
 
 const accessTokenDefaults: SignOptions = {
@@ -22,16 +22,17 @@ export const createToken = (payload: Token, options = accessTokenDefaults) => {
     )
 }
 
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): { payload?: Token, error?: undefined } => {
     try {
         const payload = jwt.verify(
             token,
             config.JWT_SECRET,
             { ...defaults }
-        );
-        return { payload }
+        ) as Token;
+
+        return { payload };
     }
-    catch (error) {
+    catch (error: any) {
         return {
             error
         }

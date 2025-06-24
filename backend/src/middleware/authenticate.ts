@@ -1,27 +1,47 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
-import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../utils/jwt";
 
-export interface CustomRequest extends Request {
-    token: string | JwtPayload
+// declare module 'express-serve-static-core' {
+//     interface Request {
+//         user?: {
+//             user_id?: string,
+//             email: string,
+//             username: string
+//         }
+//     }
+// }
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                user_id?: string;
+                email: string;
+                username: string;
+            }
+        }
+    }
 }
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.header("Authorization")?.replace('Bearer ', '')
+    try {
+        const token = req.header("Authorization")?.replace('Bearer ', '')
 
-    if (!token) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Invalid access token" });
+        if (!token) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Invalid access token" });
 
-    const { error, payload } = verifyToken(token);
+        const { error, payload } = verifyToken(token);
 
-    if (!payload) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
+        if (error || !payload) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
 
+        req.user = { email: payload.id, user_id: "test", username: "test" }
 
-    (req as CustomRequest).token = payload;
-    console.log(payload)
+        console.log(payload)
 
-    // req.userId = payload.userId;
-    // req.sessionId = payload.sessionId;
+        next();
 
-    next();
+    }
+    catch (err) {
+        next(err)
+    }
+
 }

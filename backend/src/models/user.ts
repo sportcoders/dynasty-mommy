@@ -6,9 +6,12 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String
-    }
-},
-    { collection: "user" })
+    },
+    leagues: [{
+        platform: { type: String },
+        id: { type: String }
+    }]
+},)
 
 const User = mongoose.model("user", userSchema)
 
