@@ -3,13 +3,23 @@ import { HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { verifyToken } from "../utils/jwt";
 
-
-declare module 'express-serve-static-core' {
-    interface Request {
-        user?: {
-            user_id?: string,
-            email: string,
-            username: string
+// declare module 'express-serve-static-core' {
+//     interface Request {
+//         user?: {
+//             user_id?: string,
+//             email: string,
+//             username: string
+//         }
+//     }
+// }
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                user_id?: string;
+                email: string;
+                username: string;
+            }
         }
     }
 }
