@@ -11,9 +11,7 @@ const userSchema = new mongoose.Schema({
         platform: { type: String },
         id: { type: String }
     }]
-},
-
-    { collection: "user" })
+},)
 
 const User = mongoose.model("user", userSchema)
 
