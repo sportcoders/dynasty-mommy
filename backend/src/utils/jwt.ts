@@ -24,24 +24,13 @@ export const createToken = (payload: Token, options = accessTokenDefaults) => {
 
 export const verifyToken = (token: string): { payload?: Token, error?: undefined } => {
     try {
-        const decoded = jwt.verify(
+        const payload = jwt.verify(
             token,
             config.JWT_SECRET,
             { ...defaults }
         ) as Token;
-        // if (typeof decoded === 'string') {
-        //     return { error: "Invalid token format" }
-        // }
-        // if (!decoded || typeof decoded !== 'object' || !('id' in decoded)) {
-        //     return { error: "Token missing required properties" }
-        // }
-        const payload = decoded as Token;
 
-        return {
-            payload: {
-                id: payload.id
-            }
-        };
+        return { payload };
     }
     catch (error: any) {
         return {
