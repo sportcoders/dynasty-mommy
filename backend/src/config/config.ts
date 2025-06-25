@@ -7,7 +7,8 @@ interface Config {
     nodeEnv: string;
     URI: string;
     JWT_SECRET: string;
-    salt_rounds: number
+    salt_rounds: number,
+    URL: string
 }
 
 const config: Config = {
@@ -15,7 +16,8 @@ const config: Config = {
     nodeEnv: process.env.NODE_ENV || 'development',
     URI: process.env.DB_URI || '',
     JWT_SECRET: process.env.JWT_SECRET || "JWT_SECRET",
-    salt_rounds: Number(process.env.SALT_ROUNDS) || 10
+    salt_rounds: Number(process.env.SALT_ROUNDS) || 10,
+    URL: process.env.DB_URL || ''
 };
 
 export default config;
