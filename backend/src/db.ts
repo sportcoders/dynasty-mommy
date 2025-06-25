@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
 import config from "./config/config";
 import { DataSource } from "typeorm";
+import { User, UserLeagues } from "./models/user";
 
 
 export const AppDataSource = new DataSource({
     type: "postgres",
-    url: config.URL
+    url: config.URL,
     // host: "localhost",
     // port: 5432,
     // username: "test",
     // password: "test",
     // database: "test",
     // synchronize: true,
-    // logging: true,
-    // entities: [Post, Category],
+    logging: true,
+    entities: [User, UserLeagues],
     // subscribers: [],
     // migrations: [],
 })

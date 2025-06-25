@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/error_handler';
 import { invalid_endpoint } from './errors/endpoint_not_found';
 import cors from 'cors'
 import user_router from './routes/user';
+import "reflect-metadata"
 const app = express();
 
 const corsOptions = {
