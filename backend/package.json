@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sequelize/postgres": "^7.0.0-alpha.46",
     "@types/winston": "^2.4.4",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -19,6 +20,11 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0",
+    "pg": "^8.16.2",
+    "pg-hstore": "^2.3.4",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.25",
     "winston": "^3.17.0"
   },
   "devDependencies": {

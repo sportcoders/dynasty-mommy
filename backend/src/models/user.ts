@@ -1,18 +1,49 @@
 import mongoose from "mongoose";
+import { AppDataSource } from "../db";
+import { Column, Entity, ForeignKey, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
-const userSchema = new mongoose.Schema({
-    email: {
-        type: String
-    },
-    password: {
-        type: String
-    },
-    leagues: [{
-        platform: { type: String },
-        id: { type: String }
-    }]
-},)
+// const userSchema = new mongoose.Schema({
+//     email: {
+//         type: String
+//     },
+//     password: {
+//         type: String
+//     },
+//     leagues: [{
+//         platform: { type: String },
+//         id: { type: String }
+//     }]
+// },)
 
-const User = mongoose.model("user", userSchema)
+// const User = mongoose.model("user", userSchema)
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn("uuid")
+    id!: string
 
-export default User
+    @Column()
+    email!: string
+
+    @Column()
+    password!: string
+
+    @OneToMany(() => UserLeagues, (userLeague) => userLeague.user)
+    leagues!: UserLeagues[];
+}
+
+@Entity()
+export class UserLeagues {
+    @PrimaryColumn()
+    userId!: string
+
+    @ManyToOne(() => User, (user) => user.leagues)
+    @JoinColumn({ name: 'userId' })
+    user!: User
+
+    @Column()
+    platform!: string
+
+    @PrimaryColumn()
+    league_id!: string
+
+}
