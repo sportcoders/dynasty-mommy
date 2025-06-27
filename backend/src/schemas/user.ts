@@ -1,6 +1,13 @@
 import * as z from "zod/v4"
 
-const userLogin = z.object({
-    username: z.string(),
+export const userLogin = z.object({
+    email: z.string(),
     password: z.string()
+})
+
+export const addUserToLeagueSchema = z.object({
+    league: z.object({
+        platform: z.string(),
+        id: z.string()
+    })
 })
