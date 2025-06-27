@@ -5,7 +5,7 @@ export const connectToDB = async (uri: string) => {
     await mongoose.connect(uri)
 }
 export const initDatasource = async (AppDataSource: DataSource) => {
-    AppDataSource.initialize()
+    await AppDataSource.initialize()
         .then(() => {
             console.log("Data Source has been initialized!")
         })
