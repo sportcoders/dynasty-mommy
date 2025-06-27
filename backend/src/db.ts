@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import { DataSource } from "typeorm";
 
-export const connectToDB = async (uri: string, AppDataSource: DataSource) => {
+export const connectToDB = async (uri: string) => {
     await mongoose.connect(uri)
+}
+export const initDatasource = async (AppDataSource: DataSource) => {
     AppDataSource.initialize()
         .then(() => {
             console.log("Data Source has been initialized!")
