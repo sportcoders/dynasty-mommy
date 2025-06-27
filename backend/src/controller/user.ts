@@ -48,14 +48,16 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
             throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "User Already Exists" })
         }
         const hashed_pw = await hash(password, config.salt_rounds)
-        console.log(hashed_pw)
         const user = AppDataSource.manager.create(User, { email: email, password: hashed_pw })
         const result = await AppDataSource.manager.save(User, user)
         // const user = new User({ email: email, password: hashed_pw })
         // const savedUser = await user.save()
         // console.log(savedUser)
-
-        return res.status(HttpSuccess.OK).send({ detail: "user created successfully" })
+        const payload: Token = {
+            id: email
+        }
+        const token = createToken(payload)
+        return res.status(HttpSuccess.CREATED).header({ "Authentication": `Bearer ${token}` }).send({ detail: "user created successfully" })
 
     }
     //hash pwd
