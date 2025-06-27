@@ -25,3 +25,18 @@ export const players = [
         "birth_date": "1990-02-08"
     }
 ]
+
+export const users = [
+    {
+        id: "1",
+        email: "firstTestUser@test.com",
+        password: "testpassword",
+        leagues: []
+    },
+    {
+        id: "2",
+        email: "secondTestUser@test.com",
+        password: "testpassword",
+        leagues: []
+    }
+]
