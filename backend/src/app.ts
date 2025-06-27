@@ -9,6 +9,7 @@ import "reflect-metadata"
 import { createAppDataSource } from './orm';
 import config from './config/config';
 import { DataSource } from 'typeorm';
+import { initDatasource } from './db';
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
@@ -21,10 +22,6 @@ export const createApp = (dataSource?: DataSource) => {
 
     // Use provided data source or create default one
     const AppDataSource = dataSource || createAppDataSource(config.URL);
-
-    // Make data source available to routes via app locals
-    app.locals.dataSource = AppDataSource;
-
     app.use(cors(corsOptions));
     app.use(express.json())
     app.use(req_info)
@@ -40,7 +37,27 @@ export const createApp = (dataSource?: DataSource) => {
 };
 
 // Create default app instance for non-test environments
-const { app, dataSource: AppDataSource } = createApp();
+// const { app, dataSource: AppDataSource } = createApp();
+// export default app;
+// export { AppDataSource };
+let AppDataSource: DataSource;
+export function init_app(dataSource: DataSource) {
+    const app = express();
+    AppDataSource = dataSource
+    // await initDatasource(AppDataSource)
 
-export default app;
-export { AppDataSource };
+    // Use provided data source or create default one
+    app.use(cors(corsOptions));
+    app.use(express.json())
+    app.use(req_info)
+    app.use('/sleeper_player', player_sleeper_router)
+    app.use('/auth', user_router)
+    app.get('/healthcheck', (req, res) => {
+        res.status(200).json({ message: "Healthy" });
+    });
+    app.use(invalid_endpoint)
+    app.use(errorHandler)
+
+    return app
+}
+export { AppDataSource }

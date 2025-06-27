@@ -7,7 +7,7 @@ export function createAppDataSource(url: string): DataSource {
     if (url == 'sqlite') {
         options = {
             type: "sqlite",
-            database: ":memory:",
+            database: "test.db",
             synchronize: true,
             dropSchema: true,
             logging: false
@@ -16,6 +16,7 @@ export function createAppDataSource(url: string): DataSource {
     else {
         options = {
             type: 'postgres',
+            url: url,
             // host: "localhost",
             // port: 5432,
             // username: "test",
