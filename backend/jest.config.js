@@ -10,5 +10,5 @@ module.exports = {
   },
   verbose: true,
   detectOpenHandles: true,
-  setupFilesAfterEnv: ['<rootDir>/src/tests/boostrap.ts']
+  setupFilesAfterEnv: ['<rootDir>/src/tests/bootstrap.ts']
 };
