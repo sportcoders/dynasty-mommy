@@ -40,7 +40,7 @@ describe('login', () => {
             wrongfield: "wrong"
         })
 
-        // expect(response.statusCode).toBe(422)
+        expect(response.statusCode).toBe(422)
     })
 })
 describe('signup', () => {
@@ -49,14 +49,14 @@ describe('signup', () => {
             email: "newemail@gmail.com",
             password: "asecurepassword"
         })
-        expect(response.statusCode).toBe(200)
-        // expect(response.headers).toHaveProperty("authentication")
-        // expect(response.headers.authentication).toMatch(/Bearer/)
+        expect(response.statusCode).toBe(201)
+        expect(response.headers).toHaveProperty("authentication")
+        expect(response.headers.authentication).toMatch(/Bearer/)
     })
     it('should return a status code of 422 when the body of the request is missing fields', async () => {
         const response = await api.post('/auth/signup').send({
             email: "anemail@gmail.com",
         })
-        // expect(response.statusCode).toBe(422)
+        expect(response.statusCode).toBe(422)
     })
 })
