@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { AppDataSource } from "../db";
 import { Column, Entity, ForeignKey, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 // const userSchema = new mongoose.Schema({

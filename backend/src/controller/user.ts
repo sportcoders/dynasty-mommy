@@ -5,7 +5,7 @@ import { createToken, Token } from "../utils/jwt"
 import { HttpSuccess, HttpError } from "../constants/constants"
 import { AppError } from "../errors/app_error"
 import config from "../config/config"
-import { AppDataSource } from "../db"
+import { AppDataSource } from "../app"
 import { platform } from "os"
 
 export async function login(req: Request, res: Response, next: NextFunction) {
