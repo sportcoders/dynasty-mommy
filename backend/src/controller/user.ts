@@ -6,17 +6,14 @@ import { HttpSuccess, HttpError } from "../constants/constants"
 import { AppError } from "../errors/app_error"
 import config from "../config/config"
 import { AppDataSource } from "../db"
-import { platform } from "os"
+import { addUserToLeagueSchema, userLogin } from "../schemas/user"
 
 export async function login(req: Request, res: Response, next: NextFunction) {
-    const password: string = req.body.password
-    const email: string = req.body.email
 
-    if (!email || !password) {
-        return res.status(HttpError.UNAUTHORIZED).send({ message: "Missing Email or Password" })
-    }
 
     try {
+        const { email, password } = await userLogin.parseAsync(req.body)
+
         //authenticate user
         const user = await AppDataSource.manager.findOneBy(User, { email: email })
 
@@ -41,13 +38,11 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
-    const email = req.body.email
-    const password = req.body.password
-    if (!email || !password) {
-        return res.status(HttpError.UNAUTHORIZED).send({ message: "Missing Email or Password" })
-    }
-    //check if user already exists in db
     try {
+        const { email, password } = await userLogin.parseAsync(req.body)
+
+
+        //check if user already exists in db
         const check = await AppDataSource.manager.findOneBy(User, { email: email })
         if (check) {
             throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "User Already Exists" })
@@ -71,14 +66,11 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
 export async function addLeagueToUser(req: Request, res: Response, next: NextFunction) {
     try {
-        const league = req.body.league;
+        const { league } = await addUserToLeagueSchema.parseAsync(req.body)
+        // const league = req.body.league;
 
         if (!req.user || !req.user.email || !req.user.user_id) {
             return res.status(HttpError.UNAUTHORIZED).json({ message: "Unauthorized" });
-        }
-
-        if (!league) {
-            return res.status(HttpError.BAD_REQUEST).json({ message: "League is required" });
         }
 
         const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email })
@@ -93,8 +85,8 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
             user: {
                 email: req.user.email
             },
-            league_id: req.body.league.id,
-            platform: req.body.league.platform
+            league_id: league.id,
+            platform: league.platform
         })
 
         if (check !== null) {
@@ -105,9 +97,9 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
         }
         const newUserLeague = await AppDataSource.manager.save(UserLeagues, {
             userId: user.id,
-            platform: req.body.league.platform,
+            platform: league.platform,
             user: user,
-            league_id: req.body.league.id
+            league_id: league.id
         })
         return res.status(HttpSuccess.OK).json({
             message: "League added successfully"
