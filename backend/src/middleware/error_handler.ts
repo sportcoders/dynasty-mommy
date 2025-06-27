@@ -14,7 +14,7 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
         res.status(err.statusCode).json({ message: err.message })
     }
     else if (err instanceof z.ZodError) {
-        res.status(422).json({
+        res.status(HttpError.UNPROCESSABLE_ENTITY).json({
             detail: "validation error",
             issues: err.issues
         })
