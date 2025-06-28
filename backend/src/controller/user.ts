@@ -26,6 +26,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
         else {
             const payload: Token = {
+                id: user.id,
                 email: email
             }
             const token = createToken(payload)
@@ -54,6 +55,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         // const savedUser = await user.save()
         // console.log(savedUser)
         const payload: Token = {
+            id: result.id,
             email: email
         }
         const token = createToken(payload)
