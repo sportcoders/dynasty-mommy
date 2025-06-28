@@ -18,7 +18,7 @@ declare global {
             user?: {
                 user_id?: string;
                 email: string;
-                username: string;
+                username?: string;
             }
         }
     }
