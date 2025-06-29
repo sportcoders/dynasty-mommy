@@ -1,17 +1,13 @@
 import supertest from "supertest";
 import { app, clean_db, init_app_test } from '../bootstrap'
 import { testDataSource } from "../bootstrap";
-import { User, UserLeagues } from "../../models/user";
+import { User } from "../../models/user";
 import { users } from "./utils";
 import { hash } from "bcrypt";
 import config from "../../config/config";
 import { createToken } from "../../utils/jwt";
 
 let api: any;
-// beforeAll(async () => {
-//     const app = init_app(testDataSource);
-//     api = supertest(app);
-// });
 beforeAll(() => {
     init_app_test()
     api = supertest(app)
