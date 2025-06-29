@@ -1,5 +1,5 @@
 import supertest from "supertest";
-import { app, init_app_test } from '../bootstrap'
+import { app, clean_db, init_app_test } from '../bootstrap'
 import { testDataSource } from "../bootstrap";
 import { User, UserLeagues } from "../../models/user";
 import { users } from "./utils";
@@ -16,6 +16,9 @@ beforeAll(() => {
     init_app_test()
     api = supertest(app)
 });
+afterEach(async () => {
+    await clean_db()
+})
 const loadUser = async () => {
     for (const user of users) {
         const hashed_password = await hash(user.password, config.salt_rounds)
@@ -56,6 +59,7 @@ describe("user_auth", () => {
             expect(response.headers.authentication).toMatch(/Bearer/)
         })
         it('should return a status code of 400 when a user already exists in db', async () => {
+            await loadUser()
             const response = await api.post("/auth/signup").send({
                 email: users[0].email,
                 password: "asecurepassword"
@@ -73,6 +77,7 @@ describe("user_auth", () => {
 describe("user_attributes", () => {
     describe("addLeague", () => {
         it("should return status code of 200 when league is added successfully", async () => {
+            await loadUser()
             const token = createToken({ email: users[0].email })
             const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
                 league: {
@@ -93,10 +98,31 @@ describe("user_attributes", () => {
         })
         it("should return status code of 401 when no auth header is sent", async () => {
             const response = await api.post("/auth/addLeague").send({
-                platform: "Sleeper",
-                id: "sleeper_league_idd"
+                league: {
+                    platform: "Sleeper",
+                    id: "sleeper_league_idd"
+                }
             })
             expect(response.statusCode).toBe(401)
+        })
+        it("should return status code of 401 when invalid auth header is sent", async () => {
+            const response = await api.post("/auth/addLeague").set("Authorization", `Bearer invalidAuth`).send({
+                league: {
+                    platform: "Sleeper",
+                    id: "sleeper_league_idd"
+                }
+            })
+            expect(response.statusCode).toBe(401)
+        })
+        it("should return status code of 404 when user belonging to header doesn't exist", async () => {
+            const token = createToken({ email: "email@doesnt.exist.com" })
+            const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
+                league: {
+                    platform: "Sleeper",
+                    id: "sleeper_league_idd"
+                }
+            })
+            expect(response.statusCode).toBe(404)
         })
     })
 })
