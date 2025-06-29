@@ -73,7 +73,7 @@ describe("user_auth", () => {
 describe("user_attributes", () => {
     describe("addLeague", () => {
         it("should return status code of 200 when league is added successfully", async () => {
-            const token = createToken({ id: users[0].email })
+            const token = createToken({ email: users[0].email })
             const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
                 league: {
                     platform: "Sleeper",
@@ -84,7 +84,7 @@ describe("user_attributes", () => {
             //check to see if it exists in db
         })
         it("should return status code of 422 when request fields are not as expected", async () => {
-            const token = createToken({ id: users[0].email })
+            const token = createToken({ email: users[0].email })
             const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
                 platform: "Sleeper",
                 id: "sleeper_league_idd"
