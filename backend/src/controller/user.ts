@@ -26,7 +26,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
         else {
             const payload: Token = {
-                id: email
+                id: user.id,
+                email: email
             }
             const token = createToken(payload)
             return res.status(HttpSuccess.OK).header({ "Authentication": `Bearer ` + token }).end()
@@ -54,7 +55,8 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         // const savedUser = await user.save()
         // console.log(savedUser)
         const payload: Token = {
-            id: email
+            id: result.id,
+            email: email
         }
         const token = createToken(payload)
         return res.status(HttpSuccess.CREATED).header({ "Authentication": `Bearer ${token}` }).send({ detail: "user created successfully" })

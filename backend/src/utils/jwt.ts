@@ -13,7 +13,9 @@ const accessTokenDefaults: SignOptions = {
 //     expiresIn: '30d'
 // }
 export interface Token {
-    id: string
+    id?: string,
+    email: string,
+    username?: string
 }
 export const createToken = (payload: Token, options = accessTokenDefaults) => {
     return jwt.sign(payload,
