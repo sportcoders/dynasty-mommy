@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { connectToDB, initDatasource } from "../db";
+import { connectToDB } from "../db";
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createAppDataSource } from "../orm";
 import { DataSource } from "typeorm";
