@@ -17,7 +17,16 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
     const [owner_id, setOwnerId] = useState("")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState<boolean>(true)
-
+    const [refresh, setForceRefresh] = useState<number>(0)
+    const refreshRoster = (owner_id: string) => {
+        setOwnerId((prev) => {
+            if (prev == owner_id) {
+                setForceRefresh((prev) => prev + 1)
+                return prev
+            }
+            return owner_id
+        })
+    }
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
@@ -36,6 +45,6 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
         }
         if (owner_id)
             fetchPlayers()
-    }, [league_id, owner_id])
-    return { players, error, loading, setOwnerId }
+    }, [league_id, owner_id, refresh])
+    return { players, error, loading, refreshRoster }
 }
