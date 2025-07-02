@@ -13,7 +13,7 @@ interface SleeperLeaguesHomePage {
 
 export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHomePage) {
     const { teams, error: team_error, loading: team_loading } = useGetLeagueTeamsSleeper(league_id)
-    const { players: roster, error: roster_error, loading: roster_loading, setOwnerId } = useGetPlayersOnRosterSleeper(league_id)
+    const { players: roster, error: roster_error, loading: roster_loading, refreshRoster } = useGetPlayersOnRosterSleeper(league_id)
     const { leagueInfo, loading, error } = useGetLeagueInfo(league_id)
 
     const [expanded, setExpanded] = useState<number | false>()
@@ -40,7 +40,7 @@ export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHome
                     }}
                 >
                     <AccordionSummary sx={{ minHeight: '30px' }}
-                        onClick={() => setOwnerId(team.user_id!)}>
+                        onClick={() => refreshRoster(team.user_id!)}>
                         {team.avatar ? <Avatar src={team.avatar} /> : <Avatar />}
                         <Box display="flex" alignItems="center" gap={1}>
                             <Typography variant="subtitle1" fontWeight="bold">
