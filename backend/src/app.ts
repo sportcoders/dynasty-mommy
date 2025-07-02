@@ -13,7 +13,8 @@ import { initDatasource } from './db';
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authentication']
 };
 
 // Factory function to create app with optional data source
