@@ -1,6 +1,5 @@
-import LoginForm from "@feature/auth/components/login";
-import SignUpForm from "@feature/auth/components/signup";
+import AuthHome from "@feature/auth/components/authHome";
 
 export function AuthPage() {
-    return <SignUpForm />
+    return <AuthHome />
 }
