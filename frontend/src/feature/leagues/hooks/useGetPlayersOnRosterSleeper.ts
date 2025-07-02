@@ -1,23 +1,22 @@
 import { type Player, sleeper_getPlayersForRoster } from "@services/sleeper"
 import { useEffect, useState } from "react"
 
+/**
+ * Custom React hook that fetches all players on a specific roster in a Sleeper league.
+ *
+ * Fetches player information for a given league and owner (team), and manages loading and error states.
+ * Provides a function to refresh the roster or switch to a different owner's roster.
+ *
+ * @param league_id - The unique identifier for the league.
+ * @returns An object containing the players, error message, loading state, and a function to refresh or change the roster.
+ */
 export default function useGetPlayersOnRosterSleeper(league_id: string) {
-    /**
-     * Custom React hook to retrieve all the players on a team in a sleeper league
-     * 
-     * @param {string} league_id - the id of the league
-     * 
-     * @returns {object} - An object containing the players, error and loading state
-     * @returns {object} players - the players for given roster
-     * @returns {function} setOwnerId - setter for ownerId
-     * @returns {boolean} loading - boolean for if data is currently being fetched
-     * @returns {string} error - error message, empty string if no error
-     */
     const [players, setPlayers] = useState<Player[] | null>(null)
     const [owner_id, setOwnerId] = useState("")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState<boolean>(true)
     const [refresh, setForceRefresh] = useState<number>(0)
+    
     const refreshRoster = (owner_id: string) => {
         setOwnerId((prev) => {
             if (prev == owner_id) {
@@ -27,6 +26,7 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
             return owner_id
         })
     }
+
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
@@ -36,15 +36,21 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
                 if (res)
                     setPlayers(res)
             }
-            catch (e: any) {
-                setError(e.message)
+            catch (e: unknown) {
+                if (e instanceof Error) {
+                    setError(e.message)
+                } else {
+                    setError(String(e))
+                }
             }
             finally {
                 setLoading(false)
             }
         }
+        
         if (owner_id)
             fetchPlayers()
     }, [league_id, owner_id, refresh])
+    
     return { players, error, loading, refreshRoster }
 }

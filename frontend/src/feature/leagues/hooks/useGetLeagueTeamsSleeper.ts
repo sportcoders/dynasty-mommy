@@ -1,6 +1,15 @@
 import { sleeper_getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
 import { type TeamInfo } from "@services/sleeper";
 import { useEffect, useState } from "react";
+import { set } from "zod/v4";
+
+/**
+ * Fetches and returns a URL for a league avatar image given its avatar ID.
+ *
+ * @param avatar_id - The unique identifier for the avatar image.
+ * @returns A promise that resolves to the object URL for the avatar image,
+ * or null if the avatar could not be fetched.
+ */
 const getAvatar = async (avatar_id: string) => {
     const blob = await sleeper_getAvatarThumbnail(avatar_id)
     if (!blob) {
@@ -10,14 +19,17 @@ const getAvatar = async (avatar_id: string) => {
     const url = URL.createObjectURL(blob)
     return url
 }
+
+/**
+ * Custom React hook that fetches all teams in a Sleeper league, including their avatars.
+ *
+ * Fetches team information and resolves each team's avatar image URL.
+ * Handles loading and error states, and revokes avatar object URLs on cleanup.
+ *
+ * @param league_id - The unique identifier for the league.
+ * @returns An object containing the loading state, error message, and array of teams (with avatars).
+ */
 export default function useGetLeagueTeamsSleeper(league_id: string) {
-    /**
-     * Custom React hook to retrieve the teams in a sleeper league
-     * 
-     * @param {string} league_id - the id of the league
-     * 
-     * @returns {object} - An object containing the teams, error and loading state
-     */
     const [teams, setTeams] = useState<TeamInfo[] | null>(null)
     const [error, setError] = useState("")
     const [loading, setLoading] = useState<boolean>(true)
@@ -35,20 +47,25 @@ export default function useGetLeagueTeamsSleeper(league_id: string) {
                     setTeams(teams_with_avatar)
                 }
             }
-            catch (e: any) {
-                setError("An error occured")
-                // setError(e.message)
+            catch (e: unknown) {
+                if (e instanceof Error) {
+                    setError(e.message)
+                } else {
+                    setError(String(e))
+                }
             }
             finally {
                 setLoading(false)
             }
         }
+        
         fetchTeams()
+
         return () => {
             if (teams)
                 teams.forEach((team) => team.avatar && URL.revokeObjectURL(team.avatar));
         }
-    }, [league_id])
+    }, [league_id, teams])
 
     return { loading, error, teams }
 }
