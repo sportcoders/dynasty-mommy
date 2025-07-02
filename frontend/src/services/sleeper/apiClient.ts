@@ -18,6 +18,20 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
 
     return response.json() as Promise<T>
 }
+export const serverPost = async <T, U>(endpoint: string, data: U): Promise<{ data: T, headers: Headers }> => {
+    const response = await fetch(`${SERVER_BASE_URL}${endpoint}`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }
+    )
+    const contentLength = response.headers.get('Content-Length');
+    return {
+        data: contentLength == "0" ? {} as T : await response.json() as T,
+        headers: response.headers
+    }
+}
 
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${AVATAR_URL}${endpoint}`)

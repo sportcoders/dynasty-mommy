@@ -1,0 +1,15 @@
+import { useAuthForm, type AuthFormTypes } from "../hooks/useAuthForm";
+import LoginForm from "./login";
+import SignUpForm from "./signup";
+
+interface AuthHomeProps {
+    selectedFormType?: AuthFormTypes
+}
+export default function AuthHome({ selectedFormType = "LOGIN" }: AuthHomeProps) {
+    const { selectedForm, toLogin, toSignUp } = useAuthForm(selectedFormType)
+
+    if (selectedForm == 'LOGIN')
+        return <LoginForm changeToSignUp={toSignUp} />
+    else
+        return <SignUpForm />
+}
