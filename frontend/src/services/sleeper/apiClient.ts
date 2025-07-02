@@ -26,9 +26,9 @@ export const serverPost = async <T, U>(endpoint: string, data: U): Promise<{ dat
             body: JSON.stringify(data)
         }
     )
-
+    const contentLength = response.headers.get('Content-Length');
     return {
-        data: await response.json() as T,
+        data: contentLength == "0" ? {} as T : await response.json() as T,
         headers: response.headers
     }
 }
