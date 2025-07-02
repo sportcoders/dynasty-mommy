@@ -18,7 +18,7 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
 
     return response.json() as Promise<T>
 }
-export const serverPost = async <T, U>(endpoint: string, data: U): Promise<T> => {
+export const serverPost = async <T, U>(endpoint: string, data: U): Promise<{ data: T, headers: Headers }> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`,
         {
             method: "POST",
@@ -26,7 +26,11 @@ export const serverPost = async <T, U>(endpoint: string, data: U): Promise<T> =>
             body: JSON.stringify(data)
         }
     )
-    return response.json() as Promise<T>
+
+    return {
+        data: await response.json() as T,
+        headers: response.headers
+    }
 }
 
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
