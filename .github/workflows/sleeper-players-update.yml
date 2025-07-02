@@ -4,6 +4,10 @@ on:
   schedule:
    - cron: "0 0 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - DM-31-automating-update-of-sleeper-players-from-sleeper
+
 
 env:
   DB_URI: ${{secrets.DB_URI}}
