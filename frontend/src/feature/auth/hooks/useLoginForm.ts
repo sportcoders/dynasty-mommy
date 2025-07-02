@@ -18,10 +18,10 @@ export default function useLoginForm() {
             setError("Missing Fields")
             return
         }
-        // if (!email.toLowerCase().match(reEmail)) {
-        //     setEmailError("Invalid Email Format")
-        //     return
-        // }
+        if (!email.toLowerCase().match(reEmail)) {
+            setEmailError("Invalid Email Format")
+            return
+        }
         const headers = await DM_login(email, password)
         if (headers) {
             console.log(headers.get('Authentication'))
