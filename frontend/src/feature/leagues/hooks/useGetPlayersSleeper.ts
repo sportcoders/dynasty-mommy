@@ -1,6 +1,5 @@
 import { type Player, sleeper_getPlayers } from "@services/sleeper"
 import { useEffect, useState } from "react"
-import { set } from "zod/v4"
 
 /**
  * Custom React hook to retrieve all the players on teams in a Sleeper league.

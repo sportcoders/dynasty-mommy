@@ -75,7 +75,7 @@ export default function useGetLeagueInfo(league_id: string) {
                 URL.revokeObjectURL(leagueInfo.avatar)
             }
         }
-    }, [leagueInfo, league_id])
+    }, [league_id])
     
     return { leagueInfo, loading, error }
 }
