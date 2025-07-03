@@ -18,7 +18,7 @@ afterEach(async () => {
 const loadUser = async () => {
     for (const user of users) {
         const hashed_password = await hash(user.password, config.salt_rounds)
-        const new_user = testDataSource.getRepository(User).create({ email: user.email, password: hashed_password })
+        const new_user = testDataSource.getRepository(User).create({ email: user.email, password: hashed_password, username: user.username })
         await testDataSource.getRepository(User).save(new_user)
     }
 }
@@ -48,7 +48,8 @@ describe("user_auth", () => {
         it('should return a status code of 201 when a user is create successfully', async () => {
             const response = await api.post("/auth/signup").send({
                 email: "newemail@gmail.com",
-                password: "asecurepassword"
+                password: "asecurepassword",
+                username: "testusername"
             })
             expect(response.statusCode).toBe(201)
             expect(response.headers).toHaveProperty("authentication")
@@ -58,13 +59,15 @@ describe("user_auth", () => {
             await loadUser()
             const response = await api.post("/auth/signup").send({
                 email: users[0].email,
-                password: "asecurepassword"
+                password: "asecurepassword",
+                username: "randomusername"
             })
             expect(response.statusCode).toBe(400)
         })
         it('should return a status code of 422 when the body of the request is missing fields', async () => {
             const response = await api.post('/auth/signup').send({
                 email: "anemail@gmail.com",
+                password: "apassword"
             })
             expect(response.statusCode).toBe(422)
         })
