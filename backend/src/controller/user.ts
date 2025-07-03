@@ -6,7 +6,7 @@ import { HttpSuccess, HttpError } from "../constants/constants"
 import { AppError } from "../errors/app_error"
 import config from "../config/config"
 import { AppDataSource } from "../app"
-import { addUserToLeagueSchema, userLogin } from "../schemas/user"
+import { addUserToLeagueSchema, userLogin, userSignUp } from "../schemas/user"
 
 export async function login(req: Request, res: Response, next: NextFunction) {
 
@@ -40,7 +40,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
-        const { email, password } = await userLogin.parseAsync(req.body)
+        const { email, password, username } = await userSignUp.parseAsync(req.body)
 
 
         //check if user already exists in db
@@ -49,7 +49,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
             throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "User Already Exists" })
         }
         const hashed_pw = await hash(password, config.salt_rounds)
-        const user = AppDataSource.manager.create(User, { email: email, password: hashed_pw })
+        const user = AppDataSource.manager.create(User, { email: email, password: hashed_pw, username: username })
         const result = await AppDataSource.manager.save(User, user)
         // const user = new User({ email: email, password: hashed_pw })
         // const savedUser = await user.save()
