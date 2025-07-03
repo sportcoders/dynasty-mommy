@@ -11,3 +11,9 @@ export const addUserToLeagueSchema = z.object({
         id: z.string()
     })
 })
+
+export const userSignUp = z.object({
+    email: z.email(),
+    password: z.string(),
+    username: z.string()
+})
