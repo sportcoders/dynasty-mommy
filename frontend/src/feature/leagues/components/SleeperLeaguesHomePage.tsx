@@ -1,16 +1,27 @@
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, CircularProgress, Grid, Icon, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, CircularProgress, Typography } from "@mui/material";
 import { useState, type SyntheticEvent } from "react";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
-import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOnRosterSleeper";
 import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
+import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 interface SleeperLeaguesHomePage {
     league_id: string,
-    // onTeamClick: (team_id: string) => void,
-    // displayAvatar?: boolean,
-    // displayRecord?: boolean
 }
 
+/**
+ * Displays the home page for a Sleeper fantasy league.
+ *
+ * This component fetches and displays league information, a list of teams,
+ * and the roster for each team organized by position. Teams are shown in
+ * expandable accordions. When a team is expanded, its roster is displayed
+ * in a grid by basketball position (PG, SG, SF, PF, C).
+ *
+ * Loading spinners and error messages are shown as appropriate while data is being fetched.
+ *
+ * @param props - The props for the component.
+ * @param props.league_id - The unique identifier for the league to display.
+ * @returns The rendered league home page UI.
+ */
 export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHomePage) {
     const { teams, error: team_error, loading: team_loading } = useGetLeagueTeamsSleeper(league_id)
     const { players: roster, error: roster_error, loading: roster_loading, refreshRoster } = useGetPlayersOnRosterSleeper(league_id)
