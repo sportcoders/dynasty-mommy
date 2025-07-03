@@ -1,6 +1,8 @@
 import { Container, Box, Paper, Typography, TextField, Button } from "@mui/material";
+import { useSignUpFrom } from "../hooks/useSignUpForm";
 
 export default function SignUpForm() {
+    const { username, email, password, confirmPassword, setPassword, setConfirmPassword, error, emailError, passwordError, usernameError, handleUsernameChange, handleEmailChange, handleSubmit } = useSignUpFrom()
     return (
         <Container maxWidth="sm">
             <Box
@@ -30,15 +32,18 @@ export default function SignUpForm() {
                         </Typography>
                     </Box>
 
-                    <Box component="form" noValidate>
+                    <Box>
                         <TextField
                             fullWidth
                             name="username"
                             label="Username"
                             type="text"
                             margin="normal"
-                            sx={{ mb: 2 }}
+                            sx={{ mb: usernameError ? 1 : 2 }}
+                            value={username}
+                            onChange={handleUsernameChange}
                         />
+                        {usernameError && <Typography variant="body2" color="red" sx={{ mb: 1 }}>{usernameError}</Typography>}
 
                         <TextField
                             fullWidth
@@ -46,27 +51,33 @@ export default function SignUpForm() {
                             label="Email Address"
                             type="email"
                             margin="normal"
-                            sx={{ mb: 2 }}
+                            sx={{ mb: emailError ? 1 : 2 }}
+                            value={email}
+                            onChange={handleEmailChange}
                         />
-
+                        {emailError && <Typography color="red" variant="body2" sx={{ mb: 1 }}>{emailError}</Typography>}
                         <TextField
                             fullWidth
                             name="password"
                             label="Password"
                             type="password"
                             margin="normal"
-                            sx={{ mb: 2 }}
+                            sx={{ mb: passwordError ? 1 : 2 }}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
-
+                        {passwordError && <Typography color='red' variant="body2" sx={{ mb: 1 }}>{passwordError}</Typography>}
                         <TextField
                             fullWidth
                             name="confirmPassword"
                             label="Confirm Password"
                             type="password"
                             margin="normal"
-                            sx={{ mb: 3 }}
+                            sx={{ mb: error ? 1 : 3 }}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-
+                        {error && <Typography color="red" variant="body2" sx={{ mb: 2 }}>{error}</Typography>}
                         <Button
                             type="submit"
                             fullWidth
@@ -77,6 +88,7 @@ export default function SignUpForm() {
                                 textTransform: 'none',
                                 fontSize: '1.1rem'
                             }}
+                            onClick={handleSubmit}
                         >
                             Create Account
                         </Button>
