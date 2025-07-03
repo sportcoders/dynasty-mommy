@@ -24,7 +24,7 @@ export const sleeper_getLeagues = async (username: string, season: string): Prom
         if (leagues.length === 0) {
             return []
         }
-        
+
         return leagues.map((league: League) => ({
             league_id: league.league_id,
             name: league.name,
@@ -33,7 +33,7 @@ export const sleeper_getLeagues = async (username: string, season: string): Prom
         }))
     } catch (error) {
         console.error('Failed to fetch leagues:', error);
-        return []; 
+        return [];
     }
 }
 
@@ -48,16 +48,16 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> =>
         const rosters = await sleeper_apiGet<Roster[]>(`/league/${leagueId}/rosters`)
 
         if (rosters.length === 0) {
-            return [] 
+            return []
         }
 
         return rosters.map((roster: Roster) => ({
             owner_id: roster.owner_id,
             players: roster.players
-        }))  
+        }))
     } catch (error) {
         console.error('Failed to fetch rosters:', error);
-        return []; 
+        return [];
     }
 }
 
@@ -86,16 +86,16 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 
     const playerMap: Record<string, Player> = {}
 
-        for (const player of players) {
-            playerMap[player.id] = player;
-        }
+    for (const player of players) {
+        playerMap[player.id] = player;
+    }
 
-        const ownerToPlayers: Record<string, Player[]> = {};
-        for (const roster of rosters) {
-            ownerToPlayers[roster.owner_id] = roster.players.map(pid => playerMap[pid]).filter(Boolean)
-        }
+    const ownerToPlayers: Record<string, Player[]> = {};
+    for (const roster of rosters) {
+        ownerToPlayers[roster.owner_id] = roster.players.map(pid => playerMap[pid]).filter(Boolean)
+    }
 
-        return ownerToPlayers;
+    return ownerToPlayers;
 }
 
 /**
@@ -112,10 +112,10 @@ export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: st
         return []
     }
 
-    const roster = rosters.filter((roster) => roster.owner_id == owner_id)
-    const playerIds = roster.flatMap((roster) => roster.players) 
+    const roster = rosters.find((roster) => roster.owner_id == owner_id)
+    const playerIds = roster!.players
 
-    if (playerIds.length === 0) {
+    if (!playerIds) {
         return []
     }
 
@@ -153,7 +153,7 @@ export const sleeper_getLeagueInfo = async (leagueId: string): Promise<LeagueInf
         }
     } catch (error) {
         console.error('Failed to fetch league info:', error);
-        return null; 
+        return null;
     }
 
 }
