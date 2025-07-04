@@ -207,7 +207,7 @@ function SleeperAccount({ searchType,
                         '&:hover': {
                             transform: 'translateY(-2px)',
                         },
-                        transition: 'background 0.4s ease, transform 0.3s ease'
+                        transition: 'all 0.3s ease'
                     }}
                 >
                     Search League
