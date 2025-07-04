@@ -16,6 +16,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@tanstack/react-router": "^1.120.18",
     "@tanstack/react-router-devtools": "^1.120.18",
+    "deepmerge": "^4.3.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",

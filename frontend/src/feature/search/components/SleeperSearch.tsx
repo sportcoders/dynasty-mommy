@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Paper, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, FormControl, FormControlLabel, Paper, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import { useRouter } from '@tanstack/react-router'
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList'
@@ -57,10 +57,6 @@ export default function SleeperSearch() {
                     textAlign: 'center',
                     color: 'primary.main',
                     mb: 1,
-                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
                     textShadow: 'none'
                 }}
             >
@@ -117,26 +113,6 @@ function SleeperAccount({ searchType,
     }
 
     return (
-        // <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'flex', minWidth: 1 / 4, maxHeight: 3 / 4, maxWidth: 3 / 4, alignItems: 'center', justifyItems: 'center' }}>
-        //     <FormControl fullWidth sx={{ alignItems: 'center' }}>
-        //         <FormLabel >Find Leauge By</FormLabel>
-        //         <RadioGroup
-        //             row
-        //             value={searchType}
-        //             onChange={handleSearchTypeChange}
-        //         >
-        //             <FormControlLabel value='Username' control={<Radio />} label="Username" />
-        //             <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
-        //         </RadioGroup>
-        //         <Box sx={{ m: 2, width: '100%' }} display='flex' gap={1}>
-        //             <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText} sx={{ flex: 3 }} ></TextField>
-        //             <Box sx={{ flex: 1 }}>
-        //                 <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
-        //             </Box>
-        //         </Box>
-        //         <Button onClick={handleSubmit} variant="contained" sx={{ m: 1, width: '100%' }}>Submit</Button>
-        //     </FormControl>
-        // </Box>
         <Paper
             elevation={3}
             sx={{
@@ -145,16 +121,15 @@ function SleeperAccount({ searchType,
                 m: 2,
                 maxWidth: 600,
                 mx: 'auto',
-                background: '#f8f9fa',
                 border: '1px solid',
-                borderColor: 'divider'
+                borderColor: 'background.paper'
             }}
         >
             <Box sx={{ textAlign: 'center', mb: 3 }}>
                 <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
                     Find League
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.primary">
                     Search by username or league ID
                 </Typography>
             </Box>
@@ -184,7 +159,7 @@ function SleeperAccount({ searchType,
                         }}
                     />
                     <FormControlLabel
-                        value='Leauge ID'
+                        value='League ID'
                         control={<Radio />}
                         label="League ID"
                         sx={{
@@ -228,12 +203,9 @@ function SleeperAccount({ searchType,
                         textTransform: 'none',
                         fontSize: '1.1rem',
                         fontWeight: 600,
-                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                        background: 'primary.main',
                         '&:hover': {
-                            background: 'linear-gradient(45deg, #1976D2 30%, #1BA8D1 90%)',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 10px 2px rgba(33, 203, 243, .3)',
                         },
                         transition: 'all 0.3s ease'
                     }}
@@ -288,7 +260,7 @@ function SleeperLeagues({ searchType,
                 m: 2,
                 maxWidth: 800,
                 mx: 'auto',
-                background: '#f8f9fa',
+                background: 'background.paper',
                 border: '1px solid',
                 borderColor: 'divider'
             }}
@@ -318,9 +290,9 @@ function SleeperLeagues({ searchType,
                         '&:hover': {
                             borderColor: 'primary.dark',
                             backgroundColor: 'primary.main',
-                            color: 'white',
+                            color: 'primary.contrastText',
                             transform: 'translateY(-1px)',
-                            boxShadow: '0 2px 8px rgba(33, 150, 243, 0.3)'
+                            boxShadow: '0 2px 8px primary.light'
                         },
                         transition: 'all 0.3s ease'
                     }}
@@ -337,7 +309,7 @@ function SleeperLeagues({ searchType,
                             flex: 2,
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: 2,
-                                backgroundColor: 'white'
+                                backgroundColor: 'background.default'
                             },
                             '& .MuiInputLabel-root': {
                                 fontWeight: 500
@@ -362,8 +334,8 @@ function SleeperLeagues({ searchType,
                     sx={{
                         p: 4,
                         textAlign: 'center',
-                        backgroundColor: '#fff3cd',
-                        color: '#856404'
+                        backgroundColor: 'background.default',
+                        color: 'text.primary'
                     }}
                 >
                     <Typography

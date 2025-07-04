@@ -28,23 +28,20 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: di
                         sx={{
                             borderRadius: 2,
                             p: 2,
-                            backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                            backgroundColor: 'background.default',
                             backdropFilter: 'blur(10px)',
                             border: '1px solid',
-                            borderColor: 'rgba(224, 224, 224, 0.3)',
+                            borderColor: 'divider',
                             '&:hover': {
-                                backgroundColor: 'rgba(33, 150, 243, 0.8)',
+                                backgroundColor: 'primary.main',
                                 backdropFilter: 'blur(15px)',
-                                color: 'white',
+                                color: 'primary.contrastText',
                                 transform: 'translateY(-1px)',
-                                boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)',
-                                borderColor: 'rgba(33, 150, 243, 0.5)',
+                                boxShadow: '0 4px 12px primary.light',
+                                borderColor: 'divider',
                                 '& .MuiListItemText-primary': {
-                                    color: 'white'
+                                    color: 'primary.contrastText'
                                 },
-                                '& .MuiAvatar-root': {
-                                    boxShadow: '0 2px 8px rgba(255, 255, 255, 0.4)'
-                                }
                             },
                             transition: 'all 0.3s ease'
                         }}
@@ -57,9 +54,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: di
                                     sx={{
                                         width: 48,
                                         height: 48,
-                                        border: '2px solid',
-                                        borderColor: 'rgba(224, 224, 224, 0.4)',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                                        backgroundColor: 'secondary.main'
                                     }}
                                 />
                             )}
@@ -70,7 +65,8 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: di
                                 '& .MuiListItemText-primary': {
                                     fontWeight: 500,
                                     fontSize: '1.1rem',
-                                    transition: 'color 0.3s ease'
+                                    transition: 'color 0.3s ease',
+                                    color: 'text.primary',
                                 }
                             }}
                         />
