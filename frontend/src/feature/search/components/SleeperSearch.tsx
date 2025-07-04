@@ -290,9 +290,9 @@ function SleeperLeagues({ searchType,
                         '&:hover': {
                             borderColor: 'primary.dark',
                             backgroundColor: 'primary.main',
-                            color: 'white',
+                            color: 'primary.contrastText',
                             transform: 'translateY(-1px)',
-                            boxShadow: '0 2px 8px rgba(33, 150, 243, 0.3)'
+                            boxShadow: '0 2px 8px primary.light'
                         },
                         transition: 'all 0.3s ease'
                     }}
@@ -309,7 +309,7 @@ function SleeperLeagues({ searchType,
                             flex: 2,
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: 2,
-                                backgroundColor: 'white'
+                                backgroundColor: 'background.default'
                             },
                             '& .MuiInputLabel-root': {
                                 fontWeight: 500
