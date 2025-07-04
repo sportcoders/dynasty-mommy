@@ -121,16 +121,15 @@ function SleeperAccount({ searchType,
                 m: 2,
                 maxWidth: 600,
                 mx: 'auto',
-                background: '#f8f9fa',
                 border: '1px solid',
-                borderColor: 'divider'
+                borderColor: 'background.paper'
             }}
         >
             <Box sx={{ textAlign: 'center', mb: 3 }}>
                 <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
                     Find League
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.primary">
                     Search by username or league ID
                 </Typography>
             </Box>
@@ -204,14 +203,11 @@ function SleeperAccount({ searchType,
                         textTransform: 'none',
                         fontSize: '1.1rem',
                         fontWeight: 600,
-                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                        background: 'primary.main',
                         '&:hover': {
-                            background: 'linear-gradient(45deg, #1976D2 30%, #1BA8D1 90%)',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 10px 2px rgba(33, 203, 243, .3)',
                         },
-                        transition: 'all 0.3s ease'
+                        transition: 'background 0.4s ease, transform 0.3s ease'
                     }}
                 >
                     Search League
@@ -264,7 +260,7 @@ function SleeperLeagues({ searchType,
                 m: 2,
                 maxWidth: 800,
                 mx: 'auto',
-                background: '#f8f9fa',
+                background: 'background.paper',
                 border: '1px solid',
                 borderColor: 'divider'
             }}
@@ -338,8 +334,8 @@ function SleeperLeagues({ searchType,
                     sx={{
                         p: 4,
                         textAlign: 'center',
-                        backgroundColor: '#fff3cd',
-                        color: '#856404'
+                        backgroundColor: 'background.default',
+                        color: 'text.primary'
                     }}
                 >
                     <Typography
