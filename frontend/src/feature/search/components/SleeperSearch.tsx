@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Paper, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, FormControl, FormControlLabel, Paper, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import { useRouter } from '@tanstack/react-router'
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList'
@@ -113,26 +113,6 @@ function SleeperAccount({ searchType,
     }
 
     return (
-        // <Box sx={{ borderRadius: 2, bgcolor: '#D3D3D3', p: 3, m: 2, boxShadow: 1, borderColor: 'black', border: 1, display: 'flex', minWidth: 1 / 4, maxHeight: 3 / 4, maxWidth: 3 / 4, alignItems: 'center', justifyItems: 'center' }}>
-        //     <FormControl fullWidth sx={{ alignItems: 'center' }}>
-        //         <FormLabel >Find Leauge By</FormLabel>
-        //         <RadioGroup
-        //             row
-        //             value={searchType}
-        //             onChange={handleSearchTypeChange}
-        //         >
-        //             <FormControlLabel value='Username' control={<Radio />} label="Username" />
-        //             <FormControlLabel value='Leauge ID' control={<Radio />} label="League ID" />
-        //         </RadioGroup>
-        //         <Box sx={{ m: 2, width: '100%' }} display='flex' gap={1}>
-        //             <TextField label={searchType} required variant='outlined' onChange={handleTextChange} value={searchText} sx={{ flex: 3 }} ></TextField>
-        //             <Box sx={{ flex: 1 }}>
-        //                 <SelectSeasonDropDown updateSeason={setSeason} selectedYear={season} />
-        //             </Box>
-        //         </Box>
-        //         <Button onClick={handleSubmit} variant="contained" sx={{ m: 1, width: '100%' }}>Submit</Button>
-        //     </FormControl>
-        // </Box>
         <Paper
             elevation={3}
             sx={{
