@@ -35,12 +35,12 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: di
                             '&:hover': {
                                 backgroundColor: 'primary.main',
                                 backdropFilter: 'blur(15px)',
-                                color: 'white',
+                                color: 'primary.contrastText',
                                 transform: 'translateY(-1px)',
                                 boxShadow: '0 4px 12px primary.light',
                                 borderColor: 'divider',
                                 '& .MuiListItemText-primary': {
-                                    color: 'primary.constrastText'
+                                    color: 'primary.contrastText'
                                 },
                             },
                             transition: 'all 0.3s ease'

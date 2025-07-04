@@ -14,7 +14,7 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { Provider } from "react-redux"
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { themeOptions } from './styles/theme'
+import { lightThemeOptions } from './styles/theme'
 import { CssBaseline } from '@mui/material'
 
 // Import the generated route tree
@@ -35,7 +35,7 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
-  const theme = createTheme(themeOptions)
+  const theme = createTheme(lightThemeOptions)
   root.render(
     <StrictMode>
       <Provider store={store}>
