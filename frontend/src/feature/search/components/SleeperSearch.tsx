@@ -180,7 +180,7 @@ function SleeperAccount({ searchType,
                         }}
                     />
                     <FormControlLabel
-                        value='Leauge ID'
+                        value='League ID'
                         control={<Radio />}
                         label="League ID"
                         sx={{
