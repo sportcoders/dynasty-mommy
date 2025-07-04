@@ -31,12 +31,14 @@ export const users = [
         id: "1",
         email: "firstTestUser@test.com",
         password: "testpassword",
+        username: "username1",
         leagues: []
     },
     {
         id: "2",
         email: "secondTestUser@test.com",
         password: "testpassword",
+        username: "username2",
         leagues: []
     }
 ]
