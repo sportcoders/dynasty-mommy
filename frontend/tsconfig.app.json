@@ -41,6 +41,9 @@
       "@feature/*": [
         "feature/*"
       ],
+      "@app/*": [
+        "./*"
+      ],
     },
   },
   "include": [
