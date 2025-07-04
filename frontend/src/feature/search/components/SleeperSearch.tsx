@@ -57,10 +57,6 @@ export default function SleeperSearch() {
                     textAlign: 'center',
                     color: 'primary.main',
                     mb: 1,
-                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
                     textShadow: 'none'
                 }}
             >

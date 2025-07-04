@@ -13,6 +13,10 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { Provider } from "react-redux"
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { themeOptions } from './styles/theme'
+import { CssBaseline } from '@mui/material'
+
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 import { store } from './store/store'
@@ -31,10 +35,14 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
+  const theme = createTheme(themeOptions)
   root.render(
     <StrictMode>
       <Provider store={store}>
-        <RouterProvider router={router} />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <RouterProvider router={router} />
+        </ThemeProvider>
       </Provider>
     </StrictMode>,
   )
