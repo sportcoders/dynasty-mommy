@@ -34,6 +34,8 @@ describe("user_auth", () => {
             expect(response.statusCode).toBe(200)
             expect(response.headers).toHaveProperty("authentication")
             expect(response.headers.authentication).toMatch(/Bearer/)
+            expect(response.body).toHaveProperty("username")
+            expect(response.body.username).toBe(users[0].username)
         })
         it('should return a status code of 422 when the body of the request is missing fields', async () => {
             const response = await api.post('/auth/login').send({
@@ -54,6 +56,8 @@ describe("user_auth", () => {
             expect(response.statusCode).toBe(201)
             expect(response.headers).toHaveProperty("authentication")
             expect(response.headers.authentication).toMatch(/Bearer/)
+            expect(response.body).toHaveProperty("username")
+            expect(response.body.username).toBe("testusername")
         })
         it('should return a status code of 409 when a user already exists in db', async () => {
             await loadUser()
