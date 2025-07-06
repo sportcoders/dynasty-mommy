@@ -32,8 +32,6 @@ describe("user_auth", () => {
                 password: users[0].password
             })
             expect(response.statusCode).toBe(200)
-            expect(response.headers).toHaveProperty("authentication")
-            expect(response.headers.authentication).toMatch(/Bearer/)
             expect(response.body).toHaveProperty("username")
             expect(response.body.username).toBe(users[0].username)
         })
@@ -54,8 +52,6 @@ describe("user_auth", () => {
                 username: "testusername"
             })
             expect(response.statusCode).toBe(201)
-            expect(response.headers).toHaveProperty("authentication")
-            expect(response.headers.authentication).toMatch(/Bearer/)
             expect(response.body).toHaveProperty("username")
             expect(response.body.username).toBe("testusername")
         })
@@ -91,7 +87,7 @@ describe("user_attributes", () => {
         it("should return status code of 200 when league is added successfully", async () => {
             await loadUser()
             const token = createToken({ email: users[0].email })
-            const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
+            const response = await api.post("/auth/addLeague").set("Cookie", [`accessToken=${token}`]).send({
                 league: {
                     platform: "Sleeper",
                     id: "sleeper_league_idd"
@@ -102,7 +98,7 @@ describe("user_attributes", () => {
         })
         it("should return status code of 422 when request fields are not as expected", async () => {
             const token = createToken({ email: users[0].email })
-            const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
+            const response = await api.post("/auth/addLeague").set("Cookie", [`accessToken=${token}`]).send({
                 platform: "Sleeper",
                 id: "sleeper_league_idd"
             })
@@ -118,7 +114,7 @@ describe("user_attributes", () => {
             expect(response.statusCode).toBe(401)
         })
         it("should return status code of 401 when invalid auth header is sent", async () => {
-            const response = await api.post("/auth/addLeague").set("Authorization", `Bearer invalidAuth`).send({
+            const response = await api.post("/auth/addLeague").set("Cookie", `invalidAuth`).send({
                 league: {
                     platform: "Sleeper",
                     id: "sleeper_league_idd"
@@ -128,7 +124,7 @@ describe("user_attributes", () => {
         })
         it("should return status code of 404 when user belonging to header doesn't exist", async () => {
             const token = createToken({ email: "email@doesnt.exist.com" })
-            const response = await api.post("/auth/addLeague").set("Authorization", `Bearer ${token}`).send({
+            const response = await api.post("/auth/addLeague").set("Cookie", [`accessToken=${token}`]).send({
                 league: {
                     platform: "Sleeper",
                     id: "sleeper_league_idd"

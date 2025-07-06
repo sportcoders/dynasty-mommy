@@ -13,8 +13,10 @@
   "description": "",
   "dependencies": {
     "@sequelize/postgres": "^7.0.0-alpha.46",
+    "@types/cookie-parser": "^1.4.9",
     "@types/winston": "^2.4.4",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",

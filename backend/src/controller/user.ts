@@ -7,8 +7,14 @@ import { AppError } from "../errors/app_error"
 import config from "../config/config"
 import { AppDataSource } from "../app"
 import { addUserToLeagueSchema, userLogin, userSignUp } from "../schemas/user"
-import { QueryFailedError } from "typeorm"
 
+const setAuthCookies = (res: Response, accessToken: string) => {
+    res.cookie("accessToken", accessToken, {
+        sameSite: "strict",
+        httpOnly: true,
+        secure: false //CHANGE TO TRUE WHEN NOT IN DEVELOPMENT
+    })
+}
 export async function login(req: Request, res: Response, next: NextFunction) {
 
 
@@ -16,7 +22,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const { email, password } = await userLogin.parseAsync(req.body)
 
         //authenticate user
-        const user = await AppDataSource.manager.findOneBy(User, { email: email })
+        const user = await AppDataSource.getRepository(User).findOne({ where: { email } })
 
         if (!user || !user.password) {
             throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "User Not Found" });
@@ -31,7 +37,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
                 email: email
             }
             const token = createToken(payload)
-            return res.status(HttpSuccess.OK).header({ "Authentication": `Bearer ` + token }).send({
+
+            setAuthCookies(res, token)
+            return res.status(HttpSuccess.OK).send({
                 username: user.username
             })
         }
@@ -63,7 +71,9 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
             email: email
         }
         const token = createToken(payload)
-        return res.status(HttpSuccess.CREATED).header({ "Authentication": `Bearer ${token}` }).send({ detail: "user created successfully", username: user.username })
+
+        setAuthCookies(res, token)
+        return res.status(HttpSuccess.CREATED).send({ detail: "user created successfully", username: user.username })
 
     }
     //hash pwd
