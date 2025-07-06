@@ -55,14 +55,23 @@ describe("user_auth", () => {
             expect(response.headers).toHaveProperty("authentication")
             expect(response.headers.authentication).toMatch(/Bearer/)
         })
-        it('should return a status code of 400 when a user already exists in db', async () => {
+        it('should return a status code of 409 when a user already exists in db', async () => {
             await loadUser()
             const response = await api.post("/auth/signup").send({
                 email: users[0].email,
                 password: "asecurepassword",
                 username: "randomusername"
             })
-            expect(response.statusCode).toBe(400)
+            expect(response.statusCode).toBe(409)
+        })
+        it('should return a status code of 409 when the username is already taken', async () => {
+            await loadUser()
+            const response = await api.post("/auth/signup").send({
+                email: "anewusername@gmail.com",
+                password: "asecurepassword",
+                username: users[0].username
+            })
+            expect(response.statusCode).toBe(409)
         })
         it('should return a status code of 422 when the body of the request is missing fields', async () => {
             const response = await api.post('/auth/signup').send({
