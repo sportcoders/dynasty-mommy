@@ -3,15 +3,6 @@ import { HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { verifyToken } from "../utils/jwt";
 
-// declare module 'express-serve-static-core' {
-//     interface Request {
-//         user?: {
-//             user_id?: string,
-//             email: string,
-//             username: string
-//         }
-//     }
-// }
 declare global {
     namespace Express {
         interface Request {
@@ -25,11 +16,16 @@ declare global {
 }
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.header("Authorization")?.replace('Bearer ', '')
+        console.log(req.cookies)
+        const accessToken = req.cookies.accessToken
 
-        if (!token) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Invalid access token" });
+        if (!accessToken) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Invalid access token" })
 
-        const { error, payload } = verifyToken(token);
+        // const token = req.header("Authorization")?.replace('Bearer ', '')
+
+        // if (!token) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Invalid access token" });
+
+        const { error, payload } = verifyToken(accessToken);
 
         if (error || !payload) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
 
