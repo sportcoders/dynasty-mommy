@@ -20,15 +20,21 @@ export class User {
     @PrimaryGeneratedColumn("uuid")
     id!: string
 
-    @Column()
+    @Column({
+        unique: true,
+        nullable: false
+    })
     email!: string
 
     @Column({
-        nullable: true
+        nullable: true,
+        unique: true
     })
     username!: string
 
-    @Column()
+    @Column({
+        nullable: false
+    })
     password!: string
 
     @OneToMany(() => UserLeagues, (userLeague) => userLeague.user)
