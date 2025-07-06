@@ -18,7 +18,7 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
 
     return response.json() as Promise<T>
 }
-export const serverPost = async <T, U>(endpoint: string, data: U): Promise<{ data: T, headers: Headers }> => {
+export const serverPost = async <T, U>(endpoint: string, data: U): Promise<T> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`,
         {
             method: "POST",
@@ -27,11 +27,7 @@ export const serverPost = async <T, U>(endpoint: string, data: U): Promise<{ dat
             credentials: "include"
         }
     )
-    const contentLength = response.headers.get('Content-Length');
-    return {
-        data: contentLength == "0" ? {} as T : await response.json() as T,
-        headers: response.headers
-    }
+    return response.json() as Promise<T>
 }
 
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {

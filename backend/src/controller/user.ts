@@ -22,7 +22,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const { email, password } = await userLogin.parseAsync(req.body)
 
         //authenticate user
-        const user = await AppDataSource.manager.findOneBy(User, { email: email })
+        const user = await AppDataSource.getRepository(User).findOne({ where: { email } })
 
         if (!user || !user.password) {
             throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "User Not Found" });
@@ -38,7 +38,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             }
             const token = createToken(payload)
             setAuthCookies(res, token)
-            return res.status(HttpSuccess.OK).header({ "Authentication": `Bearer ` + token }).end()
+            return res.status(HttpSuccess.OK).header({ "Authentication": `Bearer ` + token }).send({
+                username: user.username
+            })
         }
     }
     catch (error) {
@@ -69,7 +71,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         }
         const token = createToken(payload)
         setAuthCookies(res, token)
-        return res.status(HttpSuccess.CREATED).header({ "Authentication": `Bearer ${token}` }).send({ detail: "user created successfully" })
+        return res.status(HttpSuccess.CREATED).header({ "Authentication": `Bearer ${token}` }).send({ detail: "user created successfully", username: user.username })
 
     }
     //hash pwd
