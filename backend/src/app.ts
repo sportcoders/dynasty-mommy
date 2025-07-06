@@ -11,8 +11,6 @@ import cookieParser from 'cookie-parser';
 const corsOptions = {
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'OPTIONS'],
-    // allowedHeaders: ['Content-Type', 'Authorization'],
-    // exposedHeaders: ['Authentication'],
     credentials: true
 };
 
@@ -20,9 +18,7 @@ let AppDataSource: DataSource;
 export function init_app(dataSource: DataSource) {
     const app = express();
     AppDataSource = dataSource
-    // await initDatasource(AppDataSource)
 
-    // Use provided data source or create default one
     app.use(cors(corsOptions));
     app.use(cookieParser())
 
