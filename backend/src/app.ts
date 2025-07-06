@@ -9,10 +9,11 @@ import "reflect-metadata"
 import { DataSource } from 'typeorm';
 import cookieParser from 'cookie-parser';
 const corsOptions = {
-    origin: '*',
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Authentication']
+    // allowedHeaders: ['Content-Type', 'Authorization'],
+    // exposedHeaders: ['Authentication'],
+    credentials: true
 };
 
 let AppDataSource: DataSource;
