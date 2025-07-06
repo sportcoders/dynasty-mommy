@@ -7,6 +7,7 @@ import { AppError } from "../errors/app_error"
 import config from "../config/config"
 import { AppDataSource } from "../app"
 import { addUserToLeagueSchema, userLogin, userSignUp } from "../schemas/user"
+import { QueryFailedError } from "typeorm"
 
 export async function login(req: Request, res: Response, next: NextFunction) {
 
@@ -44,16 +45,17 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
 
         //check if user already exists in db
-        const check = await AppDataSource.manager.findOneBy(User, { email: email })
-        if (check) {
-            throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "User Already Exists" })
+        const [existingEmail, existingUsername] = await Promise.all([AppDataSource.manager.findOneBy(User, { email: email }), AppDataSource.manager.findOneBy(User, { username: username })])
+        if (existingEmail) {
+            throw new AppError({ statusCode: HttpError.CONFLICT, message: "Email Already Exists" })
+        }
+        if (existingUsername) {
+            throw new AppError({ statusCode: HttpError.CONFLICT, message: "Username is already taken" })
         }
         const hashed_pw = await hash(password, config.salt_rounds)
         const user = AppDataSource.manager.create(User, { email: email, password: hashed_pw, username: username })
         const result = await AppDataSource.manager.save(User, user)
-        // const user = new User({ email: email, password: hashed_pw })
-        // const savedUser = await user.save()
-        // console.log(savedUser)
+
         const payload: Token = {
             id: result.id,
             email: email
