@@ -37,7 +37,7 @@ export default function SelectSeasonDropDown({ updateSeason, selectedYear, label
             <Select
                 labelId='select-season-input-label'
                 value={selectedYear}
-                label={label_name ? label_name : "Year"}
+                label={label_name}
                 onChange={handleSeasonChange}
                 sx={
                     { ...(width && { minWidth: width }) }
