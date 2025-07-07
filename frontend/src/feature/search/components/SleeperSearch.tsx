@@ -49,17 +49,9 @@ export default function SleeperSearch() {
             display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100%',
         }} spacing={4}>
             <Typography
-                variant="h4"
+                variant="h2"
                 component="h1"
-                sx={{
-                    fontWeight: 600,
-                    display: 'block',
-                    letterSpacing: '0.02em',
-                    textAlign: 'center',
-                    color: 'primary.main',
-                    mb: 1,
-                    textShadow: 'none'
-                }}
+                color ="primary"
             >
                 Sleeper League Search
             </Typography>
@@ -89,7 +81,6 @@ export default function SleeperSearch() {
             }
 
         </Stack>
-        // </>
     )
 }
 
@@ -127,10 +118,10 @@ function SleeperAccount({ searchType,
             }}
         >
             <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
+                <Typography variant="h4" component="h2" gutterBottom color="primary">
                     Find League
                 </Typography>
-                <Typography variant="body2" color="text.primary">
+                <Typography variant="body2" color="text.main">
                     Search by username or league ID
                 </Typography>
             </Box>
@@ -152,7 +143,11 @@ function SleeperAccount({ searchType,
                     <FormControlLabel
                         value='Username'
                         control={<Radio />}
-                        label="Username"
+                        label={
+                            <Typography variant="body1" color="text.main">
+                                Username
+                            </Typography>
+                        }
                         sx={{
                             '& .MuiFormControlLabel-label': {
                                 fontWeight: 500
@@ -162,7 +157,11 @@ function SleeperAccount({ searchType,
                     <FormControlLabel
                         value='League ID'
                         control={<Radio />}
-                        label="League ID"
+                        label={
+                            <Typography variant="body1" color="text.main">
+                                League ID
+                            </Typography>
+                        }
                         sx={{
                             '& .MuiFormControlLabel-label': {
                                 fontWeight: 500
@@ -201,17 +200,16 @@ function SleeperAccount({ searchType,
                     sx={{
                         py: 1.5,
                         borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: '1.1rem',
-                        fontWeight: 600,
-                        background: 'primary.main',
+                        backgroundColor: 'primary.main',
                         '&:hover': {
                             transform: 'translateY(-2px)',
                         },
                         transition: 'all 0.3s ease'
                     }}
                 >
-                    Search League
+                    <Typography variant="button" color="primary.contrastText">
+                        Search League
+                    </Typography>
                 </Button>
             </FormControl>
         </Paper>
