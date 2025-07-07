@@ -20,7 +20,7 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
     const [error, setError] = useState<string | null>("")
     const [userLeagues, setUserLeagues] = useState<string[]>([])
     const blobUrls = useRef<string[]>([])
-    const username = "useAppSelector(state => state.authReducer.username)"
+    const username = useAppSelector(state => state.authReducer.username)
     useEffect(() => {
         const fetchLeagues = async () => {
             setLoading(true)
@@ -62,6 +62,11 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
             if (username) {
                 const leagues = await DM_getLeagues()
                 if (leagues) {
+                    /**
+                     * For each league it checks if the platform is sleeper, if it is it
+                     * adds to the current array(called result) and continues
+                     * reduce will then return the result array
+                     */
                     const sleeper_leagues = leagues.leagues.reduce<string[]>((result, league) => {
                         if (league.platform == "sleeper") {
                             result.push(league.league_id)

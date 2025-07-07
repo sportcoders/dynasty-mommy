@@ -16,15 +16,14 @@ interface displayLeaguesListProps {
     displayAvatar?: boolean
     onLeagueClick: (league_id: string) => void
     saveLeague: (league_id: string) => Promise<boolean>
-    loggedIn: boolean
-    userLeagues: string[]
+    loggedIn?: boolean
+    userLeagues?: string[]
 }
-export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, saveLeague, loggedIn, userLeagues }: displayLeaguesListProps) {
+export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, saveLeague, loggedIn = false, userLeagues = [] }: displayLeaguesListProps) {
     /**
      * @returns List component that displays all leagues it was passed
      */
-    console.log(userLeagues)
-    if (!userLeagues) return <CircularProgress></CircularProgress>
+    if (loggedIn && !userLeagues) return <CircularProgress></CircularProgress>
     return (
         <List sx={{ p: 0 }}>
             {leagues.map((league) => (
