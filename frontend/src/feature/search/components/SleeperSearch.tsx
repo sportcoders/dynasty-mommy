@@ -49,17 +49,9 @@ export default function SleeperSearch() {
             display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100%',
         }} spacing={4}>
             <Typography
-                variant="h4"
+                variant="h2"
                 component="h1"
-                sx={{
-                    fontWeight: 600,
-                    display: 'block',
-                    letterSpacing: '0.02em',
-                    textAlign: 'center',
-                    color: 'primary.main',
-                    mb: 1,
-                    textShadow: 'none'
-                }}
+                color ="primary"
             >
                 Sleeper League Search
             </Typography>
@@ -89,7 +81,6 @@ export default function SleeperSearch() {
             }
 
         </Stack>
-        // </>
     )
 }
 
@@ -127,10 +118,10 @@ function SleeperAccount({ searchType,
             }}
         >
             <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
+                <Typography variant="h4" component="h2" gutterBottom color="primary">
                     Find League
                 </Typography>
-                <Typography variant="body2" color="text.primary">
+                <Typography variant="body2" color="text.main">
                     Search by username or league ID
                 </Typography>
             </Box>
@@ -189,6 +180,7 @@ function SleeperAccount({ searchType,
                         <SelectSeasonDropDown
                             updateSeason={setSeason}
                             selectedYear={season}
+                            label_name='Year'
                         />
                     </Box>
                 </Box>
@@ -201,17 +193,16 @@ function SleeperAccount({ searchType,
                     sx={{
                         py: 1.5,
                         borderRadius: 2,
-                        textTransform: 'none',
-                        fontSize: '1.1rem',
-                        fontWeight: 600,
-                        background: 'primary.main',
+                        backgroundColor: 'primary.main',
                         '&:hover': {
                             transform: 'translateY(-2px)',
                         },
                         transition: 'all 0.3s ease'
                     }}
                 >
-                    Search League
+                    <Typography variant="button" color="primary.contrastText">
+                        Search League
+                    </Typography>
                 </Button>
             </FormControl>
         </Paper>
@@ -287,14 +278,13 @@ function SleeperLeagues({ searchType,
                 <Button
                     variant="outlined"
                     onClick={back}
+                    color="primary"
                     sx={{
                         height: '56px', // Standard Material-UI TextField height
                         borderRadius: 2,
                         textTransform: 'none',
-                        fontWeight: 500,
                         px: 3,
                         borderColor: 'primary.main',
-                        color: 'primary.main',
                         '&:hover': {
                             borderColor: 'primary.dark',
                             backgroundColor: 'primary.main',
@@ -305,7 +295,9 @@ function SleeperLeagues({ searchType,
                         transition: 'all 0.3s ease'
                     }}
                 >
-                    Back
+                    <Typography variant="body1">
+                        Back
+                    </Typography>
                 </Button>
 
                 <Box display="flex" gap={2} sx={{ flex: 1 }}>
@@ -313,16 +305,6 @@ function SleeperLeagues({ searchType,
                         disabled
                         label={searchType}
                         value={searchText}
-                        sx={{
-                            flex: 2,
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: 2,
-                                backgroundColor: 'background.default'
-                            },
-                            '& .MuiInputLabel-root': {
-                                fontWeight: 500
-                            }
-                        }}
                     />
 
                     <FormControl sx={{ flex: 1, minWidth: 150 }}>
@@ -348,9 +330,6 @@ function SleeperLeagues({ searchType,
                 >
                     <Typography
                         variant="body1"
-                        sx={{
-                            fontWeight: 500
-                        }}
                     >
                         No Leagues Found
                     </Typography>
