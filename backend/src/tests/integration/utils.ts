@@ -32,7 +32,9 @@ export const users = [
         email: "firstTestUser@test.com",
         password: "testpassword",
         username: "username1",
-        leagues: []
+        leagues: [{ "platform": "sleeper", "league_id": "111333444" },
+        { "platform": "espn", "league_id": "1e322" },
+        ]
     },
     {
         id: "2",
