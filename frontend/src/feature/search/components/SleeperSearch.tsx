@@ -278,14 +278,13 @@ function SleeperLeagues({ searchType,
                 <Button
                     variant="outlined"
                     onClick={back}
+                    color="primary"
                     sx={{
                         height: '56px', // Standard Material-UI TextField height
                         borderRadius: 2,
                         textTransform: 'none',
-                        fontWeight: 500,
                         px: 3,
                         borderColor: 'primary.main',
-                        color: 'primary.main',
                         '&:hover': {
                             borderColor: 'primary.dark',
                             backgroundColor: 'primary.main',
@@ -296,7 +295,9 @@ function SleeperLeagues({ searchType,
                         transition: 'all 0.3s ease'
                     }}
                 >
-                    Back
+                    <Typography variant="body1">
+                        Back
+                    </Typography>
                 </Button>
 
                 <Box display="flex" gap={2} sx={{ flex: 1 }}>
@@ -304,16 +305,6 @@ function SleeperLeagues({ searchType,
                         disabled
                         label={searchType}
                         value={searchText}
-                        sx={{
-                            flex: 2,
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: 2,
-                                backgroundColor: 'background.default'
-                            },
-                            '& .MuiInputLabel-root': {
-                                fontWeight: 500
-                            }
-                        }}
                     />
 
                     <FormControl sx={{ flex: 1, minWidth: 150 }}>
@@ -339,9 +330,6 @@ function SleeperLeagues({ searchType,
                 >
                     <Typography
                         variant="body1"
-                        sx={{
-                            fontWeight: 500
-                        }}
                     >
                         No Leagues Found
                     </Typography>
