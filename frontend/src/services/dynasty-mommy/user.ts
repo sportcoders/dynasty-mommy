@@ -27,7 +27,7 @@ export interface DM_saveLeagueInfo {
 }
 export async function DM_saveLeague(league_info: DM_saveLeagueInfo) {
     try {
-        await serverPost("/auth/addLeague", { league: league_info })
+        await serverPost("/user/addLeague", { league: league_info })
     }
     catch (e) {
         console.error(e)
@@ -38,7 +38,7 @@ export interface DM_getUserLeagues {
 }
 export async function DM_getLeagues() {
     try {
-        const response = await serverGet<DM_getUserLeagues>("/auth/getLeagues")
+        const response = await serverGet<DM_getUserLeagues>("/user/getLeagues")
         return response
     }
     catch (e) {
