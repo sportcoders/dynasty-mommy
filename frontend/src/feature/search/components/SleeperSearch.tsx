@@ -180,6 +180,7 @@ function SleeperAccount({ searchType,
                         <SelectSeasonDropDown
                             updateSeason={setSeason}
                             selectedYear={season}
+                            label_name='Year'
                         />
                     </Box>
                 </Box>

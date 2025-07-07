@@ -33,7 +33,7 @@ export default function SelectSeasonDropDown({ updateSeason, selectedYear, label
     }, [selectedYear])
     return (
         <FormControl fullWidth>
-            <InputLabel id='select-season-input-label'>{label_name ? label_name : "Year"}</InputLabel>
+            <InputLabel id='select-season-input-label'>{label_name}</InputLabel>
             <Select
                 labelId='select-season-input-label'
                 value={selectedYear}
