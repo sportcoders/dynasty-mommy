@@ -8,6 +8,7 @@ import user_router from './routes/user';
 import "reflect-metadata"
 import { DataSource } from 'typeorm';
 import cookieParser from 'cookie-parser';
+import auth_router from './routes/auth';
 const corsOptions = {
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'OPTIONS'],
@@ -25,7 +26,8 @@ export function init_app(dataSource: DataSource) {
     app.use(express.json())
     app.use(req_info)
     app.use('/sleeper_player', player_sleeper_router)
-    app.use('/auth', user_router)
+    app.use('/auth', auth_router)
+    app.use('/user', user_router)
     app.get('/healthcheck', (req, res) => {
         res.status(200).json({ message: "Healthy" });
     });
