@@ -1,20 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import { User, UserLeagues } from "../models/user"
-import { compareSync, hash } from "bcrypt"
-import { createToken, Token } from "../utils/jwt"
 import { HttpSuccess, HttpError } from "../constants/constants"
 import { AppError } from "../errors/app_error"
-import config from "../config/config"
 import { AppDataSource } from "../app"
-import { addUserToLeagueSchema, userLogin, userSignUp } from "../schemas/user"
+import { addUserToLeagueSchema } from "../schemas/user"
 
-const setAuthCookies = (res: Response, accessToken: string) => {
-    res.cookie("accessToken", accessToken, {
-        sameSite: "strict",
-        httpOnly: true,
-        secure: false //CHANGE TO TRUE WHEN NOT IN DEVELOPMENT
-    })
-}
 export async function addLeagueToUser(req: Request, res: Response, next: NextFunction) {
     try {
         const { league } = await addUserToLeagueSchema.parseAsync(req.body)
@@ -45,7 +35,7 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
                 message: "League alrady exists for user",
             });
         }
-        const newUserLeague = await AppDataSource.manager.save(UserLeagues, {
+        await AppDataSource.manager.save(UserLeagues, {
             userId: user.id,
             platform: league.platform,
             user: user,
@@ -54,7 +44,6 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
         return res.status(HttpSuccess.OK).json({
             message: "League added successfully"
         });
-        // const update = await User.findOneAndUpdate({ email: req.user?.email }, { $push: { leagues: req.body.leagues } })
     }
     catch (err) {
         next(err)
