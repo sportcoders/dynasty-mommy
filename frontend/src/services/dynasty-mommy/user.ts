@@ -21,3 +21,15 @@ export async function DM_signup(username: string, email: string, password: strin
         console.log(e)
     }
 }
+interface DM_saveLeagueInfo {
+    platform: string,
+    id: string
+}
+export async function DM_saveLeague(league_info: DM_saveLeagueInfo) {
+    try {
+        await serverPost("/auth/addLeague", { league: league_info })
+    }
+    catch (e) {
+        console.error(e)
+    }
+}

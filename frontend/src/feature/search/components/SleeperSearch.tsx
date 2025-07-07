@@ -5,6 +5,7 @@ import { DisplayLeaguesList } from '@components/DisplayLeaguesList'
 import SelectSeasonDropDown from '@components/SelectSeasonDropDown'
 import useSearchParamsSleeper from '@feature/search/hooks/useSearchParamsSleeper'
 import useGetUserLeaguesSleeper from '@feature/search/hooks/useGetUserLeaguesSleeper'
+import { DM_saveLeague } from '@services/dynasty-mommy/user'
 
 type SleeperSearchComponentProps = {
     searchType: string
@@ -238,7 +239,15 @@ function SleeperLeagues({ searchType,
             params: { leaugeId: id }
         })
     }
-
+    const saveLeague = async (league_id: string) => {
+        try {
+            await DM_saveLeague({ platform: "sleeper", id: league_id })
+            return true
+        }
+        catch (e) {
+            return false
+        }
+    }
     if (loading) return <CircularProgress />
 
     if (error) {
@@ -353,6 +362,8 @@ function SleeperLeagues({ searchType,
                         onLeagueClick={handleNavigateToLeague}
                         displayAvatar={true}
                         leagues={leagues}
+                        saveLeague={saveLeague}
+                        loggedIn={true}
                     />
                 </Box>
             )}

@@ -29,7 +29,20 @@ export const serverPost = async <T, U>(endpoint: string, data: U): Promise<T> =>
     )
     return response.json() as Promise<T>
 }
+export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
 
+    const response = await fetch(req)
+    if (response.status == 401) {
+        const newTokenReq = await fetch("REFRESHROUTE")
+        if (newTokenReq.status == 401) {
+            throw new Error("Session Expired, Please Login Again")
+        }
+        const retryReq = await fetch(req)
+        return retryReq.json() as Promise<T>
+    }
+    return response.json() as Promise<T>
+
+}
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${AVATAR_URL}${endpoint}`)
 

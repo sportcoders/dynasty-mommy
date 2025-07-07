@@ -1,4 +1,4 @@
-import { Avatar, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material"
+import { Avatar, Button, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material"
 import type { League } from "@services/sleeper"
 
 interface displayLeaguesListProps {
@@ -15,15 +15,36 @@ interface displayLeaguesListProps {
     leagues: League[]
     displayAvatar?: boolean
     onLeagueClick: (league_id: string) => void
+    saveLeague: (league_id: string) => Promise<boolean>
+    loggedIn: boolean
 }
-export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar }: displayLeaguesListProps) {
+export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, saveLeague, loggedIn }: displayLeaguesListProps) {
     /**
      * @returns List component that displays all leagues it was passed
      */
     return (
         <List sx={{ p: 0 }}>
             {leagues.map((league) => (
-                <ListItem key={league.league_id} sx={{ p: 0, mb: 1 }}>
+                <ListItem key={league.league_id} sx={{ p: 0, mb: 1 }} secondaryAction={
+                    <IconButton
+                        edge="end"
+                        aria-label="add"
+                        sx={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            position: 'absolute',
+                            right: 8,
+                            top: '50%',
+                            transform: 'translateY(-50%)'
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            saveLeague(league.league_id)
+                        }}
+                    >
+                        +
+                    </IconButton>
+                }>
                     <ListItemButton
                         sx={{
                             borderRadius: 2,
