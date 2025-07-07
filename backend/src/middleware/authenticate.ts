@@ -17,7 +17,6 @@ declare global {
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const accessToken = req.cookies.accessToken
-
         if (!accessToken) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Invalid access token" })
 
         const { error, payload } = verifyToken(accessToken);
