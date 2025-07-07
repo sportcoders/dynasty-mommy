@@ -128,3 +128,28 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
         next(err)
     }
 }
+
+export async function getUserLeagues(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.user || !req.user.email || !req.user.user_id) {
+            return res.status(HttpError.UNAUTHORIZED).json({ message: "Unauthorized" });
+        }
+
+        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email })
+        if (user == null) {
+            throw new AppError({
+                statusCode: HttpError.NOT_FOUND,
+                message: "User not found",
+            });
+        }
+
+        const leagues = await AppDataSource.getRepository(UserLeagues).find({
+            where: { user },
+            select: ['league_id', 'platform']
+        })
+        return res.status(200).send({ leagues })
+    }
+    catch (e) {
+        next(e)
+    }
+}
