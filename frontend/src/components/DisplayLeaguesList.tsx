@@ -1,4 +1,5 @@
-import { Avatar, Button, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material"
+import { Avatar, Button, CircularProgress, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material"
+import type { DM_getUserLeagues, DM_saveLeagueInfo } from "@services/dynasty-mommy/user"
 import type { League } from "@services/sleeper"
 
 interface displayLeaguesListProps {
@@ -17,11 +18,13 @@ interface displayLeaguesListProps {
     onLeagueClick: (league_id: string) => void
     saveLeague: (league_id: string) => Promise<boolean>
     loggedIn: boolean
+    userLeagues: DM_getUserLeagues | null
 }
-export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, saveLeague, loggedIn }: displayLeaguesListProps) {
+export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, saveLeague, loggedIn, userLeagues }: displayLeaguesListProps) {
     /**
      * @returns List component that displays all leagues it was passed
      */
+    if (!userLeagues) return <CircularProgress></CircularProgress>
     return (
         <List sx={{ p: 0 }}>
             {leagues.map((league) => (
@@ -42,7 +45,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, save
                             saveLeague(league.league_id)
                         }}
                     >
-                        +
+                        {league.league_id == userLeagues.leagues[0].league_id ? "✓" : "+"}
                     </IconButton>
                 }>
                     <ListItemButton

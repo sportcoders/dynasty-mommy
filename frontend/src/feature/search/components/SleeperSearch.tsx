@@ -41,7 +41,7 @@ export default function SleeperSearch() {
         setSeason,
         handleSearchTypeChange,
         checkValidParams,
-        setParamsFalse
+        setParamsFalse,
     } = useSearchParamsSleeper();
 
     return (
@@ -230,9 +230,8 @@ function SleeperLeagues({ searchType,
     searchText,
     setSeason,
     setParamsFalse: back }: SleeperSearchComponentProps) {
-    const { leagues, loading, error } = useGetUserLeaguesSleeper(searchType, searchText, season)
+    const { leagues, loading, error, userLeagues } = useGetUserLeaguesSleeper(searchType, searchText, season)
     const router = useRouter()
-
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
@@ -364,6 +363,7 @@ function SleeperLeagues({ searchType,
                         leagues={leagues}
                         saveLeague={saveLeague}
                         loggedIn={true}
+                        userLeagues={userLeagues!}
                     />
                 </Box>
             )}

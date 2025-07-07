@@ -14,7 +14,9 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
 }
 
 export const serverGet = async <T>(endpoint: string): Promise<T> => {
-    const response = await fetch(`${SERVER_BASE_URL}${endpoint}`)
+    const response = await fetch(`${SERVER_BASE_URL}${endpoint}`,
+        { credentials: "include" }
+    )
 
     return response.json() as Promise<T>
 }

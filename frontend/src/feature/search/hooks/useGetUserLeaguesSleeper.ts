@@ -1,3 +1,5 @@
+import { useAppSelector } from "@app/hooks";
+import { DM_getLeagues, type DM_getUserLeagues, type DM_saveLeagueInfo } from "@services/dynasty-mommy/user";
 import { sleeper_getAvatarThumbnail, sleeper_getLeagues } from "@services/sleeper";
 import type { League } from "@services/sleeper/types";
 import { useEffect, useRef, useState } from "react";
@@ -16,8 +18,9 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
     const [leagues, setLeagues] = useState<League[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>("")
+    const [userLeagues, setUserLeagues] = useState<DM_getUserLeagues>()
     const blobUrls = useRef<string[]>([])
-
+    const username = "useAppSelector(state => state.authReducer.username)"
     useEffect(() => {
         const fetchLeagues = async () => {
             setLoading(true)
@@ -55,8 +58,17 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
                 setLoading(false)
             }
         }
+        const fetchUserSavedLeagues = async () => {
+            if (username) {
+                const leagues = await DM_getLeagues()
+                if (leagues) {
+                    setUserLeagues(leagues)
+                }
+            }
+        }
 
         fetchLeagues()
+        fetchUserSavedLeagues()
 
         return () => {
             // leagues.forEach((league) => URL.revokeObjectURL(league.avatar))
@@ -66,5 +78,5 @@ export default function useGetUserLeaguesSleeper(searchType: string, value: stri
         }
     }, [searchType, value, season])
 
-    return { leagues, loading, error }
+    return { leagues, loading, error, userLeagues }
 }
