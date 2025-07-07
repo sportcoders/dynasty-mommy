@@ -143,11 +143,7 @@ function SleeperAccount({ searchType,
                     <FormControlLabel
                         value='Username'
                         control={<Radio />}
-                        label={
-                            <Typography variant="body1" color="text.main">
-                                Username
-                            </Typography>
-                        }
+                        label="Username"
                         sx={{
                             '& .MuiFormControlLabel-label': {
                                 fontWeight: 500
@@ -157,11 +153,7 @@ function SleeperAccount({ searchType,
                     <FormControlLabel
                         value='League ID'
                         control={<Radio />}
-                        label={
-                            <Typography variant="body1" color="text.main">
-                                League ID
-                            </Typography>
-                        }
+                        label="League ID"
                         sx={{
                             '& .MuiFormControlLabel-label': {
                                 fontWeight: 500
