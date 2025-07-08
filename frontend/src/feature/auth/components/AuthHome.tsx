@@ -1,6 +1,6 @@
 import { useAuthForm, type AuthFormTypes } from "../hooks/useAuthForm";
 import LoginForm from "./Login";
-import SignUpForm from "./Signup";
+import SignUpForm from "./SignUp";
 
 interface AuthHomeProps {
     selectedFormType?: AuthFormTypes

@@ -193,7 +193,6 @@ function SleeperAccount({ searchType,
                     sx={{
                         py: 1.5,
                         borderRadius: 2,
-                        backgroundColor: 'primary.main',
                         '&:hover': {
                             transform: 'translateY(-2px)',
                         },

@@ -38,18 +38,21 @@ export default function LoginForm({ changeToSignUp }: LoginFormProps) {
                     <Box >
                         <TextField
                             fullWidth
+                            color="primary"
                             name="email"
                             label="Email Address"
                             type="email"
                             margin="normal"
+                            error={emailError !== ""}
+                            helperText={emailError !== "" && emailError}
                             sx={{ mb: emailError ? 1 : 2 }}
                             value={email}
                             onChange={handleEmailChange}
                         />
-                        {emailError && <Typography sx={{ mb: 1 }} variant="body2" color="red" >{emailError}</Typography>}
 
                         <TextField
                             fullWidth
+                            color="primary"
                             name="password"
                             label="Password"
                             type="password"
@@ -58,7 +61,7 @@ export default function LoginForm({ changeToSignUp }: LoginFormProps) {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        {error && <Typography sx={{ mb: 2 }} variant="body2" color="red">{error}</Typography>}
+                        {error && <Typography sx={{ mb: 2 }} variant="body2" color="error">{error}</Typography>}
 
                         <Button
                             type="submit"
@@ -72,13 +75,13 @@ export default function LoginForm({ changeToSignUp }: LoginFormProps) {
                             }}
                             onClick={handleSubmit}
                         >
-                            Sign In
+                            <Typography variant="button" color="primary.contrastText">Sign In</Typography>
                         </Button>
                     </Box>
                     <Box sx={{ mt: 2 }}>
                         <Typography variant="body2">
                             Don't Have An Account?{' '}
-                            <Link component='span' variant="body2" underline='none' sx={{ cursor: "pointer" }} onClick={changeToSignUp}>
+                            <Link component='span' color="primary" variant="body2" underline='hover' sx={{ cursor: "pointer" }} onClick={changeToSignUp}>
                                 Sign Up
                             </Link>
                         </Typography>
