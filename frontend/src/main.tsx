@@ -19,7 +19,8 @@ import { CssBaseline } from '@mui/material'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { store } from './store/store'
+import { persistor, store } from './store/store'
+import { PersistGate } from 'redux-persist/integration/react'
 
 // Create a new router instance
 const router = createRouter({ routeTree })
@@ -39,10 +40,12 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <RouterProvider router={router} />
-        </ThemeProvider>
+        <PersistGate persistor={persistor} loading={null}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <RouterProvider router={router} />
+          </ThemeProvider>
+        </PersistGate>
       </Provider>
     </StrictMode>,
   )
