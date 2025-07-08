@@ -26,13 +26,13 @@ export default function LoginForm({ changeToSignUp }: LoginFormProps) {
                         borderRadius: 3
                     }}
                 >
-                    <Box sx={{ textAlign: 'center', mb: 4 }}>
+                    <Box sx={{ textAlign: 'center', mb: 1 }}>
                         <Typography variant="h4" component="h1" gutterBottom>
                             Sign In
                         </Typography>
-                        {/* <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary">
                             Enter your credentials to access your account
-                        </Typography> */}
+                        </Typography>
                     </Box>
 
                     <Box >
