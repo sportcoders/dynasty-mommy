@@ -22,7 +22,7 @@ export function createAppDataSource(url: string): DataSource {
             // username: "test",
             // password: "test",
             // database: "test",
-            synchronize: true,
+            // synchronize: true,
             // subscribers: [],
             // migrations: [],
             logging: true
