@@ -21,7 +21,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
         const { error, payload } = verifyToken(accessToken);
 
-        if (error || !payload) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
+        if (error || !payload || payload.type == 'refresh') throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
 
         req.user = { email: payload.email, user_id: "test", username: "test" }
 
