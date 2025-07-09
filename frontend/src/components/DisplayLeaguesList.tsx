@@ -77,7 +77,6 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar, save
                                     sx={{
                                         width: 48,
                                         height: 48,
-                                        backgroundColor: 'secondary.main'
                                     }}
                                 />
                             )}

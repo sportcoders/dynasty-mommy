@@ -23,7 +23,7 @@ export default function SignUpForm() {
                         borderRadius: 3
                     }}
                 >
-                    <Box sx={{ textAlign: 'center', mb: 4 }}>
+                    <Box sx={{ textAlign: 'center', mb: 1 }}>
                         <Typography variant="h4" component="h1" gutterBottom>
                             Sign Up
                         </Typography>
@@ -39,45 +39,49 @@ export default function SignUpForm() {
                             label="Username"
                             type="text"
                             margin="normal"
+                            error={usernameError !== ""}
+                            helperText={usernameError !== "" && usernameError}
                             sx={{ mb: usernameError ? 1 : 2 }}
                             value={username}
                             onChange={handleUsernameChange}
                         />
-                        {usernameError && <Typography variant="body2" color="red" sx={{ mb: 1 }}>{usernameError}</Typography>}
-
                         <TextField
                             fullWidth
                             name="email"
                             label="Email Address"
                             type="email"
                             margin="normal"
+                            error={emailError !== ""}
+                            helperText={emailError !== "" && emailError}
                             sx={{ mb: emailError ? 1 : 2 }}
                             value={email}
                             onChange={handleEmailChange}
                         />
-                        {emailError && <Typography color="red" variant="body2" sx={{ mb: 1 }}>{emailError}</Typography>}
                         <TextField
                             fullWidth
                             name="password"
                             label="Password"
                             type="password"
                             margin="normal"
+                            error={passwordError !== ""}
+                            helperText={passwordError !== "" && passwordError}
                             sx={{ mb: passwordError ? 1 : 2 }}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        {passwordError && <Typography color='red' variant="body2" sx={{ mb: 1 }}>{passwordError}</Typography>}
                         <TextField
                             fullWidth
                             name="confirmPassword"
                             label="Confirm Password"
                             type="password"
                             margin="normal"
+                            error={passwordError !== ""}
+                            helperText={passwordError !== "" && passwordError}
                             sx={{ mb: error ? 1 : 3 }}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-                        {error && <Typography color="red" variant="body2" sx={{ mb: 2 }}>{error}</Typography>}
+                        {error && <Typography color="error" variant="body2" sx={{ mb: 2 }}>{error}</Typography>}
                         <Button
                             type="submit"
                             fullWidth
@@ -90,7 +94,7 @@ export default function SignUpForm() {
                             }}
                             onClick={handleSubmit}
                         >
-                            Create Account
+                            <Typography variant="button" color="primary.contrastText">Create Account</Typography>
                         </Button>
                     </Box>
                 </Paper>

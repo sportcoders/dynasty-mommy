@@ -114,7 +114,7 @@ function SleeperAccount({ searchType,
                 maxWidth: 600,
                 mx: 'auto',
                 border: '1px solid',
-                borderColor: 'background.paper'
+                borderColor: 'divider'
             }}
         >
             <Box sx={{ textAlign: 'center', mb: 3 }}>
@@ -193,7 +193,6 @@ function SleeperAccount({ searchType,
                     sx={{
                         py: 1.5,
                         borderRadius: 2,
-                        backgroundColor: 'primary.main',
                         '&:hover': {
                             transform: 'translateY(-2px)',
                         },
@@ -259,7 +258,6 @@ function SleeperLeagues({ searchType,
                 m: 2,
                 maxWidth: 800,
                 mx: 'auto',
-                background: 'background.paper',
                 border: '1px solid',
                 borderColor: 'divider'
             }}
