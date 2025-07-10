@@ -28,7 +28,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         // //check date of session
         // if (!validSession || validSession.expiresAt < new Date()) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "missing/expired session" });
 
-        req.user = { email: payload.email, user_id: payload.id, username: payload.username }
+        req.user = { email: payload.email, user_id: "test", username: "test" }
 
         next();
 
