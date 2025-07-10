@@ -15,6 +15,7 @@ export interface User {
 export interface Roster {
     owner_id: string;
     players: string[]
+    roster_id: number
 }
 
 export interface Player {

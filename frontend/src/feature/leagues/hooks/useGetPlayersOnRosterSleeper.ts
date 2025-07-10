@@ -1,4 +1,4 @@
-import { type Player, sleeper_getPlayersForRoster } from "@services/sleeper"
+import { type Player, sleeper_getPlayersForRoster, sleeper_getPlayersForRoster_rosterid } from "@services/sleeper"
 import { useEffect, useState } from "react"
 
 /**
@@ -12,13 +12,14 @@ import { useEffect, useState } from "react"
  */
 export default function useGetPlayersOnRosterSleeper(league_id: string) {
     const [players, setPlayers] = useState<Player[] | null>(null)
-    const [owner_id, setOwnerId] = useState("")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState<boolean>(true)
     const [refresh, setForceRefresh] = useState<number>(0)
-    
-    const refreshRoster = (owner_id: string) => {
-        setOwnerId((prev) => {
+    const [roster_id, setRosterId] = useState<number>(1)
+
+    const refreshRoster = (owner_id: number) => {
+        console.log(owner_id)
+        setRosterId((prev) => {
             if (prev == owner_id) {
                 setForceRefresh((prev) => prev + 1)
                 return prev
@@ -32,7 +33,7 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
             try {
                 setLoading(true)
                 setError("")
-                const res = await sleeper_getPlayersForRoster(league_id, owner_id)
+                const res = await sleeper_getPlayersForRoster_rosterid(league_id, roster_id)
                 if (res)
                     setPlayers(res)
             }
@@ -47,10 +48,10 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
                 setLoading(false)
             }
         }
-        
-        if (owner_id)
+
+        if (roster_id)
             fetchPlayers()
-    }, [league_id, owner_id, refresh])
-    
+    }, [league_id, roster_id, refresh])
+
     return { players, error, loading, refreshRoster }
 }

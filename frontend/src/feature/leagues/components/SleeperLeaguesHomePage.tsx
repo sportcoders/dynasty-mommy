@@ -42,7 +42,7 @@ export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHome
                 <Typography variant="h2">{leagueInfo?.name}</Typography>
             </Box>
             {teams!.map((team, index) =>
-                <Accordion key={`${team.user_id} ${index}`} expanded={expanded == team.roster_id}
+                <Accordion key={`${team.roster_id}`} expanded={expanded == team.roster_id}
                     onChange={handleAccordionChange(team.roster_id)}
                     square={false}
                     sx={{
@@ -51,7 +51,7 @@ export default function SleeperLeaguesHomePage({ league_id }: SleeperLeaguesHome
                     }}
                 >
                     <AccordionSummary sx={{ minHeight: '30px' }}
-                        onClick={() => refreshRoster(team.user_id!)}>
+                        onClick={() => refreshRoster(team.roster_id)}>
                         {team.avatar ? <Avatar src={team.avatar} /> : <Avatar />}
                         <Box display="flex" alignItems="center" gap={1}>
                             <Typography variant="subtitle1" fontWeight="bold">
