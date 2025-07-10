@@ -68,7 +68,7 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
             where: { user },
             select: ['league_id', 'platform']
         })
-        console.log(leagues)
+
         return res.status(200).send({ leagues })
     }
     catch (e) {
@@ -78,13 +78,11 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
 export async function deleteUserLeagues(req: Request, res: Response, next: NextFunction) {
     try {
         const { league } = deleteUserLeagueSchema.parse(req.body)
-        console.log(league)
+
         if (!req.user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Unauthorized" })
-        console.log(req.user.user_id)
-        const ds = await AppDataSource.getRepository(UserLeagues).find()
-        console.log(ds)
+
         const result = await AppDataSource.getRepository(UserLeagues).delete({ userId: req.user.user_id, league_id: league.league_id, platform: league.platform })
-        console.log(result.affected)
+
         if (result.affected && result.affected > 0) return res.status(HttpSuccess.NO_CONTENT).end()
 
         throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" })
