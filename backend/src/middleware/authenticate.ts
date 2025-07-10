@@ -22,7 +22,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
         if (error || !payload || payload.type == 'refresh') throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: error === "jwt expired" ? "Token expired" : "Invalid token" });
 
-        req.user = { email: payload.email, user_id: "test" }
+        req.user = { email: payload.email, user_id: payload.id }
 
         next();
 
