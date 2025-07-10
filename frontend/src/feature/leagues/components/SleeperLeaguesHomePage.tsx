@@ -90,12 +90,11 @@ export default function SleeperLeaguesHomePage({
                 <Avatar
                     src={leagueInfo.avatar}
                     sx={{
-                        width: 60,
-                        height: 60,
-                        border: `2px solid ${theme.palette.primary.main}`,
+                        width: 50,
+                        height: 50,
                     }}
                 />
-                <Typography variant="h2" color="text.primary">
+                <Typography variant="h3" color="text.primary">
                     {leagueInfo?.name}
                 </Typography>
             </Box>
@@ -109,7 +108,7 @@ export default function SleeperLeaguesHomePage({
                     disableGutters
                     sx={{
                         borderRadius: 4,
-                        overflow: "hidden",
+                        overflow: "clip",
                         border: `1px solid ${theme.palette.divider}`,
                         backgroundColor: theme.palette.background.paper,
                         mb: 2,
