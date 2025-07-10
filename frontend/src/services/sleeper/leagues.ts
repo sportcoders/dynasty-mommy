@@ -53,7 +53,8 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> =>
 
         return rosters.map((roster: Roster) => ({
             owner_id: roster.owner_id,
-            players: roster.players
+            players: roster.players,
+            roster_id: roster.roster_id
         }))
     } catch (error) {
         console.error('Failed to fetch rosters:', error);
@@ -97,7 +98,7 @@ export const sleeper_getPlayers = async (leagueId: string): Promise<Record<strin
 
     return ownerToPlayers;
 }
-
+//TODO: CHECK IF THIS IS STILL USED
 /**
  * Function to get players for a certain team in a league from the combination of the Sleeper API and backend API.
  * 
@@ -113,6 +114,33 @@ export const sleeper_getPlayersForRoster = async (leagueId: string, owner_id: st
     }
 
     const roster = rosters.find((roster) => roster.owner_id == owner_id)
+    const playerIds = roster!.players
+
+    if (!playerIds) {
+        return []
+    }
+
+    const queryString = playerIds.join("&")
+
+    const players: Player[] = await sleeper_getPlayer(queryString) || []
+
+    return players
+}
+/**
+ * Function to get players for a certain team in a league from the combination of the Sleeper API and backend API.
+ * 
+ * @param leagueId the numerical id of the league
+ * @param roster_id the numerical id of the roster
+ * @returns an array of Player objects
+ */
+export const sleeper_getPlayersForRoster_rosterid = async (leagueId: string, roster_id: number): Promise<Player[]> => {
+    const rosters = await sleeper_getRosters(leagueId)
+
+    if (rosters.length === 0) {
+        return []
+    }
+
+    const roster = rosters.find((roster) => roster.roster_id == roster_id)
     const playerIds = roster!.players
 
     if (!playerIds) {

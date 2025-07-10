@@ -1,5 +1,9 @@
-import { type Player, sleeper_getPlayersForRoster } from "@services/sleeper"
-import { useEffect, useState } from "react"
+import {
+    type Player,
+    sleeper_getPlayersForRoster,
+    sleeper_getPlayersForRoster_rosterid,
+} from "@services/sleeper";
+import { useEffect, useState } from "react";
 
 /**
  * Custom React hook that fetches all players on a specific roster in a Sleeper league.
@@ -11,50 +15,46 @@ import { useEffect, useState } from "react"
  * @returns An object containing the players, error message, loading state, and a function to refresh or change the roster.
  */
 export default function useGetPlayersOnRosterSleeper(league_id: string) {
-    const [players, setPlayers] = useState<Player[] | null>(null)
-    const [owner_id, setOwnerId] = useState("")
-    const [error, setError] = useState("")
-    const [loading, setLoading] = useState<boolean>(true)
-    const [refresh, setForceRefresh] = useState<number>(0)
+    const [players, setPlayers] = useState<Player[] | null>(null);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState<boolean>(true);
+    const [refresh, setForceRefresh] = useState<number>(0);
+    const [roster_id, setRosterId] = useState<number>(1);
 
-    const refreshRoster = (owner_id: string) => {
-        if (!owner_id) {
-            setPlayers([])
-            return
-        }
-        setOwnerId((prev) => {
+    const refreshRoster = (owner_id: number) => {
+        console.log(owner_id);
+        setRosterId((prev) => {
             if (prev == owner_id) {
-                setForceRefresh((prev) => prev + 1)
-                return prev
+                setForceRefresh((prev) => prev + 1);
+                return prev;
             }
-            return owner_id
-        })
-    }
+            return owner_id;
+        });
+    };
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                setLoading(true)
-                setError("")
-                const res = await sleeper_getPlayersForRoster(league_id, owner_id)
-                if (res)
-                    setPlayers(res)
-            }
-            catch (e: unknown) {
+                setLoading(true);
+                setError("");
+                const res = await sleeper_getPlayersForRoster_rosterid(
+                    league_id,
+                    roster_id
+                );
+                if (res) setPlayers(res);
+            } catch (e: unknown) {
                 if (e instanceof Error) {
-                    setError(e.message)
+                    setError(e.message);
                 } else {
-                    setError(String(e))
+                    setError(String(e));
                 }
+            } finally {
+                setLoading(false);
             }
-            finally {
-                setLoading(false)
-            }
-        }
+        };
 
-        if (owner_id)
-            fetchPlayers()
-    }, [league_id, owner_id, refresh])
+        if (roster_id) fetchPlayers();
+    }, [league_id, roster_id, refresh]);
 
-    return { players, error, loading, refreshRoster }
+    return { players, error, loading, refreshRoster };
 }
