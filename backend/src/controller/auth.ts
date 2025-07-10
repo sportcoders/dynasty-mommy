@@ -128,7 +128,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 
         //check session in db
         const session = await UserSession.findById(payload.session_id)
-        if (!session || session.expiresAt > new Date()) {
+        if (!session || session.expiresAt < new Date()) {
             throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Expired/missing session" })
         }
         //create auth token
@@ -143,6 +143,8 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 
     }
     catch (e) {
+        clearAccessCookies(res)
+        clearRefreshCookies(res)
         next(e)
     }
 }
