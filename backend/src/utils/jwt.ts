@@ -21,9 +21,8 @@ export interface RefreshToken extends BaseToken {
 }
 export interface AccessToken extends BaseToken {
     type: 'access',
-    id?: string,
-    email: string,
-    username?: string
+    id: string,
+    email: string
 }
 type TokenPayload = AccessToken | RefreshToken
 export const createToken = (payload: BaseToken, options = accessTokenDefaults) => {
