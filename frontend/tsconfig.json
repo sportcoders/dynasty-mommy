@@ -13,7 +13,7 @@
         "types": ["vite/client", "node"],
         "paths": {
             "@components/*": ["components/*"],
-            "@hooks/*": ["src/hooks/*"],
+            "@hooks/*": ["hooks/*"],
             "@services/*": ["services/*"],
             "@pages/*": ["pages/*"],
             "@routes/*": ["routes/*"],

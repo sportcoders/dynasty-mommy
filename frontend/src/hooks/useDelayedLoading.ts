@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
  * @param delayMs - Delay in milliseconds before showing loading (default 200ms).
  * @returns If input is single boolean, returns one boolean; if array, returns array.
  */
-export function useDelayedLoading(
+export default function useDelayedLoading(
     loadings: boolean | boolean[],
     delayMs = 200
 ): boolean | boolean[] {
@@ -42,6 +42,8 @@ export function useDelayedLoading(
         return () => {
             timeouts.forEach((t) => clearTimeout(t));
         };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadingArray.join(","), delayMs, showLoadingArray]);
 
     return Array.isArray(loadings) ? showLoadingArray : showLoadingArray[0];

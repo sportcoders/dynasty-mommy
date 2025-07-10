@@ -1,6 +1,5 @@
 import {
     type Player,
-    sleeper_getPlayersForRoster,
     sleeper_getPlayersForRoster_rosterid,
 } from "@services/sleeper";
 import { useEffect, useState } from "react";
@@ -19,10 +18,9 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState<boolean>(true);
     const [refresh, setForceRefresh] = useState<number>(0);
-    const [roster_id, setRosterId] = useState<number>(1);
+    const [roster_id, setRosterId] = useState<number>(0);
 
     const refreshRoster = (owner_id: number) => {
-        console.log(owner_id);
         setRosterId((prev) => {
             if (prev == owner_id) {
                 setForceRefresh((prev) => prev + 1);
