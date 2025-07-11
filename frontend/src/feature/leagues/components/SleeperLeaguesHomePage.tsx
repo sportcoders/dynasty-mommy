@@ -14,6 +14,7 @@ import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOn
 import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
 import useDelayedLoading from "@hooks/useDelayedLoading";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface SleeperLeaguesHomePage {
     league_id: string;
@@ -22,7 +23,7 @@ interface SleeperLeaguesHomePage {
 export default function SleeperLeaguesHomePage({
     league_id,
 }: SleeperLeaguesHomePage) {
-    const theme = useTheme(); // Access theme
+    const theme = useTheme();
     const {
         teams,
         error: team_error,
@@ -38,7 +39,7 @@ export default function SleeperLeaguesHomePage({
 
     const { leagueInfo, loading, error } = useGetLeagueInfo(league_id);
 
-    const [expanded, setExpanded] = useState<number | false>();
+    const [expanded, setExpanded] = useState<number | false>(false);
 
     const [showTeamLoading, showRosterLoading, showLeagueLoading] =
         useDelayedLoading([team_loading, roster_loading, loading], 1000);
@@ -48,108 +49,122 @@ export default function SleeperLeaguesHomePage({
             setExpanded(newExpanded ? panel : false);
         };
 
-    // League Info & Team Info Null Check
-    if (!leagueInfo || !teams) return;
-
-    // League Info & Team Info Loading State Rendering
     if (showLeagueLoading || showTeamLoading) {
         return (
-            <Box display="flex" justifyContent="center" mt={4}>
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="60vh"
+            >
                 <CircularProgress />
             </Box>
         );
     }
 
-    // League Error State Rendering
-    if (error) {
+    if (error || team_error) {
+        const errorMessage = error || team_error;
         return (
-            <Typography color="error">
-                Failed to load league info: {error || "Unknown error"}
-            </Typography>
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="60vh"
+            >
+                <Typography variant="h6" color="error" textAlign="center">
+                    Oops! Failed to load league information.
+                    <br />
+                    {errorMessage || "Please try again later."}
+                </Typography>
+            </Box>
         );
     }
 
-    // Team Error State Rendering
-    if (team_error) {
-        return (
-            <Typography color="error">
-                Failed to load teams: {team_error || "Unknown error"}
-            </Typography>
-        );
+    if (!leagueInfo || !teams) {
+        return null;
     }
 
     return (
         <Box
             sx={{
-                p: { xs: 2, sm: 3 },
+                p: { xs: 2, sm: 3, md: 4 },
                 backgroundColor: theme.palette.background.default,
                 color: theme.palette.text.primary,
+                height: "100vh",
+                overflowY: "scroll",
+                scrollbarGutter: "stable",
             }}
         >
-            <Box display="flex" alignItems="center" gap={2} mb={3}>
+            <Box display="flex" alignItems="center" gap={2} mb={4}>
                 <Avatar
                     src={leagueInfo.avatar}
+                    alt={`${leagueInfo.name} avatar`}
                     sx={{
-                        width: 50,
-                        height: 50,
+                        width: 60,
+                        height: 60,
+                        boxShadow: theme.shadows[3],
                     }}
                 />
-                <Typography variant="h3" color="text.primary">
-                    {leagueInfo?.name}
+                <Typography variant="h3" component="h1" color="text.primary">
+                    {leagueInfo.name}
                 </Typography>
             </Box>
 
-            {teams!.map((team) => (
+            {teams.map((team) => (
                 <Accordion
-                    key={`${team.roster_id}`}
+                    key={team.roster_id}
                     expanded={expanded === team.roster_id}
                     onChange={handleAccordionChange(team.roster_id)}
-                    square={false}
                     disableGutters
                     sx={{
-                        borderRadius: 4,
-                        overflow: "clip",
+                        borderRadius: `${theme.shape.borderRadius}px`,
+                        overflow: "hidden",
                         border: `1px solid ${theme.palette.divider}`,
                         backgroundColor: theme.palette.background.paper,
                         mb: 2,
-                        "&:before": {
-                            display: "none",
-                        },
-                        "&.Mui-expanded": {
-                            border: `1px solid ${theme.palette.divider}`,
-                        },
+                        boxShadow: theme.shadows[1],
                     }}
                 >
                     <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
                         sx={{
-                            minHeight: "50px",
-                            px: 2,
+                            minHeight: "64px",
+                            px: { xs: 2, sm: 3 },
                             "& .MuiAccordionSummary-content": {
                                 alignItems: "center",
                                 gap: 2,
+                                my: 1,
                             },
                         }}
                         onClick={() => refreshRoster(team.roster_id)}
                     >
                         {team.avatar ? (
-                            <Avatar src={team.avatar} />
+                            <Avatar
+                                src={team.avatar}
+                                alt={`${team.display_name} avatar`}
+                            />
                         ) : (
                             <Avatar />
                         )}
-                        <Box display="flex" alignItems="center" gap={1}>
+                        <Box
+                            display="flex"
+                            flexDirection={{ xs: "column", sm: "row" }}
+                            alignItems={{ xs: "flex-start", sm: "center" }}
+                            gap={{ xs: 0.5, sm: 1 }}
+                        >
                             <Typography
                                 variant="body1"
-                                color="text.secondary"
+                                component="span"
                                 sx={{
+                                    fontWeight:
+                                        expanded === team.roster_id ? 600 : 500,
                                     color:
                                         expanded === team.roster_id
                                             ? theme.palette.text.primary
                                             : theme.palette.text.secondary,
                                 }}
                             >
-                                {team.team_name
-                                    ? team.team_name
-                                    : team.display_name}
+                                {team.team_name || team.display_name}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 ({team.record.wins} - {team.record.ties} -{" "}
@@ -160,33 +175,34 @@ export default function SleeperLeaguesHomePage({
                     <AccordionDetails
                         sx={{
                             backgroundColor: theme.palette.background.default,
+                            borderTop: `1px dashed ${theme.palette.divider}`,
+                            p: { xs: 2, sm: 3 },
                         }}
                     >
-                        {/* Roster Error State Rendering */}
                         {roster_error && (
-                            <Typography color="error">
+                            <Typography
+                                color="error"
+                                sx={{ textAlign: "center", py: 2 }}
+                            >
                                 Failed to load roster:{" "}
                                 {roster_error || "Unknown error"}
                             </Typography>
                         )}
 
-                        {/* Roster Loading State Rendering */}
                         {showRosterLoading && (
-                            <Box
-                                display="flex"
-                                justifyContent="center"
-                                mt={2}
-                                mb={2}
-                            >
-                                <CircularProgress size={24} />
+                            <Box display="flex" justifyContent="center" py={3}>
+                                <CircularProgress size={32} />
                             </Box>
                         )}
 
-                        {/* Roster Rendering */}
                         {!showRosterLoading && roster && (
                             <Box
                                 display="grid"
-                                gridTemplateColumns="repeat(5, 1fr)"
+                                gridTemplateColumns={{
+                                    xs: "repeat(auto-fill, minmax(100px, 1fr))",
+                                    sm: "repeat(3, 1fr)",
+                                    md: "repeat(5, 1fr)",
+                                }}
                                 gap={2}
                             >
                                 {["PG", "SG", "SF", "PF", "C"].map(
@@ -199,6 +215,15 @@ export default function SleeperLeaguesHomePage({
                                     )
                                 )}
                             </Box>
+                        )}
+                        {!showRosterLoading && !roster && !roster_error && (
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ textAlign: "center", py: 2 }}
+                            >
+                                No roster data available for this team.
+                            </Typography>
                         )}
                     </AccordionDetails>
                 </Accordion>
