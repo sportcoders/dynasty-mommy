@@ -17,18 +17,22 @@ afterEach(async () => {
     await clean_db()
 })
 const loadUser = async () => {
-    for (const user of users) {
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i]
         const hashed_password = await hash(user.password, config.salt_rounds)
         const new_user = testDataSource.getRepository(User).create({ email: user.email, password: hashed_password, username: user.username })
         await testDataSource.getRepository(User).save(new_user)
+        users[i].id = new_user.id
     }
 }
 const loadUserWithLeagues = async () => {
-    for (const user of users) {
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i]
         const hashed_password = await hash(user.password, config.salt_rounds)
         const new_user = testDataSource.getRepository(User).create({ email: user.email, password: hashed_password, username: user.username })
         await testDataSource.getRepository(User).save(new_user)
         const leagues = []
+        users[i].id = new_user.id
         for (const league of user.leagues) {
             leagues.push(testDataSource.getRepository(UserLeagues).save({ user: new_user, league_id: league.league_id, platform: league.platform, userId: new_user.id }))
         }
@@ -133,6 +137,44 @@ describe("user_leagues", () => {
             const token = createAccessToken()
 
             const response = await api.get("/user/getLeagues").set("Cookie", [`accessToken=${token}`]).send()
+            expect(response.statusCode).toBe(404)
+        })
+    })
+    describe("deleteLeague", () => {
+        it("should return status code of 204 when league is deleted successfully", async () => {
+            await loadUserWithLeagues()
+            const token = createAccessToken()
+            const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
+
+            expect(response.statusCode).toBe(204)
+        })
+        it("should return status code of 401 when no auth header is sent", async () => {
+            const response = await api.delete('/user/removeLeague').send({ league: users[0].leagues[0] })
+            expect(response.statusCode).toBe(401)
+        })
+        it("should return status code of 401 when invalid auth header is sent", async () => {
+            const response = await api.delete("/user/removeLeague").set("Cookie", `invalidAuth`).send({ league: users[0].leagues[0] })
+            expect(response.statusCode).toBe(401)
+        })
+        it("should return status code of 404 when user belonging to header doesn't exist", async () => {
+            const token = createAccessToken()
+            const response = await api.delete("/user/removeLeague").set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
+            expect(response.statusCode).toBe(404)
+        })
+        it("should return status code of 422 when request body is missing fields", async () => {
+            await loadUserWithLeagues()
+            const token = createAccessToken()
+            const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({
+                league: {
+                    platform: "sleeper"
+                }
+            })
+            expect(response.statusCode).toBe(422)
+        })
+        it("should return status code of 404 when leauge user is trying to delete a league that doesn't exist", async () => {
+            await loadUser()
+            const token = createAccessToken()
+            const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
             expect(response.statusCode).toBe(404)
         })
     })
