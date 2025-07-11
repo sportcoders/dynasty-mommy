@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 
-/**
- * Returns delayed loading states for one or more loading booleans.
- * Shows `true` only if loading has persisted longer than delayMs.
- *
- * @param loadings - A boolean or array of booleans representing loading states.
- * @param delayMs - Delay in milliseconds before showing loading (default 200ms).
- * @returns If input is single boolean, returns one boolean; if array, returns array.
- */
+// Overloads
+export default function useDelayedLoading(
+    loadings: boolean,
+    delayMs?: number
+): boolean;
+export default function useDelayedLoading(
+    loadings: boolean[],
+    delayMs?: number
+): boolean[];
+
 export default function useDelayedLoading(
     loadings: boolean | boolean[],
     delayMs = 200
@@ -44,7 +46,7 @@ export default function useDelayedLoading(
         };
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadingArray.join(","), delayMs, showLoadingArray]);
+    }, [loadingArray.join(","), delayMs]);
 
     return Array.isArray(loadings) ? showLoadingArray : showLoadingArray[0];
 }
