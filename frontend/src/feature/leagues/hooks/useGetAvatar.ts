@@ -7,9 +7,15 @@ export default function useGetAvatar(avatars_input: string | undefined) {
     useEffect(() => {
         const loadAvatars = async () => {
             const getAvatar = async (avatar_id: string) => {
+
                 const blob = await sleeper_getAvatarThumbnail(avatar_id)
+
+                if (!blob || !(blob instanceof Blob)) {
+                    throw new Error(`Invalid blob received for avatar ID: ${avatar_id}`);
+                }
                 const url = URL.createObjectURL(blob)
                 return url
+
             }
             const avatarList = avatars_input.split("&")
             const requests = avatarList.map((avatar_id) => getAvatar(avatar_id))
