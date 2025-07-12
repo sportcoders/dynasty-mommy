@@ -33,10 +33,12 @@ export interface LeagueInfo {
     name: string,
     status: string,
     avatar: string,
+    sport: string,
+    season: string,
+    previous_league_id: string,
     settings: {
         num_teams: number,
     }
-    sport: string,
     scoring_settings: {
         ast: number,
         blk: number,

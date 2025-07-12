@@ -172,6 +172,8 @@ export const sleeper_getLeagueInfo = async (leagueId: string): Promise<LeagueInf
             name: leagueInfo.name,
             status: leagueInfo.status,
             avatar: leagueInfo.avatar,
+            previous_league_id: leagueInfo.previous_league_id,
+            season: leagueInfo.season,
             settings: {
                 num_teams: leagueInfo.settings.num_teams
             },
@@ -243,3 +245,76 @@ export const sleeper_getTeamInfo = async (leagueId: string): Promise<TeamInfo[]>
 
 }
 
+export interface sleeper_transactions {
+    type: string,
+    transaction_id: string,
+    status: string,
+    roster_ids: [],
+    leg: number,
+    draft_picks: [],
+    creator: string,
+    consenter_ids: [],
+    waiver_budget: [],
+    drops: {},
+
+}
+export const sleeper_getTradesWeek = async (leagueId: string, round: number) => {
+    const transactions = await sleeper_apiGet<sleeper_transactions[]>(`/league/${leagueId}/transactions/${round}`)
+    if (!transactions) return
+
+    const trades = transactions.filter((transaction) => transaction.type == "trade")
+    return trades
+}
+export const sleeper_getTransactionsWeek = async (leagueId: string, round: number) => {
+    const transactions = await sleeper_apiGet<sleeper_transactions>(`/league/${leagueId}/transactions/${round}`)
+    return transactions
+}
+
+export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promise<sleeper_transactions[]> => {
+    const weeks = []
+    for (let i = 1; i < 27; i++) {
+        weeks.push(sleeper_apiGet<sleeper_transactions>(`/league/${leagueId}/transactions/${i}`))
+    }
+    const promises = await Promise.allSettled(weeks)
+    const allTransactions: sleeper_transactions[] = promises.map((promise, index) => promise.status == 'fulfilled' ? promise.value : {
+        type: 'error',
+        transaction_id: "error",
+        status: "error",
+        roster_ids: [],
+        leg: index + 1,
+        draft_picks: [],
+        creator: "error",
+        consenter_ids: [],
+        waiver_budget: [],
+        drops: {},
+    })
+    return allTransactions
+}
+export const sleeper_getAllLeagueTrades = async (leagueId: string) => {
+    const promises = []
+    for (let i = 1; i < 27; i++) {
+        promises.push(sleeper_getTradesWeek(leagueId, i))
+    }
+    const allTrades = await Promise.all(promises)
+    return allTrades
+}
+interface sleeper_state {
+    week: number,
+    leg: number,
+    season: string,
+    display_week: number,
+    league_season: string,
+    previous_season: string
+}
+export const sleeper_state = async () => {
+    const res = await sleeper_apiGet<sleeper_state>('https://api.sleeper.app/v1/state/nba')
+
+    return {
+        week: res.week,
+        leg: res.leg,
+        season: res.season,
+        league_season: res.league_season,
+        previous_season: res.previous_season,
+        display_week: res.display_week
+    }
+}
