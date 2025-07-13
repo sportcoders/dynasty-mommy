@@ -1,10 +1,8 @@
-import { Container, Box, Paper, Typography, TextField, Button, Link } from "@mui/material";
+import { Container, Box, Paper, Typography, TextField, Button } from "@mui/material";
+import { Link } from '@tanstack/react-router'
 import useLoginForm from "../hooks/useLoginForm";
 
-interface LoginFormProps {
-    changeToSignUp: () => void
-}
-export default function LoginForm({ changeToSignUp }: LoginFormProps) {
+export default function LoginForm() {
     const { email, password, handleEmailChange, setPassword, handleSubmit, emailError, error } = useLoginForm()
     return (
         <Container maxWidth="sm">
@@ -81,9 +79,9 @@ export default function LoginForm({ changeToSignUp }: LoginFormProps) {
                     <Box sx={{ mt: 2 }}>
                         <Typography variant="body2">
                             Don't Have An Account?{' '}
-                            <Link component='span' color="primary" variant="body2" underline='hover' sx={{ cursor: "pointer" }} onClick={changeToSignUp}>
+                            <Typography component={Link} to='/signup' sx={{ textDecoration: "none" }}>
                                 Sign Up
-                            </Link>
+                            </Typography>
                         </Typography>
                     </Box>
                 </Paper>
