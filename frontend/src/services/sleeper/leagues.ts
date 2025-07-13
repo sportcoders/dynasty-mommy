@@ -1,7 +1,7 @@
 import { sleeper_apiGet } from './apiClient';
 import { sleeper_getPlayer } from './player'
 import { sleeper_getUser } from "@services/sleeper";
-import type { League, LeagueInfo, Roster, Player, TeamInfo } from '@services/sleeper/types';
+import type { League, LeagueInfo, Roster, Player, TeamInfo, sleeper_state, sleeper_transactions } from '@services/sleeper/types';
 
 
 /**
@@ -245,19 +245,6 @@ export const sleeper_getTeamInfo = async (leagueId: string): Promise<TeamInfo[]>
 
 }
 
-export interface sleeper_transactions {
-    type: string,
-    transaction_id: string,
-    status: string,
-    roster_ids: [],
-    leg: number,
-    draft_picks: [],
-    creator: string,
-    consenter_ids: [],
-    waiver_budget: [],
-    drops: {},
-
-}
 export const sleeper_getTradesWeek = async (leagueId: string, round: number) => {
     const transactions = await sleeper_apiGet<sleeper_transactions[]>(`/league/${leagueId}/transactions/${round}`)
     if (!transactions) return
@@ -298,15 +285,8 @@ export const sleeper_getAllLeagueTrades = async (leagueId: string) => {
     const allTrades = await Promise.all(promises)
     return allTrades
 }
-interface sleeper_state {
-    week: number,
-    leg: number,
-    season: string,
-    display_week: number,
-    league_season: string,
-    previous_season: string
-}
-export const sleeper_state = async () => {
+
+export const sleeper_get_state = async () => {
     const res = await sleeper_apiGet<sleeper_state>('https://api.sleeper.app/v1/state/nba')
 
     return {

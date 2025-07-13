@@ -74,3 +74,24 @@ export interface TeamInfo {
     avatar: string | null
     roster_id: number
 }
+export interface sleeper_state {
+    week: number,
+    leg: number,
+    season: string,
+    display_week: number,
+    league_season: string,
+    previous_season: string
+}
+export interface sleeper_transactions {
+    type: string,
+    transaction_id: string,
+    status: string,
+    roster_ids: [],
+    leg: number,
+    draft_picks: [],
+    creator: string,
+    consenter_ids: [],
+    waiver_budget: [],
+    drops: {},
+
+}
