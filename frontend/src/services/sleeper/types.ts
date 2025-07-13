@@ -74,7 +74,7 @@ export interface TeamInfo {
     avatar: string | null
     roster_id: number
 }
-export interface sleeper_state {
+export interface State {
     week: number,
     leg: number,
     season: string,
@@ -82,7 +82,7 @@ export interface sleeper_state {
     league_season: string,
     previous_season: string
 }
-export interface sleeper_transactions {
+export interface Transaction {
     type: string,
     transaction_id: string,
     status: string,

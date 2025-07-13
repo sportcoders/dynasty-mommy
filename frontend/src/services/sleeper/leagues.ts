@@ -1,7 +1,7 @@
 import { sleeper_apiGet } from './apiClient';
 import { sleeper_getPlayer } from './player'
 import { sleeper_getUser } from "@services/sleeper";
-import type { League, LeagueInfo, Roster, Player, TeamInfo, sleeper_state, sleeper_transactions } from '@services/sleeper/types';
+import type { League, LeagueInfo, Roster, Player, TeamInfo, Transaction, State } from '@services/sleeper/types';
 
 
 /**
@@ -246,24 +246,24 @@ export const sleeper_getTeamInfo = async (leagueId: string): Promise<TeamInfo[]>
 }
 
 export const sleeper_getTradesWeek = async (leagueId: string, round: number) => {
-    const transactions = await sleeper_apiGet<sleeper_transactions[]>(`/league/${leagueId}/transactions/${round}`)
+    const transactions = await sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${round}`)
     if (!transactions) return
 
     const trades = transactions.filter((transaction) => transaction.type == "trade")
     return trades
 }
 export const sleeper_getTransactionsWeek = async (leagueId: string, round: number) => {
-    const transactions = await sleeper_apiGet<sleeper_transactions>(`/league/${leagueId}/transactions/${round}`)
+    const transactions = await sleeper_apiGet<Transaction>(`/league/${leagueId}/transactions/${round}`)
     return transactions
 }
 
-export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promise<sleeper_transactions[]> => {
+export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promise<Transaction[]> => {
     const weeks = []
     for (let i = 1; i < 27; i++) {
-        weeks.push(sleeper_apiGet<sleeper_transactions>(`/league/${leagueId}/transactions/${i}`))
+        weeks.push(sleeper_apiGet<Transaction>(`/league/${leagueId}/transactions/${i}`))
     }
     const promises = await Promise.allSettled(weeks)
-    const allTransactions: sleeper_transactions[] = promises.map((promise, index) => promise.status == 'fulfilled' ? promise.value : {
+    const allTransactions: Transaction[] = promises.map((promise, index) => promise.status == 'fulfilled' ? promise.value : {
         type: 'error',
         transaction_id: "error",
         status: "error",
@@ -287,7 +287,7 @@ export const sleeper_getAllLeagueTrades = async (leagueId: string) => {
 }
 
 export const sleeper_get_state = async () => {
-    const res = await sleeper_apiGet<sleeper_state>('https://api.sleeper.app/v1/state/nba')
+    const res = await sleeper_apiGet<State>('https://api.sleeper.app/v1/state/nba')
 
     return {
         week: res.week,

@@ -1,4 +1,4 @@
-import { sleeper_getAllLeagueTransactions, type sleeper_transactions } from "@services/sleeper"
+import { sleeper_getAllLeagueTransactions, type Transaction } from "@services/sleeper"
 import { useEffect, useState } from "react"
 
 interface useGetAllTransactionsTypeProps {
@@ -6,7 +6,7 @@ interface useGetAllTransactionsTypeProps {
     filter_by: 'commissioner' | 'none' | 'free_agent' | 'trade'
 }
 export default function useGetAllTransactionsType({ league_id, filter_by }: useGetAllTransactionsTypeProps) {
-    const [transactions, setTransactions] = useState<sleeper_transactions[]>([])
+    const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<string>("")
     useEffect(() => {
