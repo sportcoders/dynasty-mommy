@@ -1,50 +1,136 @@
 import {
     Box,
     Button,
+    Drawer,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
     Typography,
 } from '@mui/material';
-import { Login, PersonAdd, Logout } from '@mui/icons-material';
+import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
 import { Link } from '@tanstack/react-router';
 
-export default function AuthSection() {
-    const username = useAppSelector((state) => state.authReducer.username)
-    const dispatch = useAppDispatch()
+
+export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void }) {
+    const username = useAppSelector((state) => state.authReducer.username);
+    const dispatch = useAppDispatch();
+
 
     const handleSignOut = () => {
-        dispatch(logout())
-    }
+        dispatch(logout());
+    };
+
+    const drawerItems = [
+        { text: 'Dashboard', icon: <Dashboard />, link: '/' },
+        { text: 'Find League', icon: <Search />, link: '/' },
+        { text: 'Profile', icon: <Person />, link: '/' },
+        { text: 'Settings', icon: <Settings />, link: '/' },
+    ];
+
+    const toggleDrawer = () => {
+        setDrawerOpen(!drawerOpen);
+    };
 
     return (
         <>
+            <Drawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={toggleDrawer}
+                variant='persistent'
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        width: 250,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        borderRight: '1px solid rgba(0, 0, 0, 0.1)',
+                        pt: '0.5rem',
+                        pl: '0.75rem',
+                    }
+                }}
+            >
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2
+                }}>
+                    <Button
+                        onClick={toggleDrawer}
+                        sx={{
+                            minWidth: 'auto',
+                            color: '#1976d2',
+                            '&:hover': {
+                                backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                            }
+                        }}
+                    >
+                        <Menu />
+                    </Button>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            color: "text.primary",
+
+                        }}
+                    >
+                        <Link to='/' style={{ textDecoration: 'none' }}>
+                            Dynasty Mommy
+                        </Link>
+                    </Typography>
+                </Box>
+                <List>
+                    {drawerItems.map((item, index) => (
+                        <ListItem key={index} sx={{ cursor: 'pointer' }} component={Link} to={item.link}>
+                            <ListItemIcon sx={{ color: '#1976d2' }}>
+                                {item.icon}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={item.text}
+                                sx={{
+                                    '& .MuiListItemText-primary': {
+                                        fontWeight: 500,
+                                    }
+                                }}
+                            />
+                        </ListItem>
+                    ))}
+                </List>
+            </Drawer>
+
             <Box sx={{
                 position: 'fixed',
-                top: 16,
-                left: 16,
+                top: '0.75rem',
+                left: '0.75rem',
                 zIndex: 1000,
-
+                display: 'flex',
+                p: 0,
+                alignItems: 'center',
+                gap: 2,
             }}>
-                <Typography
-                    variant="h6"
+                <Button
+                    onClick={toggleDrawer}
                     sx={{
-                        fontWeight: 700,
-                        background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        p: 0,
+                        minWidth: 'auto',
+                        color: '#1976d2',
+                        '&:hover': {
+                            backgroundColor: 'rgba(25, 118, 210, 0.08)'
+                        }
                     }}
                 >
-                    <Link to='/' >
-                        Dynasty Mommy
-                    </Link>
-                </Typography>
+                    <Menu />
+                </Button>
+
             </Box>
+
             <Box sx={{
                 position: 'fixed',
-                top: 16,
-                right: 16,
+                top: '0.75rem',
+                right: '0.75rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 2,
@@ -93,9 +179,7 @@ export default function AuthSection() {
                                 }
                             }}
                         >
-
                             Sign Up
-
                         </Button>
                     </>
                 ) : (
@@ -140,4 +224,4 @@ export default function AuthSection() {
             </Box>
         </>
     );
-};
+}
