@@ -1,3 +1,5 @@
+import { useAppDispatch } from "@app/hooks";
+import { logout } from "@feature/auth/authSlice";
 const BASE_URL = 'https://api.sleeper.app/v1';
 const SERVER_BASE_URL = 'http://localhost:8000'
 const AVATAR_URL = 'https://sleepercdn.com/avatars'
@@ -37,6 +39,8 @@ export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
     if (response.status == 401) {
         const newTokenReq = await fetch("REFRESHROUTE")
         if (newTokenReq.status == 401) {
+            const dispatch = useAppDispatch()
+            dispatch(logout())
             throw new Error("Session Expired, Please Login Again")
         }
         const retryReq = await fetch(req)

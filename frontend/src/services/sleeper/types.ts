@@ -33,10 +33,12 @@ export interface LeagueInfo {
     name: string,
     status: string,
     avatar: string,
+    sport: string,
+    season: string,
+    previous_league_id: string,
     settings: {
         num_teams: number,
     }
-    sport: string,
     scoring_settings: {
         ast: number,
         blk: number,
@@ -71,4 +73,25 @@ export interface TeamInfo {
     display_name: string | null,
     avatar: string | null
     roster_id: number
+}
+export interface State {
+    week: number,
+    leg: number,
+    season: string,
+    display_week: number,
+    league_season: string,
+    previous_season: string
+}
+export interface Transaction {
+    type: string,
+    transaction_id: string,
+    status: string,
+    roster_ids: [],
+    leg: number,
+    draft_picks: [],
+    creator: string,
+    consenter_ids: [],
+    waiver_budget: [],
+    drops: {},
+
 }
