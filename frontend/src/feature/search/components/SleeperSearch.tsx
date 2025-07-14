@@ -204,6 +204,7 @@ function SleeperAccount({
                             updateSeason={setSeason}
                             selectedYear={season}
                             label_name="Year"
+                            disabled={searchType === "League ID"}
                         />
                     </Box>
                 </Box>
