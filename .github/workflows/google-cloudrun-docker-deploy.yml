@@ -40,6 +40,7 @@ env:
 jobs:
   deploy:
     runs-on: 'ubuntu-latest'
+    environment: ENV
     permissions:
       contents: 'read'
       id-token: 'write'
