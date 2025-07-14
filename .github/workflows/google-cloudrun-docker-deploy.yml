@@ -33,7 +33,7 @@ on:
   push:
     branches:
       - '"main"'
-      - '"DM-73-GCP-Docker-deployment'
+      - DM-73-GCP-Docker-deployment
   workflow_dispatch:
 
 env:
