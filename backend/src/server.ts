@@ -11,7 +11,7 @@ const start = async () => {
         const datasource = createAppDataSource(config.URL)
         await initDatasource(datasource)
         const app = init_app(datasource)
-        app.listen(config.port, () => {
+        app.listen(config.port, '0.0.0.0', () => {
             console.log(`Sever listening on port ${config.port}`);
         })
     }
