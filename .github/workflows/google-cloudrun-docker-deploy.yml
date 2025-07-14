@@ -30,8 +30,7 @@ name: 'Build and Deploy to Cloud Run'
 on:
   push:
     branches:
-      - 'main'
-      - DM-73-GCP-Docker-deployment
+      - main
 env:
   PROJECT_ID: 'cs122-457618' # TODO: update to your Google Cloud project ID
   REGION: 'us-west1' # TODO: update to your region
@@ -81,6 +80,24 @@ jobs:
           env_vars: |
             DB_URI=${{secrets.DB_URI}}
             DB_URL=${{secrets.DB_URL}}
+            NODE_ENV=production
+      - name: 'Delete old Docker images (keep latest 5)'
+        run: |-
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.SERVICE }}"
+          echo "Fetching image digests from $IMAGE_PATH"
+
+          IMAGES=$(gcloud artifacts docker images list "$IMAGE_PATH" \
+            --sort-by=~CREATE_TIME \
+            --format="value(version)" | grep -v "${{ github.sha }}")
+
+          # Keep the 5 most recent (excluding current SHA)
+          OLD_IMAGES=$(echo "$IMAGES" | tail -n +6)
+
+          echo "Deleting old images..."
+          for version in $OLD_IMAGES; do
+            echo "Deleting: $version"
+            gcloud artifacts docker images delete "$IMAGE_PATH@$version" --quiet --delete-tags
+          done
       # If required, use the Cloud Run URL output in later steps
       - name: 'Show output'
         run: |2-
