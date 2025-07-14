@@ -8,26 +8,26 @@ import {
     ListItemText,
     Typography,
 } from '@mui/material';
-import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search } from '@mui/icons-material';
+import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 
 
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void }) {
     const username = useAppSelector((state) => state.authReducer.username);
     const dispatch = useAppDispatch();
-
+    const location = useLocation()
 
     const handleSignOut = () => {
         dispatch(logout());
     };
-
+    const darkMode = false
     const drawerItems = [
-        { text: 'Dashboard', icon: <Dashboard />, link: '/' },
+        { text: 'Dashboard', icon: <Dashboard />, link: '' },
         { text: 'Find League', icon: <Search />, link: '/' },
-        { text: 'Profile', icon: <Person />, link: '/' },
-        { text: 'Settings', icon: <Settings />, link: '/' },
+        { text: 'Login', icon: <Person />, link: '/login' },
+        { text: 'Settings', icon: <Settings />, link: '' },
     ];
 
     const toggleDrawer = () => {
@@ -48,7 +48,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         backdropFilter: 'blur(10px)',
                         borderRight: '1px solid rgba(0, 0, 0, 0.1)',
                         pt: '0.5rem',
-                        pl: '0.75rem',
+                        // pl: '0.75rem',
                     }
                 }}
             >
@@ -64,7 +64,8 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                             color: '#1976d2',
                             '&:hover': {
                                 backgroundColor: 'rgba(25, 118, 210, 0.08)'
-                            }
+                            },
+
                         }}
                     >
                         <Menu />
@@ -82,9 +83,13 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         </Link>
                     </Typography>
                 </Box>
-                <List>
+                <List sx={{ px: '0.75rem' }}>
                     {drawerItems.map((item, index) => (
-                        <ListItem key={index} sx={{ cursor: 'pointer' }} component={Link} to={item.link}>
+                        <ListItem key={index} sx={{
+                            cursor: 'pointer',
+                            backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
+                            borderRadius: '16px',
+                        }} component={Link} to={item.link}>
                             <ListItemIcon sx={{ color: '#1976d2' }}>
                                 {item.icon}
                             </ListItemIcon>
@@ -98,8 +103,23 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                             />
                         </ListItem>
                     ))}
+                    <ListItem sx={{
+                        borderRadius: '16px',
+                        cursor: 'pointer',
+                    }}>
+                        <ListItemIcon>{darkMode ? <LightMode /> : <DarkMode />}</ListItemIcon>
+                        <ListItemText
+                            primary="Change Mode"
+                            sx={{
+                                '& .MuiListItemText-primary': {
+                                    fontWeight: 500,
+                                }
+                            }}
+                        />
+
+                    </ListItem>
                 </List>
-            </Drawer>
+            </Drawer >
 
             <Box sx={{
                 position: 'fixed',
