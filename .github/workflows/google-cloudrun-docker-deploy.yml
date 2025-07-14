@@ -33,6 +33,7 @@ on:
       - main
     paths:
       - 'backend/**'
+      - '.github/workflows/google-cloudrun-docker-deploy.yml'
 env:
   PROJECT_ID: 'cs122-457618' # TODO: update to your Google Cloud project ID
   REGION: 'us-west1' # TODO: update to your region

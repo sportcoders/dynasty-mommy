@@ -4,6 +4,8 @@ on:
   push:
     paths:
     - 'backend/**'
+    - '.github/workflows/node-backend.yml'
+
 
 permissions:
   contents: read
