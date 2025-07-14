@@ -57,11 +57,7 @@ jobs:
           workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
           service_account: 'github-actions@cs122-457618.iam.gserviceaccount.com'
           project_id: '${{ env.PROJECT_ID }}'
-      - name: 'Debug Auth'
-        run: |-
-          gcloud auth list
-          gcloud config list
-          gcloud projects get-iam-policy ${{ env.PROJECT_ID }} --flatten="bindings[].members" --filter="bindings.members:*github-actions*"
+
       # BEGIN - Docker auth and build
       #
       # If you already have a container image, you can omit these steps.
