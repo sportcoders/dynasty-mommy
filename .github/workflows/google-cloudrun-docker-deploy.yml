@@ -30,7 +30,8 @@ name: 'Build and Deploy to Cloud Run'
 on:
   push:
     branches:
-      - '"main"'
+      - 'main'
+      - DM-73-GCP-Docker-deployment
 env:
   PROJECT_ID: 'cs122-457618' # TODO: update to your Google Cloud project ID
   REGION: 'us-west1' # TODO: update to your region
