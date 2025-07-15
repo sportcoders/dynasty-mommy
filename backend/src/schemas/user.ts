@@ -8,7 +8,7 @@ export const userLogin = z.object({
 export const addUserToLeagueSchema = z.object({
     league: z.object({
         platform: z.string(),
-        id: z.string()
+        league_id: z.string()
     })
 })
 

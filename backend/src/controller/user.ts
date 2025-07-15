@@ -25,7 +25,7 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
             user: {
                 email: req.user.email
             },
-            league_id: league.id,
+            league_id: league.league_id,
             platform: league.platform
         })
 
@@ -39,7 +39,7 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
             userId: user.id,
             platform: league.platform,
             user: user,
-            league_id: league.id
+            league_id: league.league_id
         })
         return res.status(HttpSuccess.OK).json({
             message: "League added successfully"
