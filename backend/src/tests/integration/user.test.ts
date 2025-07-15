@@ -59,7 +59,7 @@ describe("user_leagues", () => {
             const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
                 league: {
                     platform: "Sleeper",
-                    id: "sleeper_league_idd"
+                    league_id: "sleeper_league_idd"
                 }
             })
             expect(response.statusCode).toBe(200)
@@ -69,10 +69,7 @@ describe("user_leagues", () => {
             const token = createAccessToken()
 
             const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
-                league: {
-                    platform: users[0].leagues[0].platform,
-                    id: users[0].leagues[0].league_id
-                }
+                league: users[0].leagues[0]
             })
             expect(response.statusCode).toBe(409)
         })
@@ -81,25 +78,19 @@ describe("user_leagues", () => {
 
             const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
                 platform: "Sleeper",
-                id: "sleeper_league_idd"
+                league_id: "sleeper_league_idd"
             })
             expect(response.statusCode).toBe(422)
         })
         it("should return status code of 401 when no auth header is sent", async () => {
             const response = await api.post("/user/addLeague").send({
-                league: {
-                    platform: "Sleeper",
-                    id: "sleeper_league_idd"
-                }
+                league: users[0].leagues[0]
             })
             expect(response.statusCode).toBe(401)
         })
         it("should return status code of 401 when invalid auth header is sent", async () => {
             const response = await api.post("/user/addLeague").set("Cookie", `invalidAuth`).send({
-                league: {
-                    platform: "Sleeper",
-                    id: "sleeper_league_idd"
-                }
+                league: users[0].leagues[0]
             })
             expect(response.statusCode).toBe(401)
         })
@@ -107,10 +98,7 @@ describe("user_leagues", () => {
             const token = createAccessToken()
 
             const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
-                league: {
-                    platform: "Sleeper",
-                    id: "sleeper_league_idd"
-                }
+                league: users[0].leagues[0]
             })
             expect(response.statusCode).toBe(404)
         })
