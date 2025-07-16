@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    CircularProgress,
     Collapse,
     Drawer,
     List,
@@ -17,13 +18,26 @@ import { useState } from 'react';
 import { DisplayLeaguesList } from '../../../components/DisplayLeaguesList';
 import { useGetSavedLeagues } from '@feature/navbar/hooks/useGetSavedLeagues';
 
+const MyLeaguesNestedList = ({ loggedIn, myLeaguesOpen }: { loggedIn: boolean, myLeaguesOpen: boolean }) => {
+    const { leagues, loading } = useGetSavedLeagues(loggedIn)
 
+    return (
+        <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
+            <Box sx={{ ml: 5, }}>
+                {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 50 }}>
+                    <CircularProgress />
+                </Box> :
+                    <DisplayLeaguesList leagues={leagues} onLeagueClick={() => { }} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' />
+                }
+            </Box>
+        </Collapse>
+    )
+}
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void }) {
     const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false)
     const username = useAppSelector((state) => state.authReducer.username);
     const dispatch = useAppDispatch();
     const location = useLocation()
-    const { leagues } = useGetSavedLeagues(username != null)
     const handleSignOut = () => {
         dispatch(logout());
     };
@@ -119,11 +133,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
 
                     </ListItem>
-                    <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
-                        <Box sx={{ ml: 5 }}>
-                            <DisplayLeaguesList leagues={leagues} onLeagueClick={() => { }} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' />
-                        </Box>
-                    </Collapse>
+                    {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} loggedIn={username != null} />}
                     <ListItem sx={{
                         borderRadius: '16px',
                         cursor: 'pointer',
