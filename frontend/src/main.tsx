@@ -1,20 +1,9 @@
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// // import './index.css'
-// import App from './App.tsx'
-
-// createRoot(document.getElementById('root')!).render(
-//   <StrictMode>
-//     <App />
-//   </StrictMode>,
-// )
-
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { Provider } from "react-redux"
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { lightThemeOptions } from './styles/theme'
+import { darkThemeOptions, lightThemeOptions } from './styles/theme'
 import { CssBaseline } from '@mui/material'
 
 // Import the generated route tree
@@ -36,7 +25,12 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
-  const theme = createTheme(lightThemeOptions)
+  const theme = createTheme({
+    colorSchemes: {
+      light: lightThemeOptions,
+      dark: darkThemeOptions,
+    },
+  })
   root.render(
     <StrictMode>
       <Provider store={store}>
