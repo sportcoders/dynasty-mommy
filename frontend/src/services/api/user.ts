@@ -32,7 +32,7 @@ export async function createUser(
 }
 export interface League {
     platform: string;
-    id: string;
+    league_id: string;
 }
 export async function addLeagueToUser(newLeague: League) {
     try {
@@ -42,7 +42,7 @@ export async function addLeagueToUser(newLeague: League) {
     }
 }
 export interface UserLeagues {
-    leagues: { platform: string; league_id: string }[];
+    leagues: League[];
 }
 export async function fetchUserLeagues() {
     try {

@@ -260,7 +260,7 @@ function SleeperLeagues({
     };
     const saveLeague = async (league_id: string) => {
         try {
-            await addLeagueToUser({ platform: "sleeper", id: league_id });
+            await addLeagueToUser({ platform: "sleeper", league_id: league_id });
             return true;
         } catch (e) {
             return false;
