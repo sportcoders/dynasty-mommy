@@ -1,4 +1,4 @@
-import NavBar from "@components/navbar";
+import NavBar from "@feature/navbar/components/navbar";
 import { Box } from "@mui/material";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
