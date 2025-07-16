@@ -1,5 +1,6 @@
 import { Container, Box, Paper, Typography, TextField, Button } from "@mui/material";
 import { useSignUpFrom } from "../hooks/useSignUpForm";
+import { Link } from "@tanstack/react-router";
 
 export default function SignUpForm() {
     const { username, email, password, confirmPassword, setPassword, setConfirmPassword, error, emailError, passwordError, usernameError, handleUsernameChange, handleEmailChange, handleSubmit } = useSignUpFrom()
@@ -96,6 +97,14 @@ export default function SignUpForm() {
                         >
                             <Typography variant="button" color="primary.contrastText">Create Account</Typography>
                         </Button>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2">
+                            Already have an account?{' '}
+                            <Typography component={Link} to='/login' sx={{ textDecoration: "none" }} variant="body2">
+                                Sign In
+                            </Typography>
+                        </Typography>
                     </Box>
                 </Paper>
             </Box>
