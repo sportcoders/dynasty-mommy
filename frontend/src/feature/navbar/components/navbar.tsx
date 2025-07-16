@@ -1,6 +1,8 @@
 import {
     Box,
     Button,
+    CircularProgress,
+    Collapse,
     Drawer,
     List,
     ListItem,
@@ -8,17 +10,34 @@ import {
     ListItemText,
     Typography,
 } from '@mui/material';
-import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode } from '@mui/icons-material';
+import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
 import { Link, useLocation } from '@tanstack/react-router';
+import { useState } from 'react';
+import { DisplayLeaguesList } from '../../../components/DisplayLeaguesList';
+import { useGetSavedLeagues } from '@feature/navbar/hooks/useGetSavedLeagues';
 
+const MyLeaguesNestedList = ({ loggedIn, myLeaguesOpen }: { loggedIn: boolean, myLeaguesOpen: boolean }) => {
+    const { leagues, loading } = useGetSavedLeagues(loggedIn)
 
+    return (
+        <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
+            <Box sx={{ ml: 5, }}>
+                {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 50 }}>
+                    <CircularProgress />
+                </Box> :
+                    <DisplayLeaguesList leagues={leagues} onLeagueClick={() => { }} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' />
+                }
+            </Box>
+        </Collapse>
+    )
+}
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void }) {
+    const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false)
     const username = useAppSelector((state) => state.authReducer.username);
     const dispatch = useAppDispatch();
     const location = useLocation()
-
     const handleSignOut = () => {
         dispatch(logout());
     };
@@ -103,6 +122,18 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                             />
                         </ListItem>
                     ))}
+                    <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
+                        borderRadius: '16px',
+                        cursor: 'pointer',
+                    }}>
+                        <ListItemIcon>
+                            <SportsBasketball />
+                        </ListItemIcon>
+                        <ListItemText primary="My Leagues" />
+                        {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
+
+                    </ListItem>
+                    {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} loggedIn={username != null} />}
                     <ListItem sx={{
                         borderRadius: '16px',
                         cursor: 'pointer',
