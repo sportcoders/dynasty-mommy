@@ -14,21 +14,28 @@ import {
 import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { DisplayLeaguesList } from '../../../components/DisplayLeaguesList';
 import { useGetSavedLeagues } from '@feature/navbar/hooks/useGetSavedLeagues';
+import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 
 const MyLeaguesNestedList = ({ loggedIn, myLeaguesOpen }: { loggedIn: boolean, myLeaguesOpen: boolean }) => {
     const { leagues, loading } = useGetSavedLeagues(loggedIn)
-
+    const router = useRouter();
+    const handleNavigateToLeague = (id: string) => [
+        router.navigate({
+            to: LeagueRoute.to,
+            params: { leaugeId: id },
+        })
+    ]
     return (
         <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
             <Box sx={{ ml: 5, }}>
                 {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 50 }}>
                     <CircularProgress />
                 </Box> :
-                    <DisplayLeaguesList leagues={leagues} onLeagueClick={() => { }} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' />
+                    <DisplayLeaguesList leagues={leagues} onLeagueClick={handleNavigateToLeague} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' text_color='primary.main' />
                 }
             </Box>
         </Collapse>
@@ -45,6 +52,7 @@ const DarkModeToggle = () => {
         <ListItem sx={{
             borderRadius: '16px',
             cursor: 'pointer',
+            color: 'primary.main',
         }}
             onClick={toggleMode}>
             <ListItemIcon>{mode == "dark" ? <LightMode /> : <DarkMode />}</ListItemIcon>
@@ -78,7 +86,6 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     const toggleDrawer = () => {
         setDrawerOpen(!drawerOpen);
     };
-
     return (
         <>
             <Drawer
@@ -89,7 +96,6 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                 sx={{
                     '& .MuiDrawer-paper': {
                         width: 250,
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
                         backdropFilter: 'blur(10px)',
                         borderRight: '1px solid rgba(0, 0, 0, 0.1)',
                         pt: '0.5rem',
@@ -106,7 +112,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         onClick={toggleDrawer}
                         sx={{
                             minWidth: 'auto',
-                            color: '#1976d2',
+                            color: 'primary',
                             '&:hover': {
                                 backgroundColor: 'rgba(25, 118, 210, 0.08)'
                             },
@@ -119,11 +125,11 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         variant="h6"
                         sx={{
                             fontWeight: 700,
-                            color: "text.primary",
 
                         }}
+                        color="primary"
                     >
-                        <Link to='/' style={{ textDecoration: 'none' }}>
+                        <Link to='/' style={{ textDecoration: 'none', color: 'inherit' }}>
                             Dynasty Mommy
                         </Link>
                     </Typography>
@@ -132,10 +138,11 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     {drawerItems.map((item, index) => (
                         <ListItem key={index} sx={{
                             cursor: 'pointer',
+                            color: 'primary.main',
                             backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
                             borderRadius: '16px',
                         }} component={Link} to={item.link}>
-                            <ListItemIcon sx={{ color: '#1976d2' }}>
+                            <ListItemIcon>
                                 {item.icon}
                             </ListItemIcon>
                             <ListItemText
@@ -152,11 +159,17 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
                         borderRadius: '16px',
                         cursor: 'pointer',
+                        color: 'primary.main',
+
                     }}>
                         <ListItemIcon>
                             <SportsBasketball />
                         </ListItemIcon>
-                        <ListItemText primary="My Leagues" />
+                        <ListItemText primary="My Leagues" sx={{
+                            '& .MuiListItemText-primary': {
+                                fontWeight: 500,
+                            }
+                        }} />
                         {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
 
                     </ListItem>
@@ -180,7 +193,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     sx={{
                         p: 0,
                         minWidth: 'auto',
-                        color: '#1976d2',
+                        color: 'primary',
                         '&:hover': {
                             backgroundColor: 'rgba(25, 118, 210, 0.08)'
                         }

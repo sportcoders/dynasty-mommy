@@ -203,4 +203,13 @@ export const darkThemeOptions: ThemeOptions = deepmerge(baseThemeOptions, {
         },
         divider: "rgba(255, 255, 255, 0.15)",
     },
+    components: {
+        MuiSvgIcon: {
+            styleOverrides: {
+                root: {
+                    color: '#bbb'
+                }
+            },
+        },
+    }
 });

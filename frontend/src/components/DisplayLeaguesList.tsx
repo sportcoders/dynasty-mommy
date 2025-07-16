@@ -24,14 +24,14 @@ interface displayLeaguesListProps {
     fontSize?: string,
     fontWeight?: string,
     padding?: string,
-    border_radius?: string
+    border_radius?: string,
+    text_color?: string
 }
 
-export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = true, saveLeague, loggedIn = false, userLeagues = [], show_border = false, background_color, fontSize, fontWeight, padding, border_radius }: displayLeaguesListProps) {
+export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = true, saveLeague, loggedIn = false, userLeagues = [], show_border = false, background_color, fontSize, fontWeight, padding, border_radius, text_color }: displayLeaguesListProps) {
     /**
      * @returns List component that displays all leagues it was passed
      */
-
     if (loggedIn && !userLeagues) return <CircularProgress></CircularProgress>
     return (
         <List sx={{ p: 0 }}>
@@ -102,7 +102,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                                     fontWeight: fontWeight ? fontWeight : 500,
                                     fontSize: fontSize ? fontSize : '1.1rem',
                                     transition: 'color 0.3s ease',
-                                    color: 'text.primary',
+                                    color: text_color ? text_color : 'text.primary',
                                 },
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
