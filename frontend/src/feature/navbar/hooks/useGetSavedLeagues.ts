@@ -16,12 +16,15 @@ export function useGetSavedLeagues(loggedIn: boolean) {
                 if (!res) {
                     throw new Error()
                 }
-                const sleeper_league_req = []
+                const league_promises = []
                 for (const league of res.leagues) {
-                    sleeper_league_req.push(sleeper_getLeagueInfo(league.league_id))
+                    switch (league.platform) {
+                        case "sleeper":
+                            league_promises.push(sleeper_getLeagueInfo(league.league_id))
+                    }
                 }
-                const temp_sleeper_leagues = await Promise.all(sleeper_league_req)
-                const result: League[] = temp_sleeper_leagues.map((league, index) => (
+                const league_res = await Promise.all(league_promises)
+                const result: League[] = league_res.map((league, index) => (
                     {
                         name: league!.name,
                         league_id: res.leagues[index].league_id,
@@ -29,7 +32,6 @@ export function useGetSavedLeagues(loggedIn: boolean) {
                         avatar: league!.avatar
                     }))
                 setLeagues(result)
-                console.log(result)
             }
             catch (e) {
                 console.log(error)
