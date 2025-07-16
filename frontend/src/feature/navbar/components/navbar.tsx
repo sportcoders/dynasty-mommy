@@ -14,21 +14,28 @@ import {
 import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { DisplayLeaguesList } from '../../../components/DisplayLeaguesList';
 import { useGetSavedLeagues } from '@feature/navbar/hooks/useGetSavedLeagues';
+import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 
 const MyLeaguesNestedList = ({ loggedIn, myLeaguesOpen }: { loggedIn: boolean, myLeaguesOpen: boolean }) => {
     const { leagues, loading } = useGetSavedLeagues(loggedIn)
-
+    const router = useRouter();
+    const handleNavigateToLeague = (id: string) => [
+        router.navigate({
+            to: LeagueRoute.to,
+            params: { leaugeId: id },
+        })
+    ]
     return (
         <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
             <Box sx={{ ml: 5, }}>
                 {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 50 }}>
                     <CircularProgress />
                 </Box> :
-                    <DisplayLeaguesList leagues={leagues} onLeagueClick={() => { }} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' text_color='primary.main' />
+                    <DisplayLeaguesList leagues={leagues} onLeagueClick={handleNavigateToLeague} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' text_color='primary.main' />
                 }
             </Box>
         </Collapse>
@@ -79,7 +86,6 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     const toggleDrawer = () => {
         setDrawerOpen(!drawerOpen);
     };
-
     return (
         <>
             <Drawer
