@@ -79,7 +79,7 @@ export default function LoginForm() {
                     <Box sx={{ mt: 2 }}>
                         <Typography variant="body2">
                             Don't Have An Account?{' '}
-                            <Typography component={Link} to='/signup' sx={{ textDecoration: "none" }}>
+                            <Typography component={Link} to='/signup' sx={{ textDecoration: "none" }} variant="body2">
                                 Sign Up
                             </Typography>
                         </Typography>
