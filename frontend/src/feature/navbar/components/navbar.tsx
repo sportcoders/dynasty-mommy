@@ -9,6 +9,7 @@ import {
     ListItemIcon,
     ListItemText,
     Typography,
+    useColorScheme,
 } from '@mui/material';
 import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
@@ -33,6 +34,32 @@ const MyLeaguesNestedList = ({ loggedIn, myLeaguesOpen }: { loggedIn: boolean, m
         </Collapse>
     )
 }
+
+const DarkModeToggle = () => {
+    const { mode, setMode } = useColorScheme();
+    if (!mode) return null
+    const toggleMode = () => {
+        setMode(mode === 'light' ? 'dark' : 'light');
+    }
+    return (
+        <ListItem sx={{
+            borderRadius: '16px',
+            cursor: 'pointer',
+        }}
+            onClick={toggleMode}>
+            <ListItemIcon>{mode == "dark" ? <LightMode /> : <DarkMode />}</ListItemIcon>
+            <ListItemText
+                primary="Change Mode"
+                sx={{
+                    '& .MuiListItemText-primary': {
+                        fontWeight: 500,
+                    }
+                }}
+            />
+
+        </ListItem>
+    )
+}
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void }) {
     const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false)
     const username = useAppSelector((state) => state.authReducer.username);
@@ -41,7 +68,6 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     const handleSignOut = () => {
         dispatch(logout());
     };
-    const darkMode = false
     const drawerItems = [
         { text: 'Dashboard', icon: <Dashboard />, link: '' },
         { text: 'Find League', icon: <Search />, link: '/' },
@@ -122,6 +148,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                             />
                         </ListItem>
                     ))}
+
                     <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
                         borderRadius: '16px',
                         cursor: 'pointer',
@@ -134,21 +161,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
 
                     </ListItem>
                     {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} loggedIn={username != null} />}
-                    <ListItem sx={{
-                        borderRadius: '16px',
-                        cursor: 'pointer',
-                    }}>
-                        <ListItemIcon>{darkMode ? <LightMode /> : <DarkMode />}</ListItemIcon>
-                        <ListItemText
-                            primary="Change Mode"
-                            sx={{
-                                '& .MuiListItemText-primary': {
-                                    fontWeight: 500,
-                                }
-                            }}
-                        />
-
-                    </ListItem>
+                    <DarkModeToggle />
                 </List>
             </Drawer >
 
