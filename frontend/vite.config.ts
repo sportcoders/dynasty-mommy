@@ -9,19 +9,20 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [
-        TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
-        react(),
-    ],
-    resolve: {
-        alias: {
-            "@components": path.resolve(__dirname, "src/components"),
-            "@hooks": path.resolve(__dirname, "src/hooks"),
-            "@services": path.resolve(__dirname, "src/services"),
-            "@pages": path.resolve(__dirname, "src/pages"),
-            "@routes": path.resolve(__dirname, "src/routes"),
-            "@feature": path.resolve(__dirname, "src/feature"),
-            "@app": path.resolve(__dirname, "src"),
-        },
+  plugins: [
+    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
+    react(),
+  ],
+  resolve: {
+    alias: {
+      "@components": path.resolve(__dirname, "src/components"),
+      "@hooks": path.resolve(__dirname, "src/hooks"),
+      "@services": path.resolve(__dirname, "src/services"),
+      "@pages": path.resolve(__dirname, "src/pages"),
+      "@routes": path.resolve(__dirname, "src/routes"),
+      "@feature": path.resolve(__dirname, "src/feature"),
+      "@app": path.resolve(__dirname, "src"),
+      "@custom-types": path.resolve(__dirname, "src/types"),
     },
+  },
 });
