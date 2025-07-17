@@ -16,19 +16,20 @@ import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
 import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
-import { DisplayLeaguesList } from '../../../components/DisplayLeaguesList';
-import { useGetSavedLeagues } from '@feature/navbar/hooks/useGetSavedLeagues';
+import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
+import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
 import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
 
-const MyLeaguesNestedList = ({ loggedIn, myLeaguesOpen }: { loggedIn: boolean, myLeaguesOpen: boolean }) => {
-    const { leagues, loading } = useGetSavedLeagues(loggedIn)
+const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean }) => {
+    const { leagues, loading, error } = useGetSavedLeaguesNavBar()
     const router = useRouter();
-    const handleNavigateToLeague = (id: string) => [
+    const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
             params: { leaugeId: id },
         })
-    ]
+    }
+    if (!leagues || error) return null
     return (
         <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
             <Box sx={{ ml: 5, }}>
@@ -173,7 +174,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
 
                     </ListItem>
-                    {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} loggedIn={username != null} />}
+                    {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} />}
                     <DarkModeToggle />
                 </List>
             </Drawer >

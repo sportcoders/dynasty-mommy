@@ -19,6 +19,7 @@ import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
 import { addLeagueToUser } from "@services/api/user";
+import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 
 type SleeperSearchComponentProps = {
     searchType: string;
@@ -246,11 +247,17 @@ function SleeperLeagues({
     setSeason,
     setParamsFalse: back,
 }: SleeperSearchComponentProps) {
-    const { leagues, loading, error, userLeagues } = useGetUserLeaguesSleeper(
+    const { leagues, loading, error } = useGetUserLeaguesSleeper(
         searchType,
         searchText,
         season
     );
+    const { data: userLeagues } = useGetSavedLeagues()
+    const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
+        if (league.platform == 'sleeper')
+            result.push(league.league_id)
+        return result
+    }, [])
     const router = useRouter();
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
@@ -353,7 +360,7 @@ function SleeperLeagues({
                         leagues={leagues}
                         saveLeague={saveLeague}
                         loggedIn={true}
-                        userLeagues={userLeagues!}
+                        userLeagues={sleeperLeagues}
                     />
                 </Box>
             )}

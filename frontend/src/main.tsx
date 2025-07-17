@@ -10,9 +10,11 @@ import { CssBaseline } from '@mui/material'
 import { routeTree } from './routeTree.gen'
 import { persistor, store } from './store/store'
 import { PersistGate } from 'redux-persist/integration/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Create a new router instance
 const router = createRouter({ routeTree })
+const queryClient = new QueryClient();
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -33,14 +35,17 @@ if (!rootElement.innerHTML) {
   })
   root.render(
     <StrictMode>
-      <Provider store={store}>
-        <PersistGate persistor={persistor} loading={null}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <RouterProvider router={router} />
-          </ThemeProvider>
-        </PersistGate>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+
+        <Provider store={store}>
+          <PersistGate persistor={persistor} loading={null}>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <RouterProvider router={router} />
+            </ThemeProvider>
+          </PersistGate>
+        </Provider>
+      </QueryClientProvider>
     </StrictMode>,
   )
 }
