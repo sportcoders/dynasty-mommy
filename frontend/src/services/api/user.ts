@@ -1,4 +1,4 @@
-import { serverGet, serverPost } from "@services/sleeper";
+import { serverDelete, serverGet, serverPost } from "@services/sleeper";
 interface User {
     username: string;
 }
@@ -37,6 +37,13 @@ export interface League {
 export async function addLeagueToUser(newLeague: League) {
     try {
         await serverPost("/user/addLeague", { league: newLeague });
+    } catch (e) {
+        console.error(e);
+    }
+}
+export async function removeLeagueFromUser(league: League) {
+    try {
+        await serverDelete(`/user/removeLeague/${league.league_id}/${league.platform}`);
     } catch (e) {
         console.error(e);
     }
