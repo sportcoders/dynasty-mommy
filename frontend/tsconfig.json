@@ -1,24 +1,25 @@
 {
-    "files": [],
-    "references": [
-        {
-            "path": "./tsconfig.app.json"
-        },
-        {
-            "path": "./tsconfig.node.json"
-        }
-    ],
-    "compilerOptions": {
-        "baseUrl": "./src",
-        "types": ["vite/client", "node"],
-        "paths": {
-            "@components/*": ["components/*"],
-            "@hooks/*": ["hooks/*"],
-            "@services/*": ["services/*"],
-            "@pages/*": ["pages/*"],
-            "@routes/*": ["routes/*"],
-            "@feature/*": ["feature/*"],
-            "@app/*": ["./*"]
-        }
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
     }
+  ],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "types": ["vite/client", "node"],
+    "paths": {
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@services/*": ["services/*"],
+      "@pages/*": ["pages/*"],
+      "@routes/*": ["routes/*"],
+      "@feature/*": ["feature/*"],
+      "@app/*": ["./*"],
+      "@types/*": ["custom-types/*"]
+    }
+  }
 }

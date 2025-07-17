@@ -1,16 +1,16 @@
 import {
-    Box,
-    Button,
-    CircularProgress,
-    FormControl,
-    FormControlLabel,
-    Paper,
-    Radio,
-    RadioGroup,
-    Snackbar,
-    Stack,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  Paper,
+  Radio,
+  RadioGroup,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { useRouter } from "@tanstack/react-router";
 import { Route as LeagueRoute } from "@routes/leagues.$leaugeId";
@@ -24,17 +24,15 @@ import useDeleteLeague from "../hooks/useDeleteLeague";
 import useSaveLeague from "../hooks/useSaveLeague";
 
 type SleeperSearchComponentProps = {
-    searchType: string;
-    season: string;
-    searchText: string;
-    validParams: boolean;
-    handleTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    setSeason: (s: string) => void;
-    handleSearchTypeChange: (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => void;
-    checkValidParams: () => void;
-    setParamsFalse: () => void;
+  searchType: string;
+  season: string;
+  searchText: string;
+  validParams: boolean;
+  handleTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  setSeason: (s: string) => void;
+  handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  checkValidParams: () => void;
+  setParamsFalse: () => void;
 };
 
 /**
@@ -50,59 +48,59 @@ type SleeperSearchComponentProps = {
  * @returns The rendered search interface for Sleeper leagues.
  */
 export default function SleeperSearch() {
-    const {
-        searchType,
-        season,
-        searchText,
-        validParams,
-        handleTextChange,
-        setSeason,
-        handleSearchTypeChange,
-        checkValidParams,
-        setParamsFalse,
-    } = useSearchParamsSleeper();
+  const {
+    searchType,
+    season,
+    searchText,
+    validParams,
+    handleTextChange,
+    setSeason,
+    handleSearchTypeChange,
+    checkValidParams,
+    setParamsFalse,
+  } = useSearchParamsSleeper();
 
-    return (
-        <Stack
-            sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100vh",
-                width: "100%",
-            }}
-            spacing={4}
-        >
-            <Typography variant="h2" component="h1" color="primary">
-                Sleeper League Search
-            </Typography>
-            {validParams ? (
-                <SleeperLeagues
-                    searchType={searchType}
-                    season={season}
-                    searchText={searchText}
-                    validParams={validParams}
-                    handleTextChange={handleTextChange}
-                    setSeason={setSeason}
-                    handleSearchTypeChange={handleSearchTypeChange}
-                    checkValidParams={checkValidParams}
-                    setParamsFalse={setParamsFalse}
-                />
-            ) : (
-                <SleeperAccount
-                    searchType={searchType}
-                    season={season}
-                    searchText={searchText}
-                    validParams={validParams}
-                    handleTextChange={handleTextChange}
-                    setSeason={setSeason}
-                    handleSearchTypeChange={handleSearchTypeChange}
-                    checkValidParams={checkValidParams}
-                    setParamsFalse={setParamsFalse}
-                />
-            )}
-        </Stack>
-    );
+  return (
+    <Stack
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        width: "100%",
+      }}
+      spacing={4}
+    >
+      <Typography variant="h2" component="h1" color="primary">
+        Sleeper League Search
+      </Typography>
+      {validParams ? (
+        <SleeperLeagues
+          searchType={searchType}
+          season={season}
+          searchText={searchText}
+          validParams={validParams}
+          handleTextChange={handleTextChange}
+          setSeason={setSeason}
+          handleSearchTypeChange={handleSearchTypeChange}
+          checkValidParams={checkValidParams}
+          setParamsFalse={setParamsFalse}
+        />
+      ) : (
+        <SleeperAccount
+          searchType={searchType}
+          season={season}
+          searchText={searchText}
+          validParams={validParams}
+          handleTextChange={handleTextChange}
+          setSeason={setSeason}
+          handleSearchTypeChange={handleSearchTypeChange}
+          checkValidParams={checkValidParams}
+          setParamsFalse={setParamsFalse}
+        />
+      )}
+    </Stack>
+  );
 }
 
 /**
@@ -113,126 +111,121 @@ export default function SleeperSearch() {
  * @returns The rendered form for searching league(s) via username/league id and season year.
  */
 function SleeperAccount({
-    searchType,
-    season,
-    searchText,
-    handleTextChange,
-    setSeason,
-    handleSearchTypeChange,
-    checkValidParams,
+  searchType,
+  season,
+  searchText,
+  handleTextChange,
+  setSeason,
+  handleSearchTypeChange,
+  checkValidParams,
 }: SleeperSearchComponentProps) {
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        checkValidParams();
-    };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    checkValidParams();
+  };
 
-    return (
-        <Paper
-            elevation={3}
-            sx={{
-                borderRadius: 3,
-                p: 4,
-                m: 2,
-                maxWidth: 600,
-                mx: "auto",
-                border: "1px solid",
-                borderColor: "divider",
-            }}
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        borderRadius: 3,
+        p: 4,
+        m: 2,
+        maxWidth: 600,
+        mx: "auto",
+        border: "1px solid",
+        borderColor: "divider",
+      }}
+    >
+      <Box sx={{ textAlign: "center", mb: 3 }}>
+        <Typography variant="h4" component="h2" gutterBottom color="primary">
+          Find League
+        </Typography>
+        <Typography variant="body2" color="text.main">
+          Search by username or league ID
+        </Typography>
+      </Box>
+
+      <FormControl fullWidth>
+        <RadioGroup
+          row
+          value={searchType}
+          onChange={handleSearchTypeChange}
+          sx={{
+            mb: 3,
+            justifyContent: "center",
+            "& .MuiFormControlLabel-root": {
+              mx: 2,
+            },
+          }}
         >
-            <Box sx={{ textAlign: "center", mb: 3 }}>
-                <Typography
-                    variant="h4"
-                    component="h2"
-                    gutterBottom
-                    color="primary"
-                >
-                    Find League
-                </Typography>
-                <Typography variant="body2" color="text.main">
-                    Search by username or league ID
-                </Typography>
-            </Box>
+          <FormControlLabel
+            value="Username"
+            control={<Radio />}
+            label="Username"
+            sx={{
+              "& .MuiFormControlLabel-label": {
+                fontWeight: 500,
+              },
+            }}
+          />
+          <FormControlLabel
+            value="League ID"
+            control={<Radio />}
+            label="League ID"
+            sx={{
+              "& .MuiFormControlLabel-label": {
+                fontWeight: 500,
+              },
+            }}
+          />
+        </RadioGroup>
 
-            <FormControl fullWidth>
-                <RadioGroup
-                    row
-                    value={searchType}
-                    onChange={handleSearchTypeChange}
-                    sx={{
-                        mb: 3,
-                        justifyContent: "center",
-                        "& .MuiFormControlLabel-root": {
-                            mx: 2,
-                        },
-                    }}
-                >
-                    <FormControlLabel
-                        value="Username"
-                        control={<Radio />}
-                        label="Username"
-                        sx={{
-                            "& .MuiFormControlLabel-label": {
-                                fontWeight: 500,
-                            },
-                        }}
-                    />
-                    <FormControlLabel
-                        value="League ID"
-                        control={<Radio />}
-                        label="League ID"
-                        sx={{
-                            "& .MuiFormControlLabel-label": {
-                                fontWeight: 500,
-                            },
-                        }}
-                    />
-                </RadioGroup>
+        <Box sx={{ mb: 3 }} display="flex" gap={2}>
+          <TextField
+            label={searchType}
+            required
+            variant="outlined"
+            onChange={handleTextChange}
+            value={searchText}
+            sx={{
+              flex: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+            }}
+          />
+          <Box sx={{ flex: 1 }}>
+            <SelectSeasonDropDown
+              updateSeason={setSeason}
+              selectedYear={season}
+              label_name="Year"
+              disabled={searchType === "League ID"}
+            />
+          </Box>
+        </Box>
 
-                <Box sx={{ mb: 3 }} display="flex" gap={2}>
-                    <TextField
-                        label={searchType}
-                        required
-                        variant="outlined"
-                        onChange={handleTextChange}
-                        value={searchText}
-                        sx={{
-                            flex: 2,
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: 2,
-                            },
-                        }}
-                    />
-                    <Box sx={{ flex: 1 }}>
-                        <SelectSeasonDropDown
-                            updateSeason={setSeason}
-                            selectedYear={season}
-                            label_name="Year"
-                            disabled={searchType === "League ID"}
-                        />
-                    </Box>
-                </Box>
-
-                <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    sx={{
-                        py: 1.5,
-                        borderRadius: 2,
-                        "&:hover": {
-                            transform: "translateY(-2px)",
-                        },
-                        transition: "all 0.3s ease",
-                    }}
-                >
-                    <Typography variant="button" color="primary.contrastText">
-                        Search League
-                    </Typography>
-                </Button>
-            </FormControl>
-        </Paper>
-    );
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          size="large"
+          fullWidth
+          sx={{
+            py: 1.5,
+            borderRadius: 2,
+            "&:hover": {
+              transform: "translateY(-2px)",
+            },
+            transition: "all 0.3s ease",
+          }}
+        >
+          <Typography variant="button" color="primary.contrastText">
+            Search League
+          </Typography>
+        </Button>
+      </FormControl>
+    </Paper>
+  );
 }
 
 /**
@@ -243,11 +236,11 @@ function SleeperAccount({
  * @returns The rendered leagues list.
  */
 function SleeperLeagues({
-    searchType,
-    season,
-    searchText,
-    setSeason,
-    setParamsFalse: back,
+  searchType,
+  season,
+  searchText,
+  setSeason,
+  setParamsFalse: back,
 }: SleeperSearchComponentProps) {
     const { leagues, loading, error } = useGetUserLeaguesSleeper(
         searchType,
@@ -283,96 +276,96 @@ function SleeperLeagues({
     }
     if (loading) return <CircularProgress />;
 
-    if (error) {
-        back();
-        return <Snackbar open={error ? true : false} message={error} />;
-    }
+  if (error) {
+    back();
+    return <Snackbar open={error ? true : false} message={error} />;
+  }
 
-    return (
-        <Paper
-            elevation={3}
-            sx={{
-                borderRadius: 3,
-                m: 2,
-                maxWidth: 800,
-                mx: "auto",
-                border: "1px solid",
-                borderColor: "divider",
-            }}
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        borderRadius: 3,
+        m: 2,
+        maxWidth: 800,
+        mx: "auto",
+        border: "1px solid",
+        borderColor: "divider",
+      }}
+    >
+      {/* Search/Filter Section */}
+      <Box
+        display="flex"
+        alignItems="center"
+        sx={{
+          p: 3,
+          gap: 2,
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={back}
+          color="primary"
+          sx={{
+            height: "56px", // Standard Material-UI TextField height
+            borderRadius: 2,
+            textTransform: "none",
+            px: 3,
+            borderColor: "primary.main",
+            "&:hover": {
+              borderColor: "primary.dark",
+              backgroundColor: "primary.main",
+              color: "primary.contrastText",
+              transform: "translateY(-1px)",
+              boxShadow: "0 2px 8px primary.light",
+            },
+            transition: "all 0.3s ease",
+          }}
         >
-            {/* Search/Filter Section */}
-            <Box
-                display="flex"
-                alignItems="center"
-                sx={{
-                    p: 3,
-                    gap: 2,
-                    borderBottom: "1px solid",
-                    borderColor: "divider",
-                }}
-            >
-                <Button
-                    variant="outlined"
-                    onClick={back}
-                    color="primary"
-                    sx={{
-                        height: "56px", // Standard Material-UI TextField height
-                        borderRadius: 2,
-                        textTransform: "none",
-                        px: 3,
-                        borderColor: "primary.main",
-                        "&:hover": {
-                            borderColor: "primary.dark",
-                            backgroundColor: "primary.main",
-                            color: "primary.contrastText",
-                            transform: "translateY(-1px)",
-                            boxShadow: "0 2px 8px primary.light",
-                        },
-                        transition: "all 0.3s ease",
-                    }}
-                >
-                    <Typography variant="body1">Back</Typography>
-                </Button>
+          <Typography variant="body1">Back</Typography>
+        </Button>
 
-                <Box display="flex" gap={2} sx={{ flex: 1 }}>
-                    <TextField disabled label={searchType} value={searchText} />
+        <Box display="flex" gap={2} sx={{ flex: 1 }}>
+          <TextField disabled label={searchType} value={searchText} />
 
-                    <FormControl sx={{ flex: 1, minWidth: 150 }}>
-                        <SelectSeasonDropDown
-                            updateSeason={setSeason}
-                            selectedYear={season}
-                            label_name="Change Year"
-                            width={150}
-                        />
-                    </FormControl>
-                </Box>
-            </Box>
+          <FormControl sx={{ flex: 1, minWidth: 150 }}>
+            <SelectSeasonDropDown
+              updateSeason={setSeason}
+              selectedYear={season}
+              label_name="Change Year"
+              width={150}
+            />
+          </FormControl>
+        </Box>
+      </Box>
 
-            {/* Results Section */}
-            {leagues.length === 0 ? (
-                <Box
-                    sx={{
-                        p: 4,
-                        textAlign: "center",
-                        backgroundColor: "background.default",
-                        color: "text.primary",
-                    }}
-                >
-                    <Typography variant="body1">No Leagues Found</Typography>
-                </Box>
-            ) : (
-                <Box sx={{ p: 2 }}>
-                    <DisplayLeaguesList
-                        onLeagueClick={handleNavigateToLeague}
-                        displayAvatar={true}
-                        leagues={leagues}
-                        saveLeague={saveLeague}
-                        loggedIn={true}
-                        userLeagues={sleeperLeagues}
+      {/* Results Section */}
+      {leagues.length === 0 ? (
+        <Box
+          sx={{
+            p: 4,
+            textAlign: "center",
+            backgroundColor: "background.default",
+            color: "text.primary",
+          }}
+        >
+          <Typography variant="body1">No Leagues Found</Typography>
+        </Box>
+      ) : (
+        <Box sx={{ p: 2 }}>
+          <DisplayLeaguesList
+            onLeagueClick={handleNavigateToLeague}
+            displayAvatar={true}
+            leagues={leagues}
+            saveLeague={saveLeague}
+            loggedIn={true}
+            userLeagues={sleeperLeagues}
                         deleteLeague={handleDeleteLeague}
-                    />
-                </Box>
-            )}
-        </Paper>
-    );
+          />
+        </Box>
+      )}
+    </Paper>
+  );
 }
