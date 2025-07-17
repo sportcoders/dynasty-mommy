@@ -20,6 +20,8 @@ import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
 import { addLeagueToUser } from "@services/api/user";
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
+import useDeleteLeague from "../hooks/useDeleteLeague";
+import useSaveLeague from "../hooks/useSaveLeague";
 
 type SleeperSearchComponentProps = {
     searchType: string;
@@ -253,6 +255,8 @@ function SleeperLeagues({
         season
     );
     const { data: userLeagues } = useGetSavedLeagues()
+    const deleteLeauge = useDeleteLeague()
+    const saveLeagueMutate = useSaveLeague()
     const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
         if (league.platform == 'sleeper')
             result.push(league.league_id)
@@ -267,12 +271,16 @@ function SleeperLeagues({
     };
     const saveLeague = async (league_id: string) => {
         try {
-            await addLeagueToUser({ platform: "sleeper", league_id: league_id });
-            return true;
+            saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id })
+            return saveLeagueMutate.isSuccess;
         } catch (e) {
             return false;
         }
     };
+    const handleDeleteLeague = async (league_id: string) => {
+        deleteLeauge.mutate({ platform: "sleeper", league_id: league_id })
+        return deleteLeauge.isSuccess
+    }
     if (loading) return <CircularProgress />;
 
     if (error) {
@@ -361,6 +369,7 @@ function SleeperLeagues({
                         saveLeague={saveLeague}
                         loggedIn={true}
                         userLeagues={sleeperLeagues}
+                        deleteLeague={handleDeleteLeague}
                     />
                 </Box>
             )}

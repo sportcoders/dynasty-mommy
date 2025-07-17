@@ -17,6 +17,7 @@ interface displayLeaguesListProps {
     displayAvatar?: boolean
     onLeagueClick: (league_id: string) => void
     saveLeague?: (league_id: string) => Promise<boolean>
+    deleteLeague?: (league_id: string) => Promise<boolean>
     loggedIn?: boolean
     userLeagues?: string[]
     background_color?: string
@@ -28,7 +29,7 @@ interface displayLeaguesListProps {
     text_color?: string
 }
 
-export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = true, saveLeague, loggedIn = false, userLeagues = [], show_border = false, background_color, fontSize, fontWeight, padding, border_radius, text_color }: displayLeaguesListProps) {
+export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = true, saveLeague, deleteLeague, loggedIn = false, userLeagues = [], show_border = false, background_color, fontSize, fontWeight, padding, border_radius, text_color }: displayLeaguesListProps) {
     /**
      * @returns List component that displays all leagues it was passed
      */
@@ -63,7 +64,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                             width: '100%'
                         }
                     }}
-                    secondaryAction={saveLeague ? (
+                    secondaryAction={saveLeague && deleteLeague ? (
                         <IconButton
                             edge="end"
                             aria-label="add"
@@ -75,14 +76,17 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                saveLeague(league.league_id)
+                                if (userLeagues.includes(league.league_id))
+                                    deleteLeague(league.league_id)
+                                else
+                                    saveLeague(league.league_id)
                             }}
                         >
-                            {userLeagues.includes(league.league_id) ? <RemoveCircle /> : <AddCircle />}
+                            {userLeagues.includes(league.league_id) ?
+                                <RemoveCircle /> : <AddCircle />}
                         </IconButton>) : null
                     }
                 >
-
                     {displayAvatar && (
                         <ListItemAvatar>
                             <Avatar
