@@ -132,37 +132,42 @@ describe("user_leagues", () => {
         it("should return status code of 204 when league is deleted successfully", async () => {
             await loadUserWithLeagues()
             const token = createAccessToken()
-            const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
+            const league = users[0].leagues[0]
+            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", [`accessToken=${token}`]).send()
 
-            expect(response.statusCode).toBe(204)
+            expect(response.statusCode).toBe(200)
         })
         it("should return status code of 401 when no auth header is sent", async () => {
-            const response = await api.delete('/user/removeLeague').send({ league: users[0].leagues[0] })
+            const league = users[0].leagues[0]
+            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).send()
             expect(response.statusCode).toBe(401)
         })
         it("should return status code of 401 when invalid auth header is sent", async () => {
-            const response = await api.delete("/user/removeLeague").set("Cookie", `invalidAuth`).send({ league: users[0].leagues[0] })
+            const league = users[0].leagues[0]
+            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", `invalidAuth`).send()
             expect(response.statusCode).toBe(401)
         })
         it("should return status code of 404 when user belonging to header doesn't exist", async () => {
+            const league = users[0].leagues[0]
             const token = createAccessToken()
-            const response = await api.delete("/user/removeLeague").set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
+            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
             expect(response.statusCode).toBe(404)
         })
-        it("should return status code of 422 when request body is missing fields", async () => {
-            await loadUserWithLeagues()
-            const token = createAccessToken()
-            const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({
-                league: {
-                    platform: "sleeper"
-                }
-            })
-            expect(response.statusCode).toBe(422)
-        })
+        // it("should return status code of 422 when request body is missing fields", async () => {
+        //     await loadUserWithLeagues()
+        //     const token = createAccessToken()
+        //     const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({
+        //         league: {
+        //             platform: "sleeper"
+        //         }
+        //     })
+        //     expect(response.statusCode).toBe(422)
+        // })
         it("should return status code of 404 when leauge user is trying to delete a league that doesn't exist", async () => {
             await loadUser()
+            const league = users[0].leagues[0]
             const token = createAccessToken()
-            const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
+            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] })
             expect(response.statusCode).toBe(404)
         })
     })

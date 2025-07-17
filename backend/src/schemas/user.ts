@@ -18,8 +18,6 @@ export const userSignUp = z.object({
     username: z.string()
 })
 export const deleteUserLeagueSchema = z.object({
-    league: z.object({
-        platform: z.string(),
-        league_id: z.string()
-    })
+    platform: z.string(),
+    league_id: z.string()
 })
