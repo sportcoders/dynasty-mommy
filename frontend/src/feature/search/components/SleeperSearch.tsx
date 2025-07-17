@@ -20,6 +20,8 @@ import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
 import { addLeagueToUser } from "@services/api/user";
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
+import useDeleteLeague from "../hooks/useDeleteLeague";
+import useSaveLeague from "../hooks/useSaveLeague";
 
 type SleeperSearchComponentProps = {
   searchType: string;
@@ -240,32 +242,39 @@ function SleeperLeagues({
   setSeason,
   setParamsFalse: back,
 }: SleeperSearchComponentProps) {
-  const { leagues, loading, error } = useGetUserLeaguesSleeper(
-    searchType,
-    searchText,
-    season
-  );
-  const { data: userLeagues } = useGetSavedLeagues();
-  const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
-    if (league.platform == "sleeper") result.push(league.league_id);
-    return result;
-  }, []);
-  const router = useRouter();
-  const handleNavigateToLeague = (id: string) => {
-    router.navigate({
-      to: LeagueRoute.to,
-      params: { leaugeId: id },
-    });
-  };
-  const saveLeague = async (league_id: string) => {
-    try {
-      await addLeagueToUser({ platform: "sleeper", league_id: league_id });
-      return true;
-    } catch (e) {
-      return false;
+    const { leagues, loading, error } = useGetUserLeaguesSleeper(
+        searchType,
+        searchText,
+        season
+    );
+    const { data: userLeagues } = useGetSavedLeagues()
+    const deleteLeauge = useDeleteLeague()
+    const saveLeagueMutate = useSaveLeague()
+    const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
+        if (league.platform == 'sleeper')
+            result.push(league.league_id)
+        return result
+    }, [])
+    const router = useRouter();
+    const handleNavigateToLeague = (id: string) => {
+        router.navigate({
+            to: LeagueRoute.to,
+            params: { leaugeId: id },
+        });
+    };
+    const saveLeague = async (league_id: string) => {
+        try {
+            saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id })
+            return saveLeagueMutate.isSuccess;
+        } catch (e) {
+            return false;
+        }
+    };
+    const handleDeleteLeague = async (league_id: string) => {
+        deleteLeauge.mutate({ platform: "sleeper", league_id: league_id })
+        return deleteLeauge.isSuccess
     }
-  };
-  if (loading) return <CircularProgress />;
+    if (loading) return <CircularProgress />;
 
   if (error) {
     back();
@@ -353,6 +362,7 @@ function SleeperLeagues({
             saveLeague={saveLeague}
             loggedIn={true}
             userLeagues={sleeperLeagues}
+                        deleteLeague={handleDeleteLeague}
           />
         </Box>
       )}

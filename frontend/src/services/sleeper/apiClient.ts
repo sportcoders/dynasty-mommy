@@ -38,6 +38,14 @@ export const serverPost = async <T, U>(
     });
     return response.json() as Promise<T>;
 };
+export const serverDelete = async <T>(endpoint: string): Promise<T> => {
+    const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
+        method: "DELETE",
+        credentials: 'include',
+    })
+
+    return response.json() as Promise<T>
+}
 export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
     const response = await fetch(req);
     if (response.status == 401) {
