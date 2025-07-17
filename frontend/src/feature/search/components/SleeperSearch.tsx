@@ -20,7 +20,6 @@ import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
 import { addLeagueToUser } from "@services/api/user";
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
-import MyComponent from "@components/MyComponent";
 
 type SleeperSearchComponentProps = {
   searchType: string;
@@ -98,7 +97,6 @@ export default function SleeperSearch() {
           setParamsFalse={setParamsFalse}
         />
       )}
-      <MyComponent />
     </Stack>
   );
 }
