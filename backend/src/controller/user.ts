@@ -77,13 +77,13 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
 }
 export async function deleteUserLeagues(req: Request, res: Response, next: NextFunction) {
     try {
-        const { league } = deleteUserLeagueSchema.parse(req.body)
+        const { league_id, platform } = deleteUserLeagueSchema.parse(req.params)
 
         if (!req.user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Unauthorized" })
 
-        const result = await AppDataSource.getRepository(UserLeagues).delete({ userId: req.user.user_id, league_id: league.league_id, platform: league.platform })
+        const result = await AppDataSource.getRepository(UserLeagues).delete({ userId: req.user.user_id, league_id: league_id, platform: platform })
 
-        if (result.affected && result.affected > 0) return res.status(HttpSuccess.NO_CONTENT).end()
+        if (result.affected && result.affected > 0) return res.status(HttpSuccess.OK).json({ detail: "League removed successfully" })
 
         throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" })
     }
