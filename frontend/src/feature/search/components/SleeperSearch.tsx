@@ -18,10 +18,10 @@ import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
-import { addLeagueToUser } from "@services/api/user";
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 import useDeleteLeague from "../hooks/useDeleteLeague";
 import useSaveLeague from "../hooks/useSaveLeague";
+import { useAppSelector } from "@app/hooks";
 
 type SleeperSearchComponentProps = {
   searchType: string;
@@ -242,39 +242,41 @@ function SleeperLeagues({
   setSeason,
   setParamsFalse: back,
 }: SleeperSearchComponentProps) {
-    const { leagues, loading, error } = useGetUserLeaguesSleeper(
-        searchType,
-        searchText,
-        season
-    );
-    const { data: userLeagues } = useGetSavedLeagues()
-    const deleteLeauge = useDeleteLeague()
-    const saveLeagueMutate = useSaveLeague()
-    const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
-        if (league.platform == 'sleeper')
-            result.push(league.league_id)
-        return result
-    }, [])
-    const router = useRouter();
-    const handleNavigateToLeague = (id: string) => {
-        router.navigate({
-            to: LeagueRoute.to,
-            params: { leaugeId: id },
-        });
-    };
-    const saveLeague = async (league_id: string) => {
-        try {
-            saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id })
-            return saveLeagueMutate.isSuccess;
-        } catch (e) {
-            return false;
-        }
-    };
-    const handleDeleteLeague = async (league_id: string) => {
-        deleteLeauge.mutate({ platform: "sleeper", league_id: league_id })
-        return deleteLeauge.isSuccess
+  const username = useAppSelector(state => state.authReducer.username)
+
+  const { leagues, loading, error } = useGetUserLeaguesSleeper(
+    searchType,
+    searchText,
+    season
+  );
+  const { data: userLeagues } = useGetSavedLeagues()
+  const deleteLeauge = useDeleteLeague()
+  const saveLeagueMutate = useSaveLeague()
+  const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
+    if (league.platform == 'sleeper')
+      result.push(league.league_id)
+    return result
+  }, [])
+  const router = useRouter();
+  const handleNavigateToLeague = (id: string) => {
+    router.navigate({
+      to: LeagueRoute.to,
+      params: { leaugeId: id },
+    });
+  };
+  const saveLeague = async (league_id: string) => {
+    try {
+      saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id })
+      return saveLeagueMutate.isSuccess;
+    } catch (e) {
+      return false;
     }
-    if (loading) return <CircularProgress />;
+  };
+  const handleDeleteLeague = async (league_id: string) => {
+    deleteLeauge.mutate({ platform: "sleeper", league_id: league_id })
+    return deleteLeauge.isSuccess
+  }
+  if (loading) return <CircularProgress />;
 
   if (error) {
     back();
@@ -360,9 +362,9 @@ function SleeperLeagues({
             displayAvatar={true}
             leagues={leagues}
             saveLeague={saveLeague}
-            loggedIn={true}
+            loggedIn={username != null}
             userLeagues={sleeperLeagues}
-                        deleteLeague={handleDeleteLeague}
+            deleteLeague={handleDeleteLeague}
           />
         </Box>
       )}

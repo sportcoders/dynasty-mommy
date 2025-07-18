@@ -33,7 +33,6 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
     /**
      * @returns List component that displays all leagues it was passed
      */
-    if (loggedIn && !userLeagues) return <CircularProgress></CircularProgress>
     return (
         <List sx={{ p: 0 }}>
             {leagues.map((league) => (
@@ -64,7 +63,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                             width: '100%'
                         }
                     }}
-                    secondaryAction={saveLeague && deleteLeague ? (
+                    secondaryAction={loggedIn && saveLeague && deleteLeague ? (
                         <IconButton
                             edge="end"
                             aria-label="add"
