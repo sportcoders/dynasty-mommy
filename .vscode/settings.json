@@ -1,0 +1,42 @@
+{
+    "typescript.format.enable": true,
+    // Indent case clauses in switch statements. Requires using TypeScript 5.1+ in the workspace.
+    "typescript.format.indentSwitchCase": true,
+    // Defines space handling after a comma delimiter.
+    "typescript.format.insertSpaceAfterCommaDelimiter": true,
+    // Defines space handling after the constructor keyword.
+    "typescript.format.insertSpaceAfterConstructor": false,
+    // Defines space handling after function keyword for anonymous functions.
+    "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+    // Defines space handling after keywords in a control flow statement.
+    "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": true,
+    // Defines space handling after opening and before closing empty braces.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": true,
+    // Defines space handling after opening and before closing JSX expression braces.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+    // Defines space handling after opening and before closing non-empty braces.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+    // Defines space handling after opening and before closing non-empty brackets.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+    // Defines space handling after opening and before closing non-empty parenthesis.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+    // Defines space handling after opening and before closing template string braces.
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+    // Defines space handling after a semicolon in a for statement.
+    "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
+    // Defines space handling after type assertions in TypeScript.
+    "typescript.format.insertSpaceAfterTypeAssertion": false,
+    // Defines space handling after a binary operator.
+    "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+    // Defines space handling before function argument parentheses.
+    "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+    // Defines whether an open brace is put onto a new line for control blocks or not.
+    "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+    // Defines whether an open brace is put onto a new line for functions or not.
+    "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+    // Defines handling of optional semicolons.
+    //  - ignore: Don't insert or remove any semicolons.
+    //  - insert: Insert semicolons at statement ends.
+    //  - remove: Remove unnecessary semicolons.
+    "typescript.format.semicolons": "ignore",
+}
