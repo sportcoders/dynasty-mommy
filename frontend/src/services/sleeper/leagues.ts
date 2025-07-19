@@ -253,37 +253,21 @@ export const sleeper_getTradesWeek = async (leagueId: string, round: number) => 
     return trades
 }
 export const sleeper_getTransactionsWeek = async (leagueId: string, round: number) => {
-    const transactions = await sleeper_apiGet<Transaction>(`/league/${leagueId}/transactions/${round}`)
+    const transactions = await sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${round}`)
     return transactions
 }
-
-export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promise<Transaction[]> => {
+export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promise<Record<number, Transaction[]>> => {
     const weeks = []
     for (let i = 1; i < 27; i++) {
-        weeks.push(sleeper_apiGet<Transaction>(`/league/${leagueId}/transactions/${i}`))
+        weeks.push(sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${i}`))
     }
     const promises = await Promise.allSettled(weeks)
-    const allTransactions: Transaction[] = promises.map((promise, index) => promise.status == 'fulfilled' ? promise.value : {
-        type: 'error',
-        transaction_id: "error",
-        status: "error",
-        roster_ids: [],
-        leg: index + 1,
-        draft_picks: [],
-        creator: "error",
-        consenter_ids: [],
-        waiver_budget: [],
-        drops: {},
+    const transactions: Record<number, Transaction[]> = {}
+    promises.forEach((promise, index) => {
+        if (promise.status == 'fulfilled' && promise.value.length > 0)
+            transactions[index + 1] = promise.value
     })
-    return allTransactions
-}
-export const sleeper_getAllLeagueTrades = async (leagueId: string) => {
-    const promises = []
-    for (let i = 1; i < 27; i++) {
-        promises.push(sleeper_getTradesWeek(leagueId, i))
-    }
-    const allTrades = await Promise.all(promises)
-    return allTrades
+    return transactions
 }
 
 export const sleeper_get_state = async () => {
