@@ -1,4 +1,6 @@
 {
+        "editor.defaultFormatter": "vscode.typescript-language-features",
+
     "typescript.format.enable": true,
     // Indent case clauses in switch statements. Requires using TypeScript 5.1+ in the workspace.
     "typescript.format.indentSwitchCase": true,
@@ -39,4 +41,5 @@
     //  - insert: Insert semicolons at statement ends.
     //  - remove: Remove unnecessary semicolons.
     "typescript.format.semicolons": "ignore",
+    "editor.formatOnSave": true,
 }
