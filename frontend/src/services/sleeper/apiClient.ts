@@ -24,6 +24,12 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
         credentials: "include",
     });
 
+    if (!response.ok) {
+        throw new Error(
+            `Server API request failed: ${response.status} ${response.statusText}`
+        );
+    }
+
     return response.json() as Promise<T>;
 };
 export const serverPost = async <T, U>(
@@ -36,6 +42,13 @@ export const serverPost = async <T, U>(
         body: JSON.stringify(data),
         credentials: "include",
     });
+
+    if (!response.ok) {
+        throw new Error(
+            `Server API request failed: ${response.status} ${response.statusText}`
+        );
+    }
+
     return response.json() as Promise<T>;
 };
 export const serverDelete = async <T>(endpoint: string): Promise<T> => {
@@ -43,6 +56,12 @@ export const serverDelete = async <T>(endpoint: string): Promise<T> => {
         method: "DELETE",
         credentials: 'include',
     })
+
+    if (!response.ok) {
+        throw new Error(
+            `Server API request failed: ${response.status} ${response.statusText}`
+        );
+    }
 
     return response.json() as Promise<T>
 }
