@@ -12,7 +12,7 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
 
     if (!response.ok) {
         throw new Error(
-            `API request failed: ${response.status} ${response.statusText}`
+            `Sleeper API request failed: ${response.status} ${response.statusText}`
         );
     }
 
@@ -62,6 +62,12 @@ export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
 };
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${AVATAR_URL}${endpoint}`);
+
+    if (!response.ok) {
+        throw new Error(
+            `Sleeper API request failed: ${response.status} ${response.statusText}`
+        );
+    }
 
     return response.blob() as Promise<T>;
 };
