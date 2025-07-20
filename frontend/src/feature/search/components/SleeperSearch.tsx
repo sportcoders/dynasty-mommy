@@ -245,7 +245,6 @@ function SleeperLeagues({
   const username = useAppSelector(state => state.authReducer.username)
 
   const { leagues, loading, error } = useGetUserLeaguesSleeper(
-    searchType,
     searchText,
     season
   );
@@ -344,7 +343,7 @@ function SleeperLeagues({
       </Box>
 
       {/* Results Section */}
-      {leagues.length === 0 ? (
+      {!leagues || leagues.length === 0 ? (
         <Box
           sx={{
             p: 4,
