@@ -24,7 +24,7 @@ export const players = [
         "number": "31",
         "birth_date": "1990-02-08"
     }
-]
+];
 
 export const users = [
     {
@@ -43,4 +43,4 @@ export const users = [
         username: "username2",
         leagues: []
     }
-]
+];
