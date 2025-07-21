@@ -40,6 +40,6 @@
     //  - ignore: Don't insert or remove any semicolons.
     //  - insert: Insert semicolons at statement ends.
     //  - remove: Remove unnecessary semicolons.
-    "typescript.format.semicolons": "ignore",
+    "typescript.format.semicolons": "insert",
     "editor.formatOnSave": true,
 }
