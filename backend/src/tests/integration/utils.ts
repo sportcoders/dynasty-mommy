@@ -24,12 +24,12 @@ export const players = [
         "number": "31",
         "birth_date": "1990-02-08"
     }
-]
+];
 
 export const users = [
     {
         id: "1",
-        email: "firstTestUser@test.com",
+        email: "firsttestuser@test.com",
         password: "testpassword",
         username: "username1",
         leagues: [{ "platform": "sleeper", "league_id": "111333444" },
@@ -38,9 +38,9 @@ export const users = [
     },
     {
         id: "2",
-        email: "secondTestUser@test.com",
+        email: "secondtestuser@test.com",
         password: "testpassword",
         username: "username2",
         leagues: []
     }
-]
+];
