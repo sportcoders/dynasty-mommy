@@ -23,6 +23,7 @@ export default defineConfig({
       "@feature": path.resolve(__dirname, "src/feature"),
       "@app": path.resolve(__dirname, "src"),
       "@custom-types": path.resolve(__dirname, "src/types"),
+      "@utils": path.resolve(__dirname, "src/utils"),
     },
   },
 });

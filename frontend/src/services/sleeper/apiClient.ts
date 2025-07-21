@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@app/hooks";
 import { logout } from "@feature/auth/authSlice";
+import { SleeperError, ServerError } from "@utils/errors";
 
 const SERVER_BASE_URL = import.meta.env.VITE_SERVER_URL;
 const BASE_URL = import.meta.env.VITE_SLEEPER_URL;
@@ -11,9 +12,7 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
     });
 
     if (!response.ok) {
-        throw new Error(
-            `Sleeper API request failed: ${response.status} ${response.statusText}`
-        );
+        throw new SleeperError(response.status, response.statusText);
     }
 
     return response.json() as Promise<T>;
@@ -25,13 +24,12 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
     });
 
     if (!response.ok) {
-        throw new Error(
-            `Server API request failed: ${response.status} ${response.statusText}`
-        );
+        throw new ServerError(response.status, response.statusText);
     }
 
     return response.json() as Promise<T>;
 };
+
 export const serverPost = async <T, U>(
     endpoint: string,
     data: U
@@ -44,27 +42,25 @@ export const serverPost = async <T, U>(
     });
 
     if (!response.ok) {
-        throw new Error(
-            `Server API request failed: ${response.status} ${response.statusText}`
-        );
+        throw new ServerError(response.status, response.statusText);
     }
 
     return response.json() as Promise<T>;
 };
+
 export const serverDelete = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
         method: "DELETE",
         credentials: 'include',
-    })
+    });
 
     if (!response.ok) {
-        throw new Error(
-            `Server API request failed: ${response.status} ${response.statusText}`
-        );
+        throw new ServerError(response.status, response.statusText);
     }
 
-    return response.json() as Promise<T>
-}
+    return response.json() as Promise<T>;
+};
+
 export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
     const response = await fetch(req);
     if (response.status == 401) {
@@ -72,20 +68,24 @@ export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
         if (newTokenReq.status == 401) {
             const dispatch = useAppDispatch();
             dispatch(logout());
-            throw new Error("Session Expired, Please Login Again");
+            throw new ServerError(response.status, "Session Expired, Please Login Again");
         }
         const retryReq = await fetch(req);
         return retryReq.json() as Promise<T>;
     }
+
+    if (!response.ok) {
+        throw new ServerError(response.status, response.statusText);
+    }
+
     return response.json() as Promise<T>;
 };
+
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${AVATAR_URL}${endpoint}`);
 
     if (!response.ok) {
-        throw new Error(
-            `Sleeper API request failed: ${response.status} ${response.statusText}`
-        );
+        throw new SleeperError(response.status, response.statusText);
     }
 
     return response.blob() as Promise<T>;

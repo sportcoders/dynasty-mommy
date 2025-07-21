@@ -19,7 +19,8 @@
       "@routes/*": ["routes/*"],
       "@feature/*": ["feature/*"],
       "@app/*": ["./*"],
-      "@types/*": ["custom-types/*"]
+      "@types/*": ["custom-types/*"],
+      "@utils/*": ["utils/*"]
     }
   }
 }
