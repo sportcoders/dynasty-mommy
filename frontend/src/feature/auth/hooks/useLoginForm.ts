@@ -2,6 +2,7 @@ import { loginUser } from "@services/api/user";
 import { useState } from "react";
 import { login } from "../authSlice";
 import { useAppDispatch } from "@app/hooks";
+import { useNavigate } from "@tanstack/react-router";
 
 export default function useLoginForm() {
     const reEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -10,6 +11,7 @@ export default function useLoginForm() {
     const [emailError, setEmailError] = useState("");
     const [error, setError] = useState("");
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmailError("");
@@ -31,6 +33,7 @@ export default function useLoginForm() {
         if (user) {
             const username = user.username;
             dispatch(login(username));
+            navigate({ to: '/' });
         }
     };
     return {
