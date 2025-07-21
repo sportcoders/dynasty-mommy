@@ -1,4 +1,5 @@
 import { createUser } from "@services/api/user";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 export function useSignUpFrom() {
@@ -13,7 +14,7 @@ export function useSignUpFrom() {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [usernameError, setUsernameError] = useState("");
-
+    const navigate = useNavigate();
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmailError("");
         if (!e.target.value.toLowerCase().match(reEmail))
@@ -40,6 +41,7 @@ export function useSignUpFrom() {
         if (response) {
             //headers are response, if no headers then no authentication
             console.log(response);
+            navigate({ to: '/' });
         } else setError("Internal Service Error, Please Try Again");
     };
 
