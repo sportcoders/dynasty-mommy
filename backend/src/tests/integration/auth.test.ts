@@ -46,16 +46,12 @@ describe("user_auth", () => {
     })
     describe('signup', () => {
         it('should return a status code of 201 when a user is create successfully', async () => {
-            const response = await api.post("/auth/signup").send({
-                email: "newemail@gmail.com",
-                password: "asecurepassword",
-                username: "testusername"
-            })
+            const response = await api.post("/auth/signup").send(users[0])
             expect(response.statusCode).toBe(201)
             expect(response.body).toHaveProperty("username")
-            expect(response.body.username).toBe("testusername")
+            expect(response.body.username).toBe(users[0].username)
         })
-        it('should return a status code of 409 when a user already exists in db', async () => {
+        it('should return a status code of 409 when a email already exists in db', async () => {
             await loadUser()
             const response = await api.post("/auth/signup").send({
                 email: users[0].email,

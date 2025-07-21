@@ -52,7 +52,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const { email, password } = await userLogin.parseAsync(req.body)
 
         //authenticate user
-        const user = await AppDataSource.getRepository(User).findOne({ where: { email } })
+        const user = await AppDataSource.getRepository(User).findOne({ where: { email: email.toLowerCase() } })
 
         if (!user || !user.password) {
             throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "User Not Found" });
@@ -84,11 +84,16 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
-        const { email, password, username } = await userSignUp.parseAsync(req.body)
-
+        const { email: emailInput, password, username } = await userSignUp.parseAsync(req.body)
+        const email = emailInput.toLowerCase()
 
         //check if user already exists in db
-        const [existingEmail, existingUsername] = await Promise.all([AppDataSource.manager.findOneBy(User, { email: email }), AppDataSource.manager.findOneBy(User, { username: username })])
+        const [existingEmail, existingUsername] = await Promise.all([AppDataSource.manager.findOneBy(User, { email: email }),
+        // AppDataSource.getRepository(User).createQueryBuilder("user").where("user.username ILIKE :username", { username: username }).getOne()
+        AppDataSource.getRepository(User).createQueryBuilder("user").where("user.username LIKE LOWER(:username)", { username }).getOne()
+
+        ])
+
         if (existingEmail) {
             throw new AppError({ statusCode: HttpError.CONFLICT, message: "Email Already Exists" })
         }
