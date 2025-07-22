@@ -22,6 +22,7 @@ import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 import useDeleteLeague from "../hooks/useDeleteLeague";
 import useSaveLeague from "../hooks/useSaveLeague";
 import { useAppSelector } from "@app/hooks";
+import { useNotification } from "@hooks/useNotification";
 
 type SleeperSearchComponentProps = {
   searchType: string;
@@ -33,6 +34,8 @@ type SleeperSearchComponentProps = {
   handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checkValidParams: () => void;
   setParamsFalse: () => void;
+  searchByLeagueIdSuccess?: boolean;
+  handleLeagueSearch?: () => Promise<boolean>;
 };
 
 /**
@@ -58,8 +61,8 @@ export default function SleeperSearch() {
     handleSearchTypeChange,
     checkValidParams,
     setParamsFalse,
+    handleLeagueSearch,
   } = useSearchParamsSleeper();
-
   return (
     <Stack
       sx={{
@@ -97,6 +100,8 @@ export default function SleeperSearch() {
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
           setParamsFalse={setParamsFalse}
+          handleLeagueSearch={handleLeagueSearch}
+
         />
       )}
     </Stack>
@@ -118,10 +123,21 @@ function SleeperAccount({
   setSeason,
   handleSearchTypeChange,
   checkValidParams,
+  handleLeagueSearch,
 }: SleeperSearchComponentProps) {
-  const handleSubmit = (e: React.FormEvent) => {
+  const { showSuccess, showError, showInfo, showWarning, showNotification } =
+    useNotification();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    checkValidParams();
+    if (searchType == 'League ID' && searchText != "") {
+      const success = await handleLeagueSearch!();
+      if (success)
+        showSuccess("Navigating to Leauge");
+      else
+        showError("League not found");
+    }
+    else
+      checkValidParams();
   };
 
   return (
@@ -242,20 +258,20 @@ function SleeperLeagues({
   setSeason,
   setParamsFalse: back,
 }: SleeperSearchComponentProps) {
-  const username = useAppSelector(state => state.authReducer.username)
+  const username = useAppSelector(state => state.authReducer.username);
 
   const { leagues, loading, error } = useGetUserLeaguesSleeper(
     searchText,
     season
   );
-  const { data: userLeagues } = useGetSavedLeagues()
-  const deleteLeauge = useDeleteLeague()
-  const saveLeagueMutate = useSaveLeague()
+  const { data: userLeagues } = useGetSavedLeagues();
+  const deleteLeauge = useDeleteLeague();
+  const saveLeagueMutate = useSaveLeague();
   const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
     if (league.platform == 'sleeper')
-      result.push(league.league_id)
-    return result
-  }, [])
+      result.push(league.league_id);
+    return result;
+  }, []);
   const router = useRouter();
   const handleNavigateToLeague = (id: string) => {
     router.navigate({
@@ -265,16 +281,16 @@ function SleeperLeagues({
   };
   const saveLeague = async (league_id: string) => {
     try {
-      saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id })
+      saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id });
       return saveLeagueMutate.isSuccess;
     } catch (e) {
       return false;
     }
   };
   const handleDeleteLeague = async (league_id: string) => {
-    deleteLeauge.mutate({ platform: "sleeper", league_id: league_id })
-    return deleteLeauge.isSuccess
-  }
+    deleteLeauge.mutate({ platform: "sleeper", league_id: league_id });
+    return deleteLeauge.isSuccess;
+  };
   if (loading) return <CircularProgress />;
 
   if (error) {
