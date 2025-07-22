@@ -147,7 +147,8 @@ function SleeperAccount({
         borderRadius: 3,
         p: 4,
         m: 2,
-        maxWidth: 600,
+        width: "90%",
+        maxWidth: 400,
         mx: "auto",
         border: "1px solid",
         borderColor: "divider",
@@ -211,14 +212,17 @@ function SleeperAccount({
               },
             }}
           />
-          <Box sx={{ flex: 1 }}>
-            <SelectSeasonDropDown
-              updateSeason={setSeason}
-              selectedYear={season}
-              label_name="Year"
-              disabled={searchType === "League ID"}
-            />
-          </Box>
+          {
+            searchType == "Username" &&
+            <Box sx={{ flex: 1 }}>
+              <SelectSeasonDropDown
+                updateSeason={setSeason}
+                selectedYear={season}
+                label_name="Year"
+                disabled={false}
+              />
+            </Box>
+          }
         </Box>
 
         <Button
