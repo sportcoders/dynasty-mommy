@@ -14,11 +14,14 @@ import {
   List,
   ListItem,
   ListItemText,
+  MenuItem,
   Paper,
+  Select,
   Tab,
   Tabs,
   Typography,
   useTheme,
+  type SelectChangeEvent,
 } from "@mui/material";
 import { useEffect, useState, type SyntheticEvent } from "react";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
@@ -33,6 +36,7 @@ import useGetAllTransactionsType from "../hooks/useGetAllTransactions";
 import { ExpandMore } from "@mui/icons-material";
 import type { Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
+import { useNavigate } from "@tanstack/react-router";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -459,13 +463,26 @@ const TransactionDisplay = ({ transactions }: { transactions: Record<number, Tra
 
 const PreviousSeasonsDropDown = ({ league_id }: { league_id: string; }) => {
   const { prevSeasons } = useGetPreviousSeasons(league_id);
-
-
+  const navigate = useNavigate();
   if (!prevSeasons || prevSeasons.length == 0) return null;
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <Typography >Previous Seasons</Typography>
-      <SelectSeasonDropDown selectedYear={prevSeasons.at(0)?.season ?? "2025"} start_year={Number(prevSeasons.at(-1)?.season)} updateSeason={() => { }} />
+      {/* <SelectSeasonDropDown selectedYear={prevSeasons.at(0)?.season ?? "2025"} start_year={Number(prevSeasons.at(-1)?.season)} updateSeason={(season:string) => {
+        navigate({to:`/leagues/${season}`})
+       }} /> */}
+      <Select
+        value={prevSeasons.at(0)?.league_id}
+        onChange={(event: SelectChangeEvent) => {
+          navigate({ to: `/leagues/${event.target.value}` });
+        }}
+      >
+        {prevSeasons.map((season) => {
+          return <MenuItem key={season.season} value={season.league_id}>
+            {season.season}
+          </MenuItem>;
+        })}
+      </Select>
     </Box>
   );
 };
