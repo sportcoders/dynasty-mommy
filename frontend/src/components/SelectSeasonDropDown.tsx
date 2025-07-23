@@ -44,9 +44,8 @@ export default function SelectSeasonDropDown({
         //update season for component that called it
         updateSeason(event.target.value);
     };
-    useEffect(() => {
-        updateSeason(selectedYear ? selectedYear : String(currentYear));
-    }, [selectedYear]);
+
+    updateSeason(selectedYear ? selectedYear : String(currentYear));
     return (
         <FormControl fullWidth disabled={disabled}>
             <InputLabel id="select-season-input-label">{label_name}</InputLabel>
