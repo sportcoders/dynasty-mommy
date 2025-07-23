@@ -62,7 +62,7 @@ export default function SleeperLeaguesHomePage({
     useDelayedLoading([team_loading, roster_loading, loading], 1000);
 
   const { showError } = useNotification();
-  const { data: transactions, loading: transaction_loading, isError: transaction_error } = useGetAllTransactionsType(league_id)
+  const { data: transactions, loading: transaction_loading, isError: transaction_error } = useGetAllTransactionsType(league_id);
 
   useEffect(() => {
     if (error) {
@@ -290,7 +290,7 @@ export default function SleeperLeaguesHomePage({
                     ))}
                   </Box>
                 )}
-                {!showRosterLoading && !roster && !roster_error && (
+                {roster && roster.length === 0 && (
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -311,13 +311,13 @@ export default function SleeperLeaguesHomePage({
     </Box>
   );
 }
-const TransactionDisplay = ({ transactions }: { transactions: Record<number, Transaction[]> }) => {
+const TransactionDisplay = ({ transactions }: { transactions: Record<number, Transaction[]>; }) => {
   if (!transactions)
     return (
       <>
         No Transactions Found
       </>
-    )
+    );
 
 
   const getStatusColor = (status: string) => {
