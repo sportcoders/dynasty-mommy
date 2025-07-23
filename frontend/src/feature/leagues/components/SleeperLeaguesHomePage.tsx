@@ -32,6 +32,7 @@ import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 import useGetAllTransactionsType from "../hooks/useGetAllTransactions";
 import { ExpandMore } from "@mui/icons-material";
 import type { Transaction } from "@services/sleeper";
+import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -62,7 +63,7 @@ export default function SleeperLeaguesHomePage({
     useDelayedLoading([team_loading, roster_loading, loading], 1000);
 
   const { showError } = useNotification();
-  const { data: transactions, loading: transaction_loading, isError: transaction_error } = useGetAllTransactionsType(league_id)
+  const { data: transactions, loading: transaction_loading, isError: transaction_error } = useGetAllTransactionsType(league_id);
 
   useEffect(() => {
     if (error) {
@@ -187,10 +188,11 @@ export default function SleeperLeaguesHomePage({
               <Tab label="Transactions" {...a11yProps(1)} />
               <Tab label="Item Three" {...a11yProps(2)} />
             </Tabs>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography >Season</Typography>
+            {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography >Previous Seasons</Typography>
               <SelectSeasonDropDown selectedYear="2025" updateSeason={() => { }} />
-            </Box>
+            </Box> */}
+            <PreviousSeasonsDropDown league_id={league_id} />
           </Box>
         </Box>
 
@@ -311,13 +313,13 @@ export default function SleeperLeaguesHomePage({
     </Box>
   );
 }
-const TransactionDisplay = ({ transactions }: { transactions: Record<number, Transaction[]> }) => {
+const TransactionDisplay = ({ transactions }: { transactions: Record<number, Transaction[]>; }) => {
   if (!transactions)
     return (
       <>
         No Transactions Found
       </>
-    )
+    );
 
 
   const getStatusColor = (status: string) => {
@@ -452,5 +454,18 @@ const TransactionDisplay = ({ transactions }: { transactions: Record<number, Tra
         </Paper>
       )}
     </Container>
+  );
+};
+
+const PreviousSeasonsDropDown = ({ league_id }: { league_id: string; }) => {
+  const { prevSeasons } = useGetPreviousSeasons(league_id);
+
+
+  if (!prevSeasons || prevSeasons.length == 0) return null;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Typography >Previous Seasons</Typography>
+      <SelectSeasonDropDown selectedYear={prevSeasons.at(0)?.season ?? "2025"} start_year={Number(prevSeasons.at(-1)?.season)} updateSeason={() => { }} />
+    </Box>
   );
 };

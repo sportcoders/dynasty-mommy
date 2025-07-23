@@ -19,6 +19,7 @@ export type SelectSeasonProps = {
     label_name?: string;
     width?: number;
     disabled?: boolean;
+    start_year?: number;
 };
 export default function SelectSeasonDropDown({
     updateSeason,
@@ -26,6 +27,7 @@ export default function SelectSeasonDropDown({
     label_name,
     width,
     disabled,
+    start_year,
 }: SelectSeasonProps) {
     /**
      * @returns drop down menu with years ranging from 2017(year sleeper was launched) to current year
@@ -35,10 +37,9 @@ export default function SelectSeasonDropDown({
     const currentDate: Date = new Date();
     const currentYear = currentDate.getFullYear();
     const validYears = Array.from(
-        { length: currentYear - 2017 + 1 },
-        (_, i) => i + 2017
+        { length: currentYear - (start_year ? start_year : 2017) + 1 },
+        (_, i) => i + (start_year ? start_year : 2017)
     ).reverse();
-
     const handleSeasonChange = (event: SelectChangeEvent) => {
         //update season for component that called it
         updateSeason(event.target.value);
