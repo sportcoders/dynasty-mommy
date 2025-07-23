@@ -1,27 +1,24 @@
 import { sleeper_getLeagueInfo } from "@services/sleeper";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-export default function useGetPreviousSeasons({ league_id }: { league_id: string }) {
-    const [prevSeasons, setPrevSeasons] = useState<{ league_id: string, season: string }[]>([])
-    const [error, setError] = useState<string>()
-    const [loading, setLoading] = useState<boolean>(false)
-    useEffect(() => {
-        const fetchPreviousSeasons = async () => {
-            setLoading(true)
-            setError("")
-            let leagueId = league_id
-            while (leagueId) {
-                const league = await sleeper_getLeagueInfo(leagueId)
-                if (!league) {
-                    setError("error fetching league")
-                    break
-                }
-                setPrevSeasons([...prevSeasons, { league_id: leagueId, season: league.season }])
-                leagueId = league.previous_league_id
-            }
-            setLoading(false)
+const fetchPreviousSeasons = async (league_id: string) => {
+    const seasons: { league_id: string, season: string; }[] = [];
+
+    let leagueId = league_id;
+    while (leagueId) {
+        const league = await sleeper_getLeagueInfo(leagueId);
+        if (!league) {
+            throw new Error("League not found");
         }
-        fetchPreviousSeasons()
-    }, [league_id])
-    return { prevSeasons, error, loading }
+        seasons.push({ league_id: leagueId, season: league.season });
+        leagueId = league.previous_league_id;
+    }
+    return seasons;
+};
+export default function useGetPreviousSeasons(league_id: string) {
+    const { data: prevSeasons, isError: error, isPending: loading } = useQuery({
+        queryKey: ['prevLeagues', league_id],
+        queryFn: () => fetchPreviousSeasons(league_id),
+    });
+    return { prevSeasons, error, loading };
 }
