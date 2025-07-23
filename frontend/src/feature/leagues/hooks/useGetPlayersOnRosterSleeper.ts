@@ -26,6 +26,9 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
                 setForceRefresh((prev) => prev + 1);
                 return prev;
             }
+
+            setPlayers(null);
+
             return owner_id;
         });
     };
