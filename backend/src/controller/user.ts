@@ -1,19 +1,19 @@
-import { NextFunction, Request, Response } from "express"
-import { User, UserLeagues } from "../models/user"
-import { HttpSuccess, HttpError } from "../constants/constants"
-import { AppError } from "../errors/app_error"
-import { AppDataSource } from "../app"
-import { addUserToLeagueSchema, deleteUserLeagueSchema } from "../schemas/user"
+import { NextFunction, Request, Response } from "express";
+import { User, UserLeagues } from "../models/user";
+import { HttpSuccess, HttpError } from "../constants/constants";
+import { AppError } from "../errors/app_error";
+import { AppDataSource } from "../app";
+import { addUserToLeagueSchema, changeUsernameSchema, deleteUserLeagueSchema } from "../schemas/user";
 
 export async function addLeagueToUser(req: Request, res: Response, next: NextFunction) {
     try {
-        const { league } = await addUserToLeagueSchema.parseAsync(req.body)
+        const { league } = await addUserToLeagueSchema.parseAsync(req.body);
 
         if (!req.user || !req.user.email || !req.user.user_id) {
             return res.status(HttpError.UNAUTHORIZED).json({ message: "Unauthorized" });
         }
 
-        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email })
+        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email });
         if (user == null) {
             throw new AppError({
                 statusCode: HttpError.NOT_FOUND,
@@ -27,7 +27,7 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
             },
             league_id: league.league_id,
             platform: league.platform
-        })
+        });
 
         if (check !== null) {
             throw new AppError({
@@ -40,13 +40,13 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
             platform: league.platform,
             user: user,
             league_id: league.league_id
-        })
+        });
         return res.status(HttpSuccess.OK).json({
             message: "League added successfully"
         });
     }
     catch (err) {
-        next(err)
+        next(err);
     }
 }
 
@@ -56,7 +56,7 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
             return res.status(HttpError.UNAUTHORIZED).json({ message: "Unauthorized" });
         }
 
-        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email })
+        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email });
         if (user == null) {
             throw new AppError({
                 statusCode: HttpError.NOT_FOUND,
@@ -67,27 +67,45 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
         const leagues = await AppDataSource.getRepository(UserLeagues).find({
             where: { user },
             select: ['league_id', 'platform']
-        })
+        });
 
-        return res.status(200).send({ leagues })
+        return res.status(200).send({ leagues });
     }
     catch (e) {
-        next(e)
+        next(e);
     }
 }
 export async function deleteUserLeagues(req: Request, res: Response, next: NextFunction) {
     try {
-        const { league_id, platform } = deleteUserLeagueSchema.parse(req.params)
+        const { league_id, platform } = deleteUserLeagueSchema.parse(req.params);
 
-        if (!req.user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Unauthorized" })
+        if (!req.user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Unauthorized" });
 
-        const result = await AppDataSource.getRepository(UserLeagues).delete({ userId: req.user.user_id, league_id: league_id, platform: platform })
+        const result = await AppDataSource.getRepository(UserLeagues).delete({ userId: req.user.user_id, league_id: league_id, platform: platform });
 
-        if (result.affected && result.affected > 0) return res.status(HttpSuccess.OK).json({ detail: "League removed successfully" })
+        if (result.affected && result.affected > 0) return res.status(HttpSuccess.OK).json({ detail: "League removed successfully" });
 
-        throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" })
+        throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
     }
     catch (e) {
-        next(e)
+        next(e);
+    }
+}
+
+export async function changeUsername(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { new_username } = changeUsernameSchema.parse(req.body);
+
+        const userCheck = await AppDataSource.getRepository(User).findOneBy({ id: req.user?.user_id });
+        if (!userCheck) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "user not found" });
+        const usernameCheck = await AppDataSource.getRepository(User).createQueryBuilder("user").where("user.username LIKE LOWER(:username)", { username: new_username }).getOne();
+
+        if (usernameCheck && usernameCheck.id != req.user?.user_id) throw new AppError({ statusCode: HttpError.CONFLICT, message: "Username is already taken" });
+
+        await AppDataSource.getRepository(User).update({ id: req.user!.user_id }, { username: new_username });
+        res.status(HttpSuccess.OK).json({ detail: "username updated" });
+    }
+    catch (e) {
+        next(e);
     }
 }
