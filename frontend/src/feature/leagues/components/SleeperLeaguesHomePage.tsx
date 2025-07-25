@@ -46,6 +46,8 @@ export default function SleeperLeaguesHomePage({
   league_id,
 }: SleeperLeaguesHomePage) {
   const theme = useTheme();
+  const { showError } = useNotification();
+
   const {
     teams,
     error: team_error,
@@ -63,11 +65,10 @@ export default function SleeperLeaguesHomePage({
 
   const [expanded, setExpanded] = useState<number | false>(false);
 
-  const [showTeamLoading, showRosterLoading, showLeagueLoading] =
-    useDelayedLoading([team_loading, roster_loading, loading], 1000);
-
-  const { showError } = useNotification();
   const { data: transactions, loading: transaction_loading, isError: transaction_error } = useGetAllTransactionsType(league_id);
+
+  const [showTeamLoading, showRosterLoading, showLeagueLoading, showTransactionLoading] =
+    useDelayedLoading([team_loading, roster_loading, loading, transaction_loading], 1000);
 
   useEffect(() => {
     if (error) {
@@ -86,6 +87,12 @@ export default function SleeperLeaguesHomePage({
       showError(`Failed to load roster: ${roster_error}`);
     }
   }, [roster_error, showError]);
+
+  useEffect(() => {
+    if (transaction_error) {
+      showError(`Failed to load transactions.`);
+    }
+  }, [transaction_error, showError]);
 
   const handleAccordionChange =
     (panel: number) => (event: SyntheticEvent, newExpanded: boolean) => {
@@ -310,8 +317,13 @@ export default function SleeperLeaguesHomePage({
           ))}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-
-          {!transactions ? <CircularProgress /> : <TransactionDisplay transactions={transactions} />}
+          {showTransactionLoading ? (
+            <CircularProgress />
+          ) : transactions ? (
+            <TransactionDisplay transactions={transactions} />
+          ) : (
+            <div>No transactions found</div>
+          )}
         </CustomTabPanel>
       </Box>
     </Box>
