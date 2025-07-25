@@ -62,7 +62,7 @@ export default function useGetLeagueInfo(league_id: string) {
 
                 if (!response) {
                     setError('League not found.');
-                    return;
+                    return { success: false };
                 }
 
                 if (response.avatar) {
