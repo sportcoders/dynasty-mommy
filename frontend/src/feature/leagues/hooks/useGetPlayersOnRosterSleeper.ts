@@ -1,3 +1,4 @@
+import { ServerError, SleeperError } from "@app/utils/errors";
 import {
     type Player,
     sleeper_getPlayersForRoster_rosterid,
@@ -38,17 +39,25 @@ export default function useGetPlayersOnRosterSleeper(league_id: string) {
             try {
                 setLoading(true);
                 setError("");
+
                 const res = await sleeper_getPlayersForRoster_rosterid(
                     league_id,
                     roster_id
                 );
+
                 if (res) setPlayers(res);
             } catch (e: unknown) {
-                if (e instanceof Error) {
-                    setError(e.message);
-                } else {
-                    setError(String(e));
+                if (e instanceof SleeperError) {
+                    // The await function used in called function is a Sleeper service function for fetching rosters
+                    setError("Failed to fetch rosters");
+                    return { success: false, statusCode: e.statusCode };
+                } else if (e instanceof ServerError) {
+                    // The await function used in called function is a Server service function for fetching players
+                    setError("Failed to fetch players");
+                    return { success: false, statusCode: e.statusCode };
                 }
+
+                return { success: false };
             } finally {
                 setLoading(false);
             }

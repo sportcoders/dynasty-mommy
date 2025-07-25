@@ -1,5 +1,6 @@
-import { type LeagueInfo, sleeper_getLeagueInfo, sleeper_getAvatarThumbnail } from "@services/sleeper"
-import { useState, useEffect } from "react"
+import { SleeperError } from "@utils/errors";
+import { type LeagueInfo, sleeper_getLeagueInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
+import { useState, useEffect } from "react";
 
 /**
  * Fetches and returns a URL for a league avatar image given its avatar ID.
@@ -9,14 +10,14 @@ import { useState, useEffect } from "react"
  * or null if the avatar could not be fetched.
  */
 const getAvatar = async (avatar_id: string) => {
-    const blob = await sleeper_getAvatarThumbnail(avatar_id)
+    const blob = await sleeper_getAvatarThumbnail(avatar_id);
     if (!blob) {
-        return null
-    } 
+        return null;
+    }
 
-    const url = URL.createObjectURL(blob)
-    return url
-}
+    const url = URL.createObjectURL(blob);
+    return url;
+};
 
 /**
  * Custom React hook that retrieves Sleeper league scoring information and avatar.
@@ -36,46 +37,70 @@ export default function useGetLeagueInfo(league_id: string) {
      * 
      * @returns {object} - An object contain the league info, error and loading status
      */
-    const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null)
-    const [loading, setLoading] = useState<boolean>(true)
-    const [error, setError] = useState("")
-    
+    const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState("");
+
     useEffect(() => {
         const loadLeagueInfo = async () => {
-            setLoading(true)
+            setLoading(true);
             try {
-                const response = await sleeper_getLeagueInfo(league_id)
+                let response;
+
+                try {
+                    response = await sleeper_getLeagueInfo(league_id);
+                } catch (error) {
+                    setError("Failed to fetch league information.");
+
+                    if (error instanceof SleeperError) {
+                        return { success: false, statusCode: error.statusCode };
+
+                    }
+
+                    return { success: false };
+                }
 
                 if (!response) {
-                    setError('Failed to fetch league info.')
-                    return
+                    setError('League not found.');
+                    return { success: false };
                 }
 
                 if (response.avatar) {
-                    response.avatar = await getAvatar(response.avatar) || ""
+                    try {
+                        response.avatar = await getAvatar(response.avatar) || "";
+                    } catch (error) {
+                        setError("Failed to load league avatar.");
+
+                        if (error instanceof SleeperError) {
+                            return { success: false, statusCode: error.statusCode };
+
+                        }
+
+                        return { success: false };
+
+                    }
                 }
-                setLeagueInfo(response)
+
+                setLeagueInfo(response);
             }
             catch (error: unknown) {
-                if (error instanceof Error) {
-                    setError(error.message)
-                } else {
-                    setError(String(error))
-                }
+                // Not sure if we want console error, maybe it'll help with error stack tracing
+                // console.error('League info fetch failed:', error);
+                setError('An unexpected error occurred while loading league data.');
             }
             finally {
-                setLoading(false)
+                setLoading(false);
             }
-        }
-        
-        loadLeagueInfo()
-        
+        };
+
+        loadLeagueInfo();
+
         return () => {
             if (leagueInfo && leagueInfo.avatar) {
-                URL.revokeObjectURL(leagueInfo.avatar)
+                URL.revokeObjectURL(leagueInfo.avatar);
             }
-        }
-    }, [league_id])
-    
-    return { leagueInfo, loading, error }
+        };
+    }, [league_id]);
+
+    return { leagueInfo, loading, error };
 }
