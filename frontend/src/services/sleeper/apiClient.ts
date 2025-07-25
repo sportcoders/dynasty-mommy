@@ -1,4 +1,5 @@
 import { useAppDispatch } from "@app/hooks";
+import { store } from "@app/store/store";
 import { logout } from "@feature/auth/authSlice";
 import { SleeperError, ServerError } from "@utils/errors";
 
@@ -22,7 +23,9 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
         credentials: "include",
     });
-
+    if (response.status == 401) {
+        store.dispatch(logout());
+    }
     if (!response.ok) {
         throw new ServerError(response.status, response.statusText);
     }
@@ -40,7 +43,9 @@ export const serverPost = async <T, U>(
         body: JSON.stringify(data),
         credentials: "include",
     });
-
+    if (response.status == 401) {
+        store.dispatch(logout());
+    }
     if (!response.ok) {
         throw new ServerError(response.status, response.statusText);
     }
