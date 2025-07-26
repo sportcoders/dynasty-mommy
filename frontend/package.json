@@ -25,14 +25,13 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "sass": "^1.89.0",
-    "zod": "^3.25.56"
+    "sass": "^1.89.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
     "@tanstack/eslint-plugin-query": "^5.81.2",
     "@tanstack/router-plugin": "^1.120.18",
-    "@types/node": "^22.15.29",
+    "@types/node": "^24.1.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/react-redux": "^7.1.34",
