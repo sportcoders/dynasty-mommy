@@ -26,7 +26,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
         vertical: "bottom",
         horizontal: "left",
       }}
-      preventDuplicate
+      // preventDuplicate
       autoHideDuration={3000}
       action={(key) => (
         <IconButton onClick={onClickDismiss(key)} color="inherit" size="small">
