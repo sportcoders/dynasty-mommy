@@ -37,6 +37,7 @@ import { ExpandMore } from "@mui/icons-material";
 import type { Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import { useNavigate } from "@tanstack/react-router";
+import BackButton from "@components/BackButton";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -179,6 +180,7 @@ export default function SleeperLeaguesHomePage({
         }}
       >
         <Box display="flex" alignItems="center" gap={2} mb={1}>
+          <BackButton url="/" />
           <Avatar
             src={leagueInfo.avatar}
             alt={`${leagueInfo.name} avatar`}
