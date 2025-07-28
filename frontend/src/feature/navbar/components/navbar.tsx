@@ -133,71 +133,74 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         </Link>
                     </Typography>
                 </Box>
-                <List sx={{ px: '0.75rem' }}>
-                    {drawerItems.map((item, index) => (
-                        <ListItem key={index} sx={{
-                            cursor: 'pointer',
-                            color: 'primary.main',
-                            backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
-                            borderRadius: '16px',
-                        }} component={Link} to={item.link}>
-                            <ListItemIcon>
-                                {item.icon}
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={item.text}
-                                sx={{
-                                    '& .MuiListItemText-primary': {
-                                        fontWeight: 500,
-                                    }
-                                }}
-                            />
-                        </ListItem>
-                    ))}
-                    {username ?
-                        <>
-                            <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
-                                borderRadius: '16px',
+                <Box sx={{ px: '0.75rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <List sx={{ flexGrow: 1 }}>
+                        {drawerItems.map((item, index) => (
+                            <ListItem key={index} sx={{
                                 cursor: 'pointer',
                                 color: 'primary.main',
-
-                            }}>
+                                backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
+                                borderRadius: '16px',
+                            }} component={Link} to={item.link}>
                                 <ListItemIcon>
-                                    <SportsBasketball />
+                                    {item.icon}
                                 </ListItemIcon>
-                                <ListItemText primary="My Leagues" sx={{
-                                    '& .MuiListItemText-primary': {
-                                        fontWeight: 500,
-                                    }
-                                }} />
-                                {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
-
+                                <ListItemText
+                                    primary={item.text}
+                                    sx={{
+                                        '& .MuiListItemText-primary': {
+                                            fontWeight: 500,
+                                        }
+                                    }}
+                                />
                             </ListItem>
+                        ))}
+                        {username ?
+                            <>
+                                <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
+                                    borderRadius: '16px',
+                                    cursor: 'pointer',
+                                    color: 'primary.main',
 
-                            {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} />}
-                        </> :
-                        <ListItem sx={{
-                            cursor: 'pointer',
-                            color: 'primary.main',
-                            backgroundColor: location.pathname == '/login' ? 'rgba(67, 139, 212, 0.51)' : "transparent",
-                            borderRadius: '16px',
-                        }} component={Link} to={'/login'}>
-                            <ListItemIcon>
-                                <Person />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary='Login'
-                                sx={{
-                                    '& .MuiListItemText-primary': {
-                                        fontWeight: 500,
-                                    }
-                                }}
-                            />
-                        </ListItem>
-                    }
+                                }}>
+                                    <ListItemIcon>
+                                        <SportsBasketball />
+                                    </ListItemIcon>
+                                    <ListItemText primary="My Leagues" sx={{
+                                        '& .MuiListItemText-primary': {
+                                            fontWeight: 500,
+                                        }
+                                    }} />
+                                    {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
 
-                    <DarkModeToggle />
-                </List>
+                                </ListItem>
+
+                                {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} />}
+                            </> :
+                            <ListItem sx={{
+                                cursor: 'pointer',
+                                color: 'primary.main',
+                                backgroundColor: location.pathname == '/login' ? 'rgba(67, 139, 212, 0.51)' : "transparent",
+                                borderRadius: '16px',
+                            }} component={Link} to={'/login'}>
+                                <ListItemIcon>
+                                    <Person />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary='Login'
+                                    sx={{
+                                        '& .MuiListItemText-primary': {
+                                            fontWeight: 500,
+                                        }
+                                    }}
+                                />
+                            </ListItem>
+                        }
+                    </List>
+                    <Box sx={{ pb: 1 }}>
+                        <DarkModeToggle />
+                    </Box>
+                </Box>
             </Drawer >
 
             <Box sx={{
