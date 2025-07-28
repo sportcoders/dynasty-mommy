@@ -14,15 +14,15 @@ export interface User {
 
 export interface Roster {
     owner_id: string;
-    players: string[]
-    roster_id: number
+    players: string[];
+    roster_id: number;
 }
 
 export interface Player {
     id: string;
     first_name: string;
     last_name: string;
-    position: string
+    position: string;
 }
 
 export interface Players {
@@ -38,7 +38,7 @@ export interface LeagueInfo {
     previous_league_id: string,
     settings: {
         num_teams: number,
-    }
+    };
     scoring_settings: {
         ast: number,
         blk: number,
@@ -59,20 +59,20 @@ export interface LeagueInfo {
         tpm: number,
         ftm: number,
     },
-    roster_positions: string[]
+    roster_positions: string[];
 }
 export interface TeamInfo {
     record: {
         wins: number,
         losses: number,
-        ties: number
+        ties: number;
     },
     team_name: string,
     user_id: string | null,
     username: string | null,
     display_name: string | null,
-    avatar: string | null
-    roster_id: number
+    avatar: string | null;
+    roster_id: number;
 }
 export interface State {
     week: number,
@@ -80,18 +80,19 @@ export interface State {
     season: string,
     display_week: number,
     league_season: string,
-    previous_season: string
+    previous_season: string;
 }
 export interface Transaction {
     type: string,
     transaction_id: string,
     status: string,
-    roster_ids: [],
+    roster_ids: number[],
     leg: number,
     draft_picks: [],
     creator: string,
     consenter_ids: [],
     waiver_budget: [],
     drops: {},
-
+    adds: {},
+    status_updated: string;
 }
