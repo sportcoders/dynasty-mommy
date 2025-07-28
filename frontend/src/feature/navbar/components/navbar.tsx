@@ -11,25 +11,25 @@ import {
     Typography,
     useColorScheme,
 } from '@mui/material';
-import { Menu, Person, Settings, Dashboard, Login, PersonAdd, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { Menu, Person, Login, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 import { logout } from '@feature/auth/authSlice';
 import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
 import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
-import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
+import { Route as LeagueRoute } from '@routes/leagues.$leaugeId';
 
-const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean }) => {
-    const { leagues, loading, error } = useGetSavedLeaguesNavBar()
+const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
+    const { leagues, loading, error } = useGetSavedLeaguesNavBar();
     const router = useRouter();
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
             params: { leaugeId: id },
-        })
-    }
-    if (!leagues || error) return null
+        });
+    };
+    if (!leagues || error) return null;
     return (
         <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
             <Box sx={{ ml: 5, }}>
@@ -40,15 +40,15 @@ const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean }) => {
                 }
             </Box>
         </Collapse>
-    )
-}
+    );
+};
 
 const DarkModeToggle = () => {
     const { mode, setMode } = useColorScheme();
-    if (!mode) return null
+    if (!mode) return null;
     const toggleMode = () => {
         setMode(mode === 'light' ? 'dark' : 'light');
-    }
+    };
     return (
         <ListItem sx={{
             borderRadius: '16px',
@@ -67,21 +67,19 @@ const DarkModeToggle = () => {
             />
 
         </ListItem>
-    )
-}
-export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void }) {
-    const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false)
+    );
+};
+export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void; }) {
+    const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false);
     const username = useAppSelector((state) => state.authReducer.username);
     const dispatch = useAppDispatch();
-    const location = useLocation()
+    const location = useLocation();
     const handleSignOut = () => {
         dispatch(logout());
     };
     const drawerItems = [
-        { text: 'Dashboard', icon: <Dashboard />, link: '' },
         { text: 'Find League', icon: <Search />, link: '/' },
-        { text: 'Login', icon: <Person />, link: '/login' },
-        { text: 'Settings', icon: <Settings />, link: '' },
+        // { text: 'Login', icon: <Person />, link: '/login' },
     ];
 
     const toggleDrawer = () => {
@@ -135,48 +133,74 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         </Link>
                     </Typography>
                 </Box>
-                <List sx={{ px: '0.75rem' }}>
-                    {drawerItems.map((item, index) => (
-                        <ListItem key={index} sx={{
-                            cursor: 'pointer',
-                            color: 'primary.main',
-                            backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
-                            borderRadius: '16px',
-                        }} component={Link} to={item.link}>
-                            <ListItemIcon>
-                                {item.icon}
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={item.text}
-                                sx={{
-                                    '& .MuiListItemText-primary': {
-                                        fontWeight: 500,
-                                    }
-                                }}
-                            />
-                        </ListItem>
-                    ))}
+                <Box sx={{ px: '0.75rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <List sx={{ flexGrow: 1 }}>
+                        {drawerItems.map((item, index) => (
+                            <ListItem key={index} sx={{
+                                cursor: 'pointer',
+                                color: 'primary.main',
+                                backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
+                                borderRadius: '16px',
+                            }} component={Link} to={item.link}>
+                                <ListItemIcon>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={item.text}
+                                    sx={{
+                                        '& .MuiListItemText-primary': {
+                                            fontWeight: 500,
+                                        }
+                                    }}
+                                />
+                            </ListItem>
+                        ))}
+                        {username ?
+                            <>
+                                <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
+                                    borderRadius: '16px',
+                                    cursor: 'pointer',
+                                    color: 'primary.main',
 
-                    <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
-                        borderRadius: '16px',
-                        cursor: 'pointer',
-                        color: 'primary.main',
+                                }}>
+                                    <ListItemIcon>
+                                        <SportsBasketball />
+                                    </ListItemIcon>
+                                    <ListItemText primary="My Leagues" sx={{
+                                        '& .MuiListItemText-primary': {
+                                            fontWeight: 500,
+                                        }
+                                    }} />
+                                    {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
 
-                    }}>
-                        <ListItemIcon>
-                            <SportsBasketball />
-                        </ListItemIcon>
-                        <ListItemText primary="My Leagues" sx={{
-                            '& .MuiListItemText-primary': {
-                                fontWeight: 500,
-                            }
-                        }} />
-                        {myLeaguesOpen ? <ExpandLess /> : <ExpandMore />}
+                                </ListItem>
 
-                    </ListItem>
-                    {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} />}
-                    <DarkModeToggle />
-                </List>
+                                {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} />}
+                            </> :
+                            <ListItem sx={{
+                                cursor: 'pointer',
+                                color: 'primary.main',
+                                backgroundColor: location.pathname == '/login' ? 'rgba(67, 139, 212, 0.51)' : "transparent",
+                                borderRadius: '16px',
+                            }} component={Link} to={'/login'}>
+                                <ListItemIcon>
+                                    <Person />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary='Login'
+                                    sx={{
+                                        '& .MuiListItemText-primary': {
+                                            fontWeight: 500,
+                                        }
+                                    }}
+                                />
+                            </ListItem>
+                        }
+                    </List>
+                    <Box sx={{ pb: 1 }}>
+                        <DarkModeToggle />
+                    </Box>
+                </Box>
             </Drawer >
 
             <Box sx={{
@@ -215,63 +239,37 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                 zIndex: 1000,
             }}>
                 {!username ? (
-                    <>
-                        <Button
-                            component={Link}
-                            to='/login'
-                            variant="outlined"
-                            startIcon={<Login />}
-                            size="small"
-                            sx={{
-                                color: '#1976d2',
-                                borderColor: '#1976d2',
-                                textTransform: 'none',
-                                boxShadow: '0 2px 8px rgba(25, 118, 210, 0.2)',
-                                minWidth: '90px',
-                                '&:hover': {
-                                    borderColor: '#1565c0',
-                                    backgroundColor: 'rgba(25, 118, 210, 0.08)',
-                                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
-                                    transform: 'translateY(-1px)'
-                                }
-                            }}
-                        >
-                            Sign In
-                        </Button>
-                        <Button
-                            component={Link}
-                            to='/signup'
-                            variant="contained"
-                            startIcon={<PersonAdd />}
-                            size="small"
-                            sx={{
-                                backgroundColor: '#1976d2',
-                                fontWeight: 600,
-                                textTransform: 'none',
-                                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)',
-                                minWidth: '90px',
-                                '&:hover': {
-                                    backgroundColor: '#1565c0',
-                                    boxShadow: '0 6px 16px rgba(25, 118, 210, 0.5)',
-                                    transform: 'translateY(-1px)'
-                                }
-                            }}
-                        >
-                            Sign Up
-                        </Button>
-                    </>
+                    <Button
+                        component={Link}
+                        to='/login'
+                        variant="outlined"
+                        startIcon={<Login />}
+                        size="small"
+                        sx={{
+                            color: '#1976d2',
+                            borderColor: '#1976d2',
+                            textTransform: 'none',
+                            boxShadow: '0 2px 8px rgba(25, 118, 210, 0.2)',
+                            minWidth: '90px',
+                            '&:hover': {
+                                borderColor: '#1565c0',
+                                backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                                transform: 'translateY(-1px)'
+                            }
+                        }}
+                    >
+                        Sign In
+                    </Button>
+
                 ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Typography
                             variant="body1"
                             sx={{
-                                color: "text.primary",
+                                color: "primary.main",
                                 fontWeight: 600,
-                                background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-                                backgroundClip: 'text',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+
                             }}
                         >
                             {username}
