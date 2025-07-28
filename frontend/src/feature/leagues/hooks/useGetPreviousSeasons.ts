@@ -3,9 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 
 const fetchPreviousSeasons = async (league_id: string) => {
     const seasons: { league_id: string, season: string; }[] = [];
-
     let leagueId = league_id;
-    while (leagueId) {
+    while (leagueId && leagueId != '0') {
         const league = await sleeper_getLeagueInfo(leagueId);
         if (!league) {
             throw new Error("League not found");
