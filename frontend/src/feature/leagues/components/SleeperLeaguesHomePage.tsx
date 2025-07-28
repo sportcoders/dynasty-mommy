@@ -18,6 +18,12 @@ import {
   Paper,
   Select,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Tabs,
   Typography,
   useTheme,
@@ -31,10 +37,9 @@ import useDelayedLoading from "@hooks/useDelayedLoading";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNotification } from "@hooks/useNotification";
-import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 import useGetAllTransactionsType from "../hooks/useGetAllTransactions";
 import { ExpandMore } from "@mui/icons-material";
-import type { Transaction } from "@services/sleeper";
+import { sleeper_getPlayer, type Player, type TeamInfo, type Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
@@ -322,7 +327,7 @@ export default function SleeperLeaguesHomePage({
           {showTransactionLoading ? (
             <CircularProgress />
           ) : transactions ? (
-            <TransactionDisplay transactions={transactions} />
+            <TransactionDisplay transactions={transactions} teams={teams} />
           ) : (
             <div>No transactions found</div>
           )}
@@ -331,7 +336,13 @@ export default function SleeperLeaguesHomePage({
     </Box>
   );
 }
-const TransactionDisplay = ({ transactions }: { transactions: Record<number, Transaction[]>; }) => {
+const TransactionDisplay = ({ transactions, teams }: { transactions: Record<number, Transaction[]>, teams: TeamInfo[]; }) => {
+  const [expanded, setExpanded] = useState<string | false>("");
+
+  const handleAccordionChange =
+    (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
   if (!transactions)
     return (
       <>
@@ -358,11 +369,16 @@ const TransactionDisplay = ({ transactions }: { transactions: Record<number, Tra
       default: return 'default';
     }
   };
+  const formatUnixTime = (time: string) => {
+    const day = new Date(time);
+    return day.toString().substring(4, 21);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
 
       {Object.entries(transactions).map(([leg, legTransactions]) => (
+
         <Card key={leg} sx={{ mb: 3, boxShadow: 3 }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -375,89 +391,41 @@ const TransactionDisplay = ({ transactions }: { transactions: Record<number, Tra
             </Box>
 
             {legTransactions.map((transaction, index) => (
-              <Accordion key={transaction.transaction_id} sx={{ mb: 2 }}>
+              <Accordion key={transaction.transaction_id} sx={{ mb: 2 }} expanded={expanded === transaction.transaction_id} onChange={handleAccordionChange(transaction.transaction_id)}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2 }}>
-                    <Chip
-                      label={transaction.status}
-                      color={getStatusColor(transaction.status) as any}
-                      size="small"
-                    />
                     <Chip
                       label={transaction.type}
                       color={getTypeColor(transaction.type) as any}
                       size="small"
                       variant="outlined"
+                      sx={{ width: 100, justifyContent: 'center' }}
                     />
-                    <Typography sx={{ flexGrow: 1, ml: 2 }}>
-                      Transaction ID: {transaction.transaction_id}
+                    <Typography sx={{ flexGrow: 1, ml: 2, fontWeight: 600 }}>
+                      {
+                        // transaction.roster_ids.length > 1 ?
+                        transaction.roster_ids.map((id) => teams[id - 1].display_name).join(' ')
+                      }
                     </Typography>
+                    <Chip
+                      label={transaction.status}
+                      color={getStatusColor(transaction.status) as any}
+                      size="small"
+                      sx={{ width: 80, justifyContent: 'center' }}
+                    />
                     <Typography variant="body2" color="text.secondary">
                       {/* {formatTimestamp(transaction.)} */}
                     </Typography>
                   </Box>
                 </AccordionSummary>
-
-                <AccordionDetails>
-                  <Grid container spacing={3}>
-                    <Grid >
-                      <List dense>
-                        <ListItem>
-                          <ListItemText
-                            primary="Creator"
-                            secondary={transaction.creator}
-                          />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemText
-                            primary="Roster IDs"
-                            secondary={transaction.roster_ids?.join(', ') || 'None'}
-                          />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemText
-                            primary="Status Updated"
-                          // secondary={formatTimestamp(transaction.status_updated)}
-                          />
-                        </ListItem>
-                        {transaction.consenter_ids && (
-                          <ListItem>
-                            <ListItemText
-                              primary="Consenter IDs"
-                              secondary={transaction.consenter_ids.join(', ')}
-                            />
-                          </ListItem>
-                        )}
-                      </List>
-                    </Grid>
-
-                    <Grid >
-                      {/* {transaction.metadata && transaction.metadata.notes && (
-                        <Paper sx={{ p: 2, mb: 2, bgcolor: 'grey.50' }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            Notes
-                          </Typography>
-                          <Typography variant="body2">
-                            {transaction.metadata.notes}
-                          </Typography>
-                        </Paper>
-                      )} */}
-
-                      {transaction.waiver_budget && transaction.waiver_budget.length > 0 && (
-                        <Paper sx={{ p: 2, bgcolor: 'warning.50' }}>
-                          <Typography variant="subtitle2" color="warning.main" gutterBottom>
-                            Waiver Budget Changes
-                          </Typography>
-                          {transaction.waiver_budget.map((budget, idx) => (
-                            <Typography key={idx} variant="body2">
-                              {/* ${budget.amount} from Roster {budget.sender} to Roster {budget.receiver} */}
-                            </Typography>
-                          ))}
-                        </Paper>
-                      )}
-                    </Grid>
-                  </Grid>
-                </AccordionDetails>
+                {expanded === transaction.transaction_id &&
+                  <AccordionDetails>
+                    {transaction.type == "trade" ?
+                      <DisplayTrades transaction={transaction} teams={[teams[transaction.roster_ids[0] - 1], teams[transaction.roster_ids[1] - 1]]} /> :
+                      <DisplayAddDrop transaction={transaction} team={teams[transaction.roster_ids[0] - 1]} />
+                    }
+                  </AccordionDetails>
+                }
               </Accordion>
             ))}
           </CardContent>
@@ -498,5 +466,220 @@ const PreviousSeasonsDropDown = ({ league_id }: { league_id: string; }) => {
         })}
       </Select>
     </Box>
+  );
+};
+
+const DisplayAddDrop = ({ transaction, team }: { transaction: Transaction, team: TeamInfo | undefined; }) => {
+  if (!team) return;
+  const formatUnixTime = (time: string) => {
+    const day = new Date(time);
+    return day.toString().substring(4, 21);
+  };
+  const [addsNames, setAddsNames] = useState<string[]>([]);
+  const [dropsNames, setDropsNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchPlayerNames = async () => {
+      if (transaction.adds) {
+        const addEntries = await Promise.all(
+          Object.entries(transaction.adds).map(async ([key]) => {
+            const player = await sleeper_getPlayer(key);
+            return `${player[0].first_name} ${player[0].last_name}`;
+          })
+        );
+        setAddsNames(addEntries);
+      }
+
+      if (transaction.drops) {
+        const dropEntries = await Promise.all(
+          Object.entries(transaction.drops).map(async ([key]) => {
+            const player = await sleeper_getPlayer(key);
+            return `${player[0].first_name} ${player[0].last_name}`;
+          })
+        );
+        setDropsNames(dropEntries);
+      }
+    };
+
+    fetchPlayerNames();
+  }, [transaction]);
+  return (<Grid container spacing={3}>
+    <Grid >
+      <List dense>
+        <ListItem>
+          <ListItemText
+            primary="Team"
+            secondary={team.display_name}
+          />
+        </ListItem>
+
+        {addsNames.length > 0 &&
+          <ListItem>
+            <ListItemText
+              primary="Adds"
+            />
+          </ListItem>
+        }
+        {addsNames.map((player) => {
+          return <ListItem>
+            <ListItemText
+
+              secondary={player} />
+          </ListItem>;
+        })}
+        <ListItem>
+          {dropsNames.length > 0 &&
+            <ListItemText
+              primary="Drops"
+              secondary={dropsNames}
+            />
+          }
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            // primary="Status Updated"
+            secondary={formatUnixTime(transaction.status_updated)}
+          />
+        </ListItem>
+      </List>
+    </Grid>
+
+    <Grid >
+      {/* {transaction.metadata && transaction.metadata.notes && (
+                        <Paper sx={{ p: 2, mb: 2, bgcolor: 'grey.50' }}>
+                          <Typography variant="subtitle2" gutterBottom>
+                            Notes
+                          </Typography>
+                          <Typography variant="body2">
+                            {transaction.metadata.notes}
+                          </Typography>
+                        </Paper>
+                      )} */}
+
+      {transaction.waiver_budget && transaction.waiver_budget.length > 0 && (
+        <Paper sx={{ p: 2, bgcolor: 'warning.50' }}>
+          <Typography variant="subtitle2" color="warning.main" gutterBottom>
+            Waiver Budget Changes
+          </Typography>
+          {transaction.waiver_budget.map((budget, idx) => (
+            <Typography key={idx} variant="body2">
+              {/* ${budget.amount} from Roster {budget.sender} to Roster {budget.receiver} */}
+            </Typography>
+          ))}
+        </Paper>
+      )}
+    </Grid>
+  </Grid>);
+};
+const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams: TeamInfo[] | undefined; }) => {
+  if (!teams) return;
+  const formatUnixTime = (time: string) => {
+    const day = new Date(time);
+    return day.toString().substring(4, 21);
+  };
+  const [playerMap, setPlayerMap] = useState<Record<string, Player>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  useEffect(() => {
+    const loadPlayerMap = async () => {
+      const ids: string[] = [];
+      if (transaction.adds) {
+        Object.entries(transaction.adds).map(([key]) => {
+          ids.push(key);
+        });
+      }
+      if (transaction.drops) {
+        Object.entries(transaction.drops).map(([key]) => {
+          ids.push(key);
+        });
+      }
+      const players = await sleeper_getPlayer(ids.join("&"));
+      const tmap: Record<string, Player> = {};
+      for (const player of players) {
+        tmap[player.id] = player;
+      }
+
+      setPlayerMap(tmap);
+      setLoading(false);
+    };
+    loadPlayerMap();
+  }, [transaction]);
+
+  if (loading) return <CircularProgress />;
+
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Team</TableCell>
+            <TableCell>Additions</TableCell>
+            <TableCell>Drops</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {teams.map((team) => {
+            const teamAdds = transaction.adds
+              ? Object.entries(transaction.adds)
+                .filter(([_, rosterId]) => rosterId === team.roster_id)
+                .map(([playerName]) => playerName)
+              : [];
+
+            const teamDrops = transaction.drops
+              ? Object.entries(transaction.drops)
+                .filter(([_, rosterId]) => rosterId === team.roster_id)
+                .map(([playerName]) => playerName)
+              : [];
+
+            return (
+              <TableRow key={team.roster_id} hover>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    {team.display_name}
+                  </Typography>
+                </TableCell>
+
+                <TableCell>
+                  {teamAdds.length > 0 ? (
+                    <Box>
+                      {teamAdds.map((playerName, index) => (
+                        <Box key={playerName} sx={{ display: 'block', mb: 0.5 }}>
+                          {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" >
+                      —
+                    </Typography>
+                  )}
+                </TableCell>
+
+                <TableCell>
+                  {teamDrops.length > 0 ? (
+                    <Box>
+                      {teamDrops.map((playerName, index) => (
+                        <Box key={playerName} sx={{ display: 'block', mb: 0.5 }}>
+                          {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      —
+                    </Typography>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+
+      <Box sx={{ p: 2, textAlign: 'right', borderTop: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="caption" color="text.secondary">
+          Completed: {formatUnixTime(transaction.status_updated)}
+        </Typography>
+      </Box>
+    </TableContainer>
   );
 };
