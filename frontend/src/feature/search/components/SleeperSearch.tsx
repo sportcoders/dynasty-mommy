@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "@tanstack/react-router";
-import { Route as LeagueRoute } from "@routes/leagues.$leaugeId";
+import { Route as LeagueRoute } from "@routes/leagues.$leagueId";
 import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
@@ -280,7 +280,7 @@ function SleeperLeagues({
   const handleNavigateToLeague = (id: string) => {
     router.navigate({
       to: LeagueRoute.to,
-      params: { leaugeId: id },
+      params: { leagueId: id },
     });
   };
   const saveLeague = async (league_id: string) => {

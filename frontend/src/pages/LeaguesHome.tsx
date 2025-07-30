@@ -1,12 +1,12 @@
 import SleeperLeaguesHomePage from "@feature/leagues/components/SleeperLeaguesHomePage";
-import { Route as LeagueRoute } from '@routes/leagues.$leaugeId'
-import { getRouteApi } from '@tanstack/react-router'
+import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
+import { getRouteApi } from '@tanstack/react-router';
 
 export default function LeagueHome() {
-    const route = getRouteApi(LeagueRoute.id)
-    const { leaugeId } = route.useParams()
-
+    const route = getRouteApi(LeagueRoute.id);
+    const { leagueId } = route.useParams();
+    const { tab, parent } = route.useSearch();
     return (
-        <SleeperLeaguesHomePage league_id={leaugeId} />
-    )
+        <SleeperLeaguesHomePage league_id={leagueId} tab={tab!} parent={parent} />
+    );
 }

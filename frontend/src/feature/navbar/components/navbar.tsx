@@ -18,7 +18,7 @@ import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
 import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
-import { Route as LeagueRoute } from '@routes/leagues.$leaugeId';
+import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
 
 const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
     const { leagues, loading, error } = useGetSavedLeaguesNavBar();
@@ -26,7 +26,7 @@ const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => 
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
-            params: { leaugeId: id },
+            params: { leagueId: id },
         });
     };
     if (!leagues || error) return null;
