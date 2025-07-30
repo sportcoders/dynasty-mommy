@@ -280,7 +280,7 @@ function SleeperLeagues({
   const handleNavigateToLeague = (id: string) => {
     router.navigate({
       to: LeagueRoute.to,
-      params: { leaugeId: id },
+      params: { leagueId: id },
     });
   };
   const saveLeague = async (league_id: string) => {
