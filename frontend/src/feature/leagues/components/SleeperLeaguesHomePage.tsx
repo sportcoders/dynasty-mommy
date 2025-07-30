@@ -43,16 +43,18 @@ import { sleeper_getPlayer, type Player, type TeamInfo, type Transaction } from 
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
-import type { league_tabs } from "@app/types/queryParams";
+
 
 interface SleeperLeaguesHomePage {
   league_id: string;
-  tab: league_tabs;
+  tab: number;
+  parent?: string;
 }
 
 export default function SleeperLeaguesHomePage({
   league_id,
-  tab
+  tab,
+  parent
 }: SleeperLeaguesHomePage) {
   const theme = useTheme();
   const { showError } = useNotification();
@@ -110,8 +112,8 @@ export default function SleeperLeaguesHomePage({
 
   interface TabPanelProps {
     children?: React.ReactNode;
-    id: league_tabs;
-    value: league_tabs;
+    id: number;
+    value: number;
   }
 
   function CustomTabPanel(props: TabPanelProps) {
@@ -129,10 +131,10 @@ export default function SleeperLeaguesHomePage({
       </div>
     );
   }
-  const handleChange = (event: React.SyntheticEvent, newValue: league_tabs) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const [value, setValue] = useState<league_tabs>(tab);
+  const [value, setValue] = useState<number>(tab);
   function a11yProps(index: number) {
     return {
       id: `simple-tab-${index}`,
@@ -213,11 +215,11 @@ export default function SleeperLeaguesHomePage({
               <Typography >Previous Seasons</Typography>
               <SelectSeasonDropDown selectedYear="2025" updateSeason={() => { }} />
             </Box> */}
-            <PreviousSeasonsDropDown league_id={league_id} current_tab={value} />
+            <PreviousSeasonsDropDown league_id={league_id} current_tab={value} parent={parent} />
           </Box>
         </Box>
 
-        <CustomTabPanel value={value} id='rosters'>
+        <CustomTabPanel value={value} id={0}>
           {teams.map((team) => (
             <Accordion
               key={team.roster_id}
@@ -326,7 +328,7 @@ export default function SleeperLeaguesHomePage({
             </Accordion>
           ))}
         </CustomTabPanel>
-        <CustomTabPanel value={value} id='transactions'>
+        <CustomTabPanel value={value} id={1}>
           {showTransactionLoading ? (
             <CircularProgress />
           ) : transactions ? (
@@ -446,20 +448,17 @@ const TransactionDisplay = ({ transactions, teams }: { transactions: Record<numb
   );
 };
 
-const PreviousSeasonsDropDown = ({ league_id, current_tab }: { league_id: string; current_tab: league_tabs; }) => {
-  const { prevSeasons } = useGetPreviousSeasons(league_id);
+const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: { league_id: string; current_tab: number; parent?: string; }) => {
+  const { prevSeasons } = useGetPreviousSeasons(parent ? parent : league_id);
   const navigate = useNavigate();
   if (!prevSeasons || prevSeasons.length == 0) return null;
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <Typography >Previous Seasons</Typography>
-      {/* <SelectSeasonDropDown selectedYear={prevSeasons.at(0)?.season ?? "2025"} start_year={Number(prevSeasons.at(-1)?.season)} updateSeason={(season:string) => {
-        navigate({to:`/leagues/${season}`})
-       }} /> */}
       <Select
-        value={prevSeasons.at(0)?.league_id}
+        value={league_id}
         onChange={(event: SelectChangeEvent) => {
-          navigate({ to: `/leagues/${event.target.value}`, search: { tab: current_tab } });
+          navigate({ to: `/leagues/${event.target.value}`, search: { tab: current_tab, parent: prevSeasons[0].league_id } });
         }}
       >
         {prevSeasons.map((season) => {

@@ -5,8 +5,8 @@ import { getRouteApi } from '@tanstack/react-router';
 export default function LeagueHome() {
     const route = getRouteApi(LeagueRoute.id);
     const { leagueId } = route.useParams();
-    const { tab } = route.useSearch();
+    const { tab, parent } = route.useSearch();
     return (
-        <SleeperLeaguesHomePage league_id={leagueId} tab={tab!} />
+        <SleeperLeaguesHomePage league_id={leagueId} tab={tab!} parent={parent} />
     );
 }
