@@ -25,3 +25,9 @@ export const deleteUserLeagueSchema = z.object({
 export const changeUsernameSchema = z.object({
     new_username: z.string()
 });
+
+export const saveTeamSleeperSchema = z.object({
+    league_id: z.string(),
+    roster_id: z.number(),
+    user_id: z.string(),
+});

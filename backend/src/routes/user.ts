@@ -7,4 +7,6 @@ user_router.route("/addLeague").post(authenticate, (req, res, next) => { user_co
 user_router.route("/getLeagues").get(authenticate, (req, res, next) => { user_controller.getUserLeagues(req, res, next); });
 user_router.route("/removeLeague/:league_id/:platform").delete(authenticate, (req, res, next) => { user_controller.deleteUserLeagues(req, res, next); });
 user_router.route("/username").patch(authenticate, user_controller.changeUsername);
+user_router.route("/saveTeamSleeper").post(authenticate, user_controller.saveTeam);
+user_router.route("/savedTeams").get(authenticate, user_controller.getSavedTeams);
 export default user_router;
