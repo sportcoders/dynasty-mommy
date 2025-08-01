@@ -22,7 +22,10 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
 export const serverGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
         credentials: "include",
+    }).catch(() => {
+        throw new ServerError(0, 'Server unavailable');
     });
+
     if (response.status == 401) {
         store.dispatch(logout());
     }
