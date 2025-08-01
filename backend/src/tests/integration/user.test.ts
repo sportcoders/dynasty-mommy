@@ -34,7 +34,7 @@ const loadUserWithLeagues = async () => {
         const leagues = [];
         users[i].id = new_user.id;
         for (const league of user.leagues) {
-            leagues.push(testDataSource.getRepository(UserLeagues).save({ user: new_user, league_id: league.league_id, platform: league.platform, userId: new_user.id }));
+            leagues.push(testDataSource.getRepository(UserLeagues).save({ user: new_user, league_id: league.league_id, platform: league.platform, userId: new_user.id, saved_roster_id: league.saved_roster_id, saved_user: league.saved_user }));
         }
         await Promise.all(leagues);
     }
@@ -111,7 +111,7 @@ describe("user_leagues", () => {
             const response = await api.get("/user/getLeagues").set("Cookie", [`accessToken=${token}`]).send();
             expect(response.statusCode).toBe(200);
             expect(response.body).toHaveProperty("leagues");
-            expect(response.body.leagues).toEqual(users[0].leagues);
+            expect(users[0].leagues).toMatchObject(response.body.leagues);
         });
         it("should return status code of 401 when no auth header is sent", async () => {
             const response = await api.get("/user/getLeagues").send();
@@ -213,4 +213,26 @@ describe("user_leagues", () => {
                 expect(response.statusCode).toBe(422);
             });
         });
+    describe('save teams', () => {
+        it("should return status code of 200 when team is changed successfully", async () => {
+
+            await loadUserWithLeagues();
+            const token = createAccessToken();
+            const response = await api.post('/user/saveTeamSleeper').set("Cookie", [`accessToken=${token}`]).send({
+                league_id: users[0].leagues[0].league_id,
+                roster_id: 3,
+                user_id: "newrosterId"
+            });
+            expect(response.statusCode).toBe(200);
+        });
+    });
+    describe('get teams', () => {
+        it("should return status code of 200 when all teams are fetch successfully", async () => {
+            await loadUserWithLeagues();
+            const token = createAccessToken();
+            const response = await api.get('/user/savedTeams').set("Cookie", [`accessToken=${token}`]).send();
+            expect(response.body).toEqual(users[0].leagues);
+            expect(response.statusCode).toBe(200);
+        });
+    });
 });

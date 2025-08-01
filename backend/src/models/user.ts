@@ -41,4 +41,9 @@ export class UserLeagues {
     @PrimaryColumn()
     league_id!: string
 
+    @Column({nullable:true})
+    saved_user!:string
+
+    @Column({nullable:true})
+    saved_roster_id!:number
 }
