@@ -83,19 +83,19 @@ export default function SleeperLeaguesHomePage({
 
   useEffect(() => {
     if (error) {
-      showError(`Failed to load league info: ${error}`);
+      showError(error);
     }
   }, [error, showError]);
 
   useEffect(() => {
     if (team_error) {
-      showError(`Failed to load teams: ${team_error}`);
+      showError(team_error);
     }
   }, [team_error, showError]);
 
   useEffect(() => {
     if (roster_error) {
-      showError(`Failed to load roster: ${roster_error}`);
+      showError(roster_error);
     }
   }, [roster_error, showError]);
 
@@ -163,7 +163,7 @@ export default function SleeperLeaguesHomePage({
         alignItems="center"
         minHeight="60vh"
       >
-        <Typography variant="h6" color="error" textAlign="center">
+        <Typography variant="h6" color="text.primary" textAlign="center">
           Oops! Failed to load league information.
           <br />
           {errorMessage || "Please try again later."}
@@ -285,8 +285,8 @@ export default function SleeperLeaguesHomePage({
                 }}
               >
                 {roster_error && (
-                  <Typography color="error" sx={{ textAlign: "center", py: 2 }}>
-                    Failed to load roster: {roster_error || "Unknown error"}
+                  <Typography color="text.primary" sx={{ textAlign: "center", py: 2 }}>
+                    {roster_error || "Unknown error"}
                   </Typography>
                 )}
 
@@ -374,6 +374,7 @@ const TransactionDisplay = ({ transactions, teams }: { transactions: Record<numb
       default: return 'default';
     }
   };
+
   const formatUnixTime = (time: string) => {
     const day = new Date(time);
     return day.toString().substring(4, 21);
