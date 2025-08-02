@@ -361,13 +361,16 @@ const TransactionCard = ({ week, league_id, teams, open }: { week: string, leagu
   };
   return (
     <Card key={week} sx={{ mb: 3, boxShadow: 3 }}>
-      <CardHeader title={`Week ${week}`} action={
-        <IconButton onClick={toggleCard}>
-          {showWeek ?
-            <ExpandLess /> : <ExpandMore />}
-        </IconButton>
-      }
-        sx={{ fontWeight: 'bold' }}
+      <CardHeader title={
+        <Typography variant="h5" sx={{ fontWeight: 'bold', }}>
+          {`Week ${week}`}
+        </Typography>}
+        action={
+          <IconButton onClick={toggleCard}>
+            {showWeek ?
+              <ExpandLess /> : <ExpandMore />}
+          </IconButton>
+        }
       />
       {showWeek && <TransactionInWeekDisplay week={week} league_id={league_id} teams={teams} />}
     </Card>
