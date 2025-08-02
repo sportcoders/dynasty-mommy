@@ -45,6 +45,9 @@ import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
 import useGetSleeperState from "../hooks/useGetSleeperState";
+import useGetSavedTeam from "../hooks/useGetSavedTeam";
+import { useAppSelector } from "@app/hooks";
+import useSaveSleeperLeague from "../hooks/useSaveTeam";
 
 
 interface SleeperLeaguesHomePage {
@@ -82,7 +85,9 @@ export default function SleeperLeaguesHomePage({
   } = useGetPlayersOnRosterSleeper(league_id);
 
   const [expanded, setExpanded] = useState<number | false>(false);
-
+  const username = useAppSelector((state) => state.authReducer.username);
+  const { savedTeam } = useGetSavedTeam(league_id, !username);
+  const { mutate } = useSaveSleeperLeague(league_id);
   useEffect(() => {
     if (leagueError) {
       showError(leagueError);
@@ -345,6 +350,14 @@ export default function SleeperLeaguesHomePage({
                     <Typography variant="body2" color="text.secondary">
                       ({team.record.wins} - {team.record.ties} - {team.record.losses})
                     </Typography>
+
+                    {savedTeam && team.user_id && ((savedTeam.roster_id == team.roster_id && savedTeam.user_id == team.user_id) ? <Chip label="My Team" /> :
+                      <Chip label="Set As My Team" onClick={(e) => {
+                        e.stopPropagation();
+                        mutate({ roster_id: team.roster_id, user_id: team.user_id! });
+                      }} />
+                    )}
+
                   </Box>
                 </AccordionSummary>
 
