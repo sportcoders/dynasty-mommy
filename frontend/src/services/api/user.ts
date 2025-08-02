@@ -8,7 +8,6 @@ export async function loginUser(email: string, password: string) {
             email: email,
             password: password,
         });
-        console.log(user);
         return user as User;
     } catch (e) {
         console.log(e);
@@ -57,5 +56,47 @@ export async function fetchUserLeagues() {
         return response;
     } catch (e) {
         console.error(e);
+    }
+}
+
+export async function saveSleeperLeague({ league_id, roster_id, user_id }: savedTeam) {
+    try {
+        const response = await serverPost('/user/saveTeamSleeper', {
+            league_id: league_id,
+            roster_id: roster_id,
+            user_id: user_id
+        });
+
+        return response;
+    }
+    catch (e) {
+        console.log(e);
+    }
+}
+
+interface savedTeam {
+    league_id: string,
+    roster_id: number,
+    user_id: string,
+    platform?: string;
+}
+
+export async function getSavedTeams() {
+    try {
+        const response = await serverGet<savedTeam[]>('/user/savedTeams');
+        return response;
+    }
+    catch (e) {
+        console.log(e);
+    }
+}
+
+export async function getSavedTeamSleeperLeague(league_id: string) {
+    try {
+        const response = await serverGet<savedTeam>(`/user/savedTeam/sleeper/${league_id}`);
+        return response;
+    }
+    catch (e) {
+        console.log(e);
     }
 }
