@@ -19,17 +19,23 @@ import { useState } from 'react';
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
 import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
 import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
+import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
+
 
 const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
     const { leagues, loading, error } = useGetSavedLeaguesNavBar();
+
     const router = useRouter();
+
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
             params: { leagueId: id },
         });
     };
+
     if (!leagues || error) return null;
+
     return (
         <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
             <Box sx={{ ml: 5, }}>
@@ -71,14 +77,24 @@ const DarkModeToggle = () => {
 };
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void; }) {
     const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false);
+
+    const { setParamsFalse } = useSearchParamsSleeper();
+
     const username = useAppSelector((state) => state.authReducer.username);
+
     const dispatch = useAppDispatch();
+
     const location = useLocation();
+
+    const handleFindLeagueClick = () => {
+        setParamsFalse();
+    };
+
     const handleSignOut = () => {
         dispatch(logout());
     };
     const drawerItems = [
-        { text: 'Find League', icon: <Search />, link: '/' },
+        { text: 'Find League', icon: <Search />, link: '/', onClick: handleFindLeagueClick },
         // { text: 'Login', icon: <Person />, link: '/login' },
     ];
 
@@ -136,12 +152,16 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                 <Box sx={{ px: '0.75rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <List sx={{ flexGrow: 1 }}>
                         {drawerItems.map((item, index) => (
-                            <ListItem key={index} sx={{
-                                cursor: 'pointer',
-                                color: 'primary.main',
-                                backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
-                                borderRadius: '16px',
-                            }} component={Link} to={item.link}>
+                            <ListItem key={index}
+                                sx={{
+                                    cursor: 'pointer',
+                                    color: 'primary.main',
+                                    backgroundColor: location.pathname == item.link ? 'rgba(67, 139, 212, 0.51)' : "transparent",
+                                    borderRadius: '16px',
+                                }}
+                                component={Link} to={item.link}
+                                onClick={item.onClick}
+                            >
                                 <ListItemIcon>
                                     {item.icon}
                                 </ListItemIcon>

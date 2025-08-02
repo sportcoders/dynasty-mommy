@@ -348,7 +348,7 @@ const TransactionTab = ({ league_id, teams, league_season }: { league_id: string
 
       {display_weeks.map((week) => {
         return (
-          <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} />);
+          <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} key={week} />);
       })}
     </Container>
   );
