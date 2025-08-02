@@ -3,14 +3,15 @@ import {
   AccordionDetails,
   AccordionSummary,
   Avatar,
-  Badge,
   Box,
   Card,
   CardContent,
+  CardHeader,
   Chip,
   CircularProgress,
   Container,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -38,11 +39,13 @@ import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNotification } from "@hooks/useNotification";
 import useGetAllTransactionsType from "../hooks/useGetAllTransactions";
-import { ExpandMore } from "@mui/icons-material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { sleeper_getPlayer, type Player, type TeamInfo, type Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
+import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
+import useGetSleeperState from "../hooks/useGetSleeperState";
 
 
 interface SleeperLeaguesHomePage {
@@ -76,10 +79,9 @@ export default function SleeperLeaguesHomePage({
 
   const [expanded, setExpanded] = useState<number | false>(false);
 
-  const { data: transactions, loading: transaction_loading, isError: transaction_error } = useGetAllTransactionsType(league_id);
 
-  const [showTeamLoading, showRosterLoading, showLeagueLoading, showTransactionLoading] =
-    useDelayedLoading([team_loading, roster_loading, loading, transaction_loading], 1000);
+  const [showTeamLoading, showRosterLoading, showLeagueLoading] =
+    useDelayedLoading([team_loading, roster_loading, loading], 1000);
 
   useEffect(() => {
     if (error) {
@@ -99,11 +101,6 @@ export default function SleeperLeaguesHomePage({
     }
   }, [roster_error, showError]);
 
-  useEffect(() => {
-    if (transaction_error) {
-      showError(`Failed to load transactions.`);
-    }
-  }, [transaction_error, showError]);
 
   const handleAccordionChange =
     (panel: number) => (event: SyntheticEvent, newExpanded: boolean) => {
@@ -329,32 +326,57 @@ export default function SleeperLeaguesHomePage({
           ))}
         </CustomTabPanel>
         <CustomTabPanel value={value} id={1}>
-          {showTransactionLoading ? (
-            <CircularProgress />
-          ) : transactions ? (
-            <TransactionDisplay transactions={transactions} teams={teams} />
-          ) : (
-            <div>No transactions found</div>
-          )}
+
+          <TransactionTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
+
         </CustomTabPanel>
       </Box>
     </Box>
   );
 }
-const TransactionDisplay = ({ transactions, teams }: { transactions: Record<number, Transaction[]>, teams: TeamInfo[]; }) => {
+const TransactionTab = ({ league_id, teams, league_season }: { league_id: string, league_season: string, teams: TeamInfo[]; }) => {
+  const { data: state } = useGetSleeperState();
+  /*finding the max week, week set to current week from sleeper state get if it is the current season,
+  otherwise it will be the max number of weeks in a season(which is 20)
+  */
+  const max_week = league_season == state?.league_season ? state.week : 19;
+  //display week max is 20
+  const display_weeks = Array.from({ length: max_week + 1 }, (_, i) => i + 1).reverse();
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+
+      {display_weeks.map((week) => {
+        return (
+          <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} />);
+      })}
+    </Container>
+  );
+};
+const TransactionCard = ({ week, league_id, teams, open }: { week: string, league_id: string, teams: TeamInfo[]; open: boolean; }) => {
+  const [showWeek, setShowWeek] = useState<boolean>(open);
+
+  const toggleCard = () => {
+    setShowWeek((prev) => !prev);
+  };
+  return (
+    <Card key={week} sx={{ mb: 3, boxShadow: 3 }}>
+      <CardHeader title={`Week ${week}`} action={
+        <IconButton onClick={toggleCard}>
+          {showWeek ?
+            <ExpandLess /> : <ExpandMore />}
+        </IconButton>
+      }
+        sx={{ fontWeight: 'bold' }}
+      />
+      {showWeek && <TransactionInWeekDisplay week={week} league_id={league_id} teams={teams} />}
+    </Card>
+  );
+
+};
+const TransactionInWeekDisplay = ({ week, league_id, teams }: { week: string, league_id: string, teams: TeamInfo[]; }) => {
   const [expanded, setExpanded] = useState<string | false>("");
-
-  const handleAccordionChange =
-    (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
-  if (!transactions)
-    return (
-      <>
-        No Transactions Found
-      </>
-    );
-
+  const { data: transactions } = useGetTransactionByWeek(league_id, Number(week));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -374,78 +396,69 @@ const TransactionDisplay = ({ transactions, teams }: { transactions: Record<numb
       default: return 'default';
     }
   };
-
-  const formatUnixTime = (time: string) => {
-    const day = new Date(time);
-    return day.toString().substring(4, 21);
-  };
-
+  const handleAccordionChange =
+    (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <CardContent>
 
-      {Object.entries(transactions).map(([leg, legTransactions]) => (
+      {/* <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 2 }}>
+              Week {leg}
+            </Typography>
+            <Badge badgeContent={legTransactions.length} color="primary">
+              <Chip label="Transactions" variant="outlined" />
+            </Badge>
+          </Box>
+          <IconButton onClick={toggleCard}>
+            {showWeek ?
+              <ExpandMore /> : <ExpandLess />
+            }
+          </IconButton>
+        </Box> */}
 
-        <Card key={leg} sx={{ mb: 3, boxShadow: 3 }}>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 2 }}>
-                Week {leg}
-              </Typography>
-              <Badge badgeContent={legTransactions.length} color="primary">
-                <Chip label="Transactions" variant="outlined" />
-              </Badge>
-            </Box>
 
-            {legTransactions.map((transaction, index) => (
-              <Accordion key={transaction.transaction_id} sx={{ mb: 2 }} expanded={expanded === transaction.transaction_id} onChange={handleAccordionChange(transaction.transaction_id)}>
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2 }}>
-                    <Chip
-                      label={transaction.type}
-                      color={getTypeColor(transaction.type) as any}
-                      size="small"
-                      variant="outlined"
-                      sx={{ width: 100, justifyContent: 'center' }}
-                    />
-                    <Typography sx={{ flexGrow: 1, ml: 2, fontWeight: 600 }}>
-                      {
-                        // transaction.roster_ids.length > 1 ?
-                        transaction.roster_ids.map((id) => teams[id - 1].display_name).join(' ')
-                      }
-                    </Typography>
-                    <Chip
-                      label={transaction.status}
-                      color={getStatusColor(transaction.status) as any}
-                      size="small"
-                      sx={{ width: 80, justifyContent: 'center' }}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      {/* {formatTimestamp(transaction.)} */}
-                    </Typography>
-                  </Box>
-                </AccordionSummary>
-                {expanded === transaction.transaction_id &&
-                  <AccordionDetails>
-                    {transaction.type == "trade" ?
-                      <DisplayTrades transaction={transaction} teams={[teams[transaction.roster_ids[0] - 1], teams[transaction.roster_ids[1] - 1]]} /> :
-                      <DisplayAddDrop transaction={transaction} team={teams[transaction.roster_ids[0] - 1]} />
-                    }
-                  </AccordionDetails>
+      {transactions ? transactions.map((transaction, index) => (
+        <Accordion key={transaction.transaction_id} sx={{ mb: 2 }} expanded={expanded === transaction.transaction_id} onChange={handleAccordionChange(transaction.transaction_id)}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2 }}>
+              <Chip
+                label={transaction.type}
+                color={getTypeColor(transaction.type) as any}
+                size="small"
+                variant="outlined"
+                sx={{ width: 100, justifyContent: 'center' }}
+              />
+              <Typography sx={{ flexGrow: 1, ml: 2, fontWeight: 600 }}>
+                {
+                  // transaction.roster_ids.length > 1 ?
+                  transaction.roster_ids.map((id) => teams[id - 1].display_name).join(' ')
                 }
-              </Accordion>
-            ))}
-          </CardContent>
-        </Card>
-      ))}
+              </Typography>
+              <Chip
+                label={transaction.status}
+                color={getStatusColor(transaction.status) as any}
+                size="small"
+                sx={{ width: 80, justifyContent: 'center' }}
+              />
+            </Box>
+          </AccordionSummary>
+          {expanded === transaction.transaction_id &&
+            <AccordionDetails>
+              {transaction.type == "trade" ?
+                <DisplayTrades transaction={transaction} teams={[teams[transaction.roster_ids[0] - 1], teams[transaction.roster_ids[1] - 1]]} /> :
+                <DisplayAddDrop transaction={transaction} team={teams[transaction.roster_ids[0] - 1]} />
+              }
+            </AccordionDetails>
+          }
+        </Accordion>
+      )) :
+        <>No transactions found</>
+      }
+    </CardContent>
 
-      {Object.keys(transactions).length === 0 && (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary">
-            No transactions found
-          </Typography>
-        </Paper>
-      )}
-    </Container>
   );
 };
 
