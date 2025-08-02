@@ -3,7 +3,7 @@ import { User, UserLeagues } from "../models/user";
 import { HttpSuccess, HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { AppDataSource } from "../app";
-import { addUserToLeagueSchema, changeUsernameSchema, deleteUserLeagueSchema, saveTeamSleeperSchema } from "../schemas/user";
+import { addUserToLeagueSchema, changeUsernameSchema, deleteUserLeagueSchema, getTeamSchema, saveTeamSleeperSchema } from "../schemas/user";
 
 export async function addLeagueToUser(req: Request, res: Response, next: NextFunction) {
     try {
@@ -137,6 +137,31 @@ export async function getSavedTeams(req: Request, res: Response, next: NextFunct
             select: ['league_id', 'platform', 'saved_roster_id', 'saved_user']
         });
         res.status(HttpSuccess.OK).json(response);
+    }
+    catch (e) {
+        next(e);
+    }
+}
+
+export async function getSavedTeamSleeper(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { league_id } = getTeamSchema.parse(req.params);
+        const userCheck = await AppDataSource.getRepository(User).findOneBy({ id: req.user?.user_id });
+        if (!userCheck) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "user not found" });
+
+        const response = await AppDataSource.getRepository(UserLeagues).findOne({
+            where: {
+                userId: req.user?.user_id,
+                league_id: league_id
+            },
+            select: ['league_id', 'platform', 'saved_roster_id', 'saved_user']
+        });
+        res.status(HttpSuccess.OK).json({
+            league_id: league_id,
+            roster_id: response?.saved_roster_id,
+            user_id: response?.saved_user,
+            platform: "sleeper"
+        });
     }
     catch (e) {
         next(e);

@@ -9,4 +9,5 @@ user_router.route("/removeLeague/:league_id/:platform").delete(authenticate, (re
 user_router.route("/username").patch(authenticate, user_controller.changeUsername);
 user_router.route("/saveTeamSleeper").post(authenticate, user_controller.saveTeam);
 user_router.route("/savedTeams").get(authenticate, user_controller.getSavedTeams);
+user_router.route("/savedTeam/sleeper/:league_id").get(authenticate, user_controller.getSavedTeamSleeper);
 export default user_router;
