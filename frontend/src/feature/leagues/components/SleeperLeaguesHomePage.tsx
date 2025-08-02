@@ -174,7 +174,8 @@ export default function SleeperLeaguesHomePage({
     );
   }
 
-  if (!leagueInfo || !teams) {
+  // Null: League
+  if (!leagueInfo) {
     return null;
   }
 
@@ -257,6 +258,21 @@ export default function SleeperLeaguesHomePage({
               minHeight="60vh"
             >
               <CircularProgress />
+            </Box>
+          )}
+
+          {/* Null: Team */}
+          {!teamError && !teamLoading && !teams && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              minHeight="60vh"
+            >
+              <Typography variant="h6" color="text.primary" textAlign="center">
+                Oops! Failed to load team information.
+                <br />
+              </Typography>
             </Box>
           )}
 
@@ -355,6 +371,14 @@ export default function SleeperLeaguesHomePage({
                     </Box>
                   )}
 
+                  {/* Null: Roster */}
+                  {!rosterError && !rosterLoading && !roster && (
+                    <Typography variant="h6" color="text.primary" textAlign="center"
+                    >
+                      Oops! Failed to load roster.
+                    </Typography>
+                  )}
+
                   {/* Roster Render if there are players on roster */}
                   {!rosterError && !rosterLoading && roster && (
                     <Box
@@ -386,6 +410,7 @@ export default function SleeperLeaguesHomePage({
                       No roster data available for this team.
                     </Typography>
                   )}
+
                 </AccordionDetails>
               </Accordion>
             ))
@@ -394,12 +419,23 @@ export default function SleeperLeaguesHomePage({
 
         {/* Transactions */}
         <CustomTabPanel value={value} id={1}>
-          <TransactionTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
+
+          {/* Render Transaction Tab Component if teams is not null */}
+          {teams ? (
+            <TransactionTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
+
+          ) : (
+            <Typography variant="h6" color="text.primary" textAlign="center"
+            >
+              Oops! Failed to load transactions.
+            </Typography>
+          )}
         </CustomTabPanel>
       </Box>
     </Box>
   );
 }
+
 const TransactionTab = ({ league_id, teams, league_season }: { league_id: string, league_season: string, teams: TeamInfo[]; }) => {
   const { data: state } = useGetSleeperState();
   /*finding the max week, week set to current week from sleeper state get if it is the current season,
@@ -411,7 +447,6 @@ const TransactionTab = ({ league_id, teams, league_season }: { league_id: string
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-
       {display_weeks.map((week) => {
         return (
           <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} key={week} />);
@@ -419,6 +454,7 @@ const TransactionTab = ({ league_id, teams, league_season }: { league_id: string
     </Container>
   );
 };
+
 const TransactionCard = ({ week, league_id, teams, open }: { week: string, league_id: string, teams: TeamInfo[]; open: boolean; }) => {
   const [showWeek, setShowWeek] = useState<boolean>(open);
 
@@ -443,6 +479,7 @@ const TransactionCard = ({ week, league_id, teams, open }: { week: string, leagu
   );
 
 };
+
 const TransactionInWeekDisplay = ({ week, league_id, teams }: { week: string, league_id: string, teams: TeamInfo[]; }) => {
   const [expanded, setExpanded] = useState<string | false>("");
   const { data: transactions } = useGetTransactionByWeek(league_id, Number(week));
@@ -531,6 +568,7 @@ const TransactionInWeekDisplay = ({ week, league_id, teams }: { week: string, le
   );
 };
 
+// Move later
 const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: { league_id: string; current_tab: number; parent?: string; }) => {
   const { prevSeasons } = useGetPreviousSeasons(parent ? parent : league_id);
   const navigate = useNavigate();
