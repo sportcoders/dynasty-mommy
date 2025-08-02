@@ -258,7 +258,7 @@ export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promis
 };
 
 export const sleeper_get_state = async () => {
-    const res = await sleeper_apiGet<State>('https://api.sleeper.app/v1/state/nba');
+    const res = await sleeper_apiGet<State>('/state/nba');
 
     return {
         week: res.week,
