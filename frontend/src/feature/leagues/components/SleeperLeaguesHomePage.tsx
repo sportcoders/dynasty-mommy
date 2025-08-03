@@ -37,7 +37,6 @@ import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNotification } from "@hooks/useNotification";
-import useGetAllTransactionsType from "../hooks/useGetAllTransactions";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { sleeper_getPlayer, type Player, type TeamInfo, type Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
@@ -45,6 +44,9 @@ import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
 import useGetSleeperState from "../hooks/useGetSleeperState";
+import useGetSavedTeam from "../hooks/useGetSavedTeam";
+import { useAppSelector } from "@app/hooks";
+import useSaveSleeperLeague from "../hooks/useSaveTeam";
 
 
 interface SleeperLeaguesHomePage {
@@ -82,7 +84,11 @@ export default function SleeperLeaguesHomePage({
   } = useGetPlayersOnRosterSleeper(league_id);
 
   const [expanded, setExpanded] = useState<number | false>(false);
+  const username = useAppSelector((state) => state.authReducer.username);
+  const { savedTeam } = useGetSavedTeam(league_id, !username);
+  const { mutate } = useSaveSleeperLeague(league_id);
 
+  const [showAddTeam, setShowAddTeam] = useState<number>(0);
   useEffect(() => {
     if (leagueError) {
       showError(leagueError);
@@ -294,6 +300,8 @@ export default function SleeperLeaguesHomePage({
                   mb: 2,
                   boxShadow: theme.shadows[1],
                 }}
+                onMouseEnter={() => setShowAddTeam(team.roster_id)}
+                onMouseLeave={() => setShowAddTeam(0)}
               >
 
                 {/* Team Content */}
@@ -345,6 +353,14 @@ export default function SleeperLeaguesHomePage({
                     <Typography variant="body2" color="text.secondary">
                       ({team.record.wins} - {team.record.ties} - {team.record.losses})
                     </Typography>
+
+                    {savedTeam && team.user_id && ((savedTeam.roster_id == team.roster_id && savedTeam.user_id == team.user_id) ? <Chip label="My Team" /> :
+                      showAddTeam == team.roster_id && (<Chip label="Set As My Team" onClick={(e) => {
+                        e.stopPropagation();
+                        mutate({ roster_id: team.roster_id, user_id: team.user_id! });
+                      }} />)
+                    )}
+
                   </Box>
                 </AccordionSummary>
 
@@ -449,7 +465,7 @@ const TransactionTab = ({ league_id, teams, league_season }: { league_id: string
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {display_weeks.map((week) => {
         return (
-          <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} />);
+          <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} key={week} />);
       })}
     </Container>
   );
