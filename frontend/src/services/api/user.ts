@@ -59,11 +59,10 @@ export async function fetchUserLeagues() {
     }
 }
 
-export async function saveSleeperLeague({ league_id, roster_id, user_id }: savedTeam) {
+export async function saveSleeperLeague({ league_id, user_id }: savedTeam) {
     try {
         const response = await serverPost('/user/saveTeamSleeper', {
             league_id: league_id,
-            roster_id: roster_id,
             user_id: user_id
         });
 
@@ -76,14 +75,17 @@ export async function saveSleeperLeague({ league_id, roster_id, user_id }: saved
 
 interface savedTeam {
     league_id: string,
-    roster_id: number,
     user_id: string,
     platform?: string;
 }
-
+interface savedTeamResponse {
+    league_id: string,
+    saved_user: string,
+    platform?: string;
+}
 export async function getSavedTeams() {
     try {
-        const response = await serverGet<savedTeam[]>('/user/savedTeams');
+        const response = await serverGet<savedTeamResponse[]>('/user/savedTeams');
         return response;
     }
     catch (e) {
@@ -93,7 +95,7 @@ export async function getSavedTeams() {
 
 export async function getSavedTeamSleeperLeague(league_id: string) {
     try {
-        const response = await serverGet<savedTeam>(`/user/savedTeam/sleeper/${league_id}`);
+        const response = await serverGet<savedTeamResponse>(`/user/savedTeam/sleeper/${league_id}`);
         return response;
     }
     catch (e) {

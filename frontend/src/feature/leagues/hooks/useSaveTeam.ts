@@ -7,7 +7,7 @@ export default function useSaveSleeperLeague(league_id: string) {
     const { showSuccess, showError } = useNotification();
 
     const { mutate, isPending, isError, isSuccess } = useMutation({
-        mutationFn: ({ roster_id, user_id }: { roster_id: number, user_id: string; }) => saveSleeperLeague({ league_id, roster_id, user_id }),
+        mutationFn: ({ user_id }: { user_id: string; }) => saveSleeperLeague({ league_id, user_id }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['savedTeam', league_id] });
             showSuccess("Team saved successfully");

@@ -354,10 +354,10 @@ export default function SleeperLeaguesHomePage({
                       ({team.record.wins} - {team.record.ties} - {team.record.losses})
                     </Typography>
 
-                    {savedTeam && team.user_id && ((savedTeam.roster_id == team.roster_id && savedTeam.user_id == team.user_id) ? <Chip label="My Team" /> :
+                    {savedTeam && team.user_id && (savedTeam.saved_user == team.user_id ? <Chip label="My Team" /> :
                       showAddTeam == team.roster_id && (<Chip label="Set As My Team" onClick={(e) => {
                         e.stopPropagation();
-                        mutate({ roster_id: team.roster_id, user_id: team.user_id! });
+                        mutate({ user_id: team.user_id! });
                       }} />)
                     )}
 
