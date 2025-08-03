@@ -34,7 +34,7 @@ const loadUserWithLeagues = async () => {
         const leagues = [];
         users[i].id = new_user.id;
         for (const league of user.leagues) {
-            leagues.push(testDataSource.getRepository(UserLeagues).save({ user: new_user, league_id: league.league_id, platform: league.platform, userId: new_user.id, saved_roster_id: league.saved_roster_id, saved_user: league.saved_user }));
+            leagues.push(testDataSource.getRepository(UserLeagues).save({ user: new_user, league_id: league.league_id, platform: league.platform, userId: new_user.id, saved_user: league.saved_user }));
         }
         await Promise.all(leagues);
     }
@@ -220,7 +220,6 @@ describe("user_leagues", () => {
             const token = createAccessToken();
             const response = await api.post('/user/saveTeamSleeper').set("Cookie", [`accessToken=${token}`]).send({
                 league_id: users[0].leagues[0].league_id,
-                roster_id: 3,
                 user_id: "newrosterId"
             });
             expect(response.statusCode).toBe(200);
