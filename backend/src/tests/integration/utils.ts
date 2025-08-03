@@ -33,8 +33,8 @@ export const users = [
         password: "testpassword",
         username: "username1",
         leagues: [
-            { "platform": "sleeper", "league_id": "111333444", saved_user: "12131313", saved_roster_id: 1 },
-            { "platform": "espn", "league_id": "1e322", saved_user: "12131313", saved_roster_id: 4 },
+            { "platform": "sleeper", "league_id": "111333444", saved_user: "12131313" },
+            { "platform": "espn", "league_id": "1e322", saved_user: "12131313" },
         ]
     },
     {
