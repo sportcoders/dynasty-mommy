@@ -1,29 +1,36 @@
-export class SleeperError extends Error {
+export class AppError extends Error {
     public statusCode: number;
     public statusText: string;
 
     constructor(
+        messagePrefix: string = "Error",
         statusCode: number,
         statusText: string,
     ) {
-        super(`Sleeper request failed: ${statusCode} ${statusText}`);
-        this.name = 'SleeperError';
+        super(`${messagePrefix}: ${statusCode} ${statusText}`);
+        this.name = 'AppError';
         this.statusCode = statusCode;
         this.statusText = statusText;
     }
 }
-
-export class ServerError extends Error {
-    public statusCode: number;
-    public statusText: string;
+export class SleeperError extends AppError {
 
     constructor(
         statusCode: number,
         statusText: string,
     ) {
-        super(`Server request failed: ${statusCode} ${statusText}`);
+        super(`Sleeper request failed`, statusCode, statusText);
+        this.name = 'SleeperError';
+    }
+}
+
+export class ServerError extends AppError {
+
+    constructor(
+        statusCode: number,
+        statusText: string,
+    ) {
+        super(`Server request failed`, statusCode, statusText);
         this.name = 'ServerError';
-        this.statusCode = statusCode;
-        this.statusText = statusText;
     }
 }

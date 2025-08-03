@@ -37,7 +37,6 @@ import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNotification } from "@hooks/useNotification";
-import useGetAllTransactionsType from "../hooks/useGetAllTransactions";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { sleeper_getPlayer, type Player, type TeamInfo, type Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
@@ -88,6 +87,8 @@ export default function SleeperLeaguesHomePage({
   const username = useAppSelector((state) => state.authReducer.username);
   const { savedTeam } = useGetSavedTeam(league_id, !username);
   const { mutate } = useSaveSleeperLeague(league_id);
+
+  const [showAddTeam, setShowAddTeam] = useState<number>(0);
   useEffect(() => {
     if (leagueError) {
       showError(leagueError);
@@ -299,6 +300,8 @@ export default function SleeperLeaguesHomePage({
                   mb: 2,
                   boxShadow: theme.shadows[1],
                 }}
+                onMouseEnter={() => setShowAddTeam(team.roster_id)}
+                onMouseLeave={() => setShowAddTeam(0)}
               >
 
                 {/* Team Content */}
@@ -352,10 +355,10 @@ export default function SleeperLeaguesHomePage({
                     </Typography>
 
                     {savedTeam && team.user_id && ((savedTeam.roster_id == team.roster_id && savedTeam.user_id == team.user_id) ? <Chip label="My Team" /> :
-                      <Chip label="Set As My Team" onClick={(e) => {
+                      showAddTeam == team.roster_id && (<Chip label="Set As My Team" onClick={(e) => {
                         e.stopPropagation();
                         mutate({ roster_id: team.roster_id, user_id: team.user_id! });
-                      }} />
+                      }} />)
                     )}
 
                   </Box>
