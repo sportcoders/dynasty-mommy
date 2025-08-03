@@ -112,13 +112,13 @@ export async function changeUsername(req: Request, res: Response, next: NextFunc
 
 export async function saveTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const { roster_id, league_id, user_id } = saveTeamSleeperSchema.parse(req.body);
+        const { league_id, user_id } = saveTeamSleeperSchema.parse(req.body);
 
         const userCheck = await AppDataSource.getRepository(User).findOneBy({ id: req.user?.user_id });
 
         if (!userCheck) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "user not found" });
 
-        await AppDataSource.getRepository(UserLeagues).upsert({ userId: req.user?.user_id, league_id: league_id, saved_roster_id: roster_id, saved_user: user_id, platform: "sleeper" }, ['userId', 'league_id']);
+        await AppDataSource.getRepository(UserLeagues).upsert({ userId: req.user?.user_id, league_id: league_id, saved_user: user_id, platform: "sleeper" }, ['userId', 'league_id']);
 
         res.status(HttpSuccess.OK).json({ detail: "team saved" });
     }
@@ -134,7 +134,7 @@ export async function getSavedTeams(req: Request, res: Response, next: NextFunct
 
         const response = await AppDataSource.getRepository(UserLeagues).find({
             where: { userId: req.user?.user_id },
-            select: ['league_id', 'platform', 'saved_roster_id', 'saved_user']
+            select: ['league_id', 'platform', 'saved_user']
         });
         res.status(HttpSuccess.OK).json(response);
     }
@@ -154,14 +154,9 @@ export async function getSavedTeamSleeper(req: Request, res: Response, next: Nex
                 userId: req.user?.user_id,
                 league_id: league_id
             },
-            select: ['league_id', 'platform', 'saved_roster_id', 'saved_user']
+            select: ['league_id', 'platform', 'saved_user']
         });
-        res.status(HttpSuccess.OK).json({
-            league_id: league_id,
-            roster_id: response?.saved_roster_id,
-            user_id: response?.saved_user,
-            platform: "sleeper"
-        });
+        res.status(HttpSuccess.OK).json(response);
     }
     catch (e) {
         next(e);

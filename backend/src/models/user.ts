@@ -3,24 +3,24 @@ import { Column, Entity, ForeignKey, JoinColumn, ManyToOne, OneToMany, PrimaryCo
 @Entity()
 export class User {
     @PrimaryGeneratedColumn("uuid")
-    id!: string
+    id!: string;
 
     @Column({
         unique: true,
         nullable: false
     })
-    email!: string
+    email!: string;
 
     @Column({
         nullable: true,
         unique: true
     })
-    username!: string
+    username!: string;
 
     @Column({
         nullable: false
     })
-    password!: string
+    password!: string;
 
     @OneToMany(() => UserLeagues, (userLeague) => userLeague.user, { cascade: true })
     leagues!: UserLeagues[];
@@ -29,21 +29,18 @@ export class User {
 @Entity()
 export class UserLeagues {
     @PrimaryColumn()
-    userId!: string
+    userId!: string;
 
     @ManyToOne(() => User, (user) => user.leagues)
     @JoinColumn({ name: 'userId' })
-    user!: User
+    user!: User;
 
     @Column()
-    platform!: string
+    platform!: string;
 
     @PrimaryColumn()
-    league_id!: string
+    league_id!: string;
 
-    @Column({nullable:true})
-    saved_user!:string
-
-    @Column({nullable:true})
-    saved_roster_id!:number
+    @Column({ nullable: true })
+    saved_user!: string;
 }
