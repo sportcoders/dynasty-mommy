@@ -20,9 +20,11 @@ import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 import useDeleteLeague from "../hooks/useDeleteLeague";
-import useSaveLeague from "../hooks/useSaveLeague";
 import { useAppSelector } from "@app/hooks";
 import { useNotification } from "@hooks/useNotification";
+import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { sleeper_getUser } from "@services/sleeper";
 
 type SleeperSearchComponentProps = {
   searchType: string;
@@ -268,9 +270,14 @@ function SleeperLeagues({
     searchText,
     season
   );
+  const { data: user_id } = useSuspenseQuery({
+    queryKey: ['sleeper_user', searchText],
+    queryFn: () => sleeper_getUser(searchText),
+    select: (data) => data?.user_id
+  });
   const { data: userLeagues } = useGetSavedLeagues();
   const deleteLeauge = useDeleteLeague();
-  const saveLeagueMutate = useSaveLeague();
+  const saveTeamMutate = useSaveSleeperLeague();
   const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
     if (league.platform == 'sleeper')
       result.push(league.league_id);
@@ -285,8 +292,8 @@ function SleeperLeagues({
   };
   const saveLeague = async (league_id: string) => {
     try {
-      saveLeagueMutate.mutate({ platform: "sleeper", league_id: league_id });
-      return saveLeagueMutate.isSuccess;
+      saveTeamMutate.mutate({ league_id: league_id, user_id: user_id! });
+      return saveTeamMutate.isSuccess;
     } catch (e) {
       return false;
     }
