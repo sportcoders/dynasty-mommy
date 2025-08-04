@@ -53,41 +53,53 @@ export const sleeper_getRosters = async (leagueId: string): Promise<Roster[]> =>
 };
 
 /**
- * Function to get players from the combination of the Sleeper API and backend API.
- * 
- * @param leagueId the numerical id of the league
- * @returns a record with owner ids and its corresponding array of Player objects or null
- */
-export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]> | null> => {
+* Function to get players from the combination of the Sleeper API and backend API.
+* 
+* @param leagueId the numerical id of the league
+* @returns a record with roster ids and its corresponding array of Player objects
+*/
+export const sleeper_getPlayers = async (leagueId: string): Promise<Record<string, Player[]>> => {
     const rosters = await sleeper_getRosters(leagueId);
 
     if (rosters === null || rosters === undefined || rosters.length === 0) {
-        return null;
+        return {};
     }
 
-    const playerIds = rosters.flatMap(roster => roster.players);
-    const uniquePlayerIds = Array.from(new Set(playerIds));
+    const playerIds = rosters.flatMap(roster => roster.players || []);
+
+    if (playerIds.length === 0) {
+        return {};
+    }
+
+    const uniquePlayerIds = Array.from(new Set(playerIds)).filter(Boolean);
+
+    if (uniquePlayerIds.length === 0) {
+        return {};
+    }
+
     const idsString = uniquePlayerIds.join('&');
 
-    const players = await sleeper_getPlayer(idsString);
+    const players = await sleeper_getPlayer(idsString) || [];
 
-    if (players === null || players === undefined || players.length === 0) {
-        return null;
-    }
-
+    // Create a map of player ID to Player object for quick lookup
     const playerMap: Record<string, Player> = {};
-
     for (const player of players) {
         playerMap[player.id] = player;
     }
 
-    const ownerToPlayers: Record<string, Player[]> = {};
+    // Map each roster to its players
+    const rosterToPlayers: Record<string, Player[]> = {};
     for (const roster of rosters) {
-        ownerToPlayers[roster.owner_id] = roster.players.map(pid => playerMap[pid]).filter(Boolean);
+        const rosterPlayers = (roster.players || [])
+            .map(pid => playerMap[String(pid)])
+            .filter(Boolean);
+
+        rosterToPlayers[String(roster.roster_id)] = rosterPlayers;
     }
 
-    return ownerToPlayers;
+    return rosterToPlayers;
 };
+
 //TODO: CHECK IF THIS IS STILL USED
 /**
  * Function to get players for a certain team in a league from the combination of the Sleeper API and backend API.
