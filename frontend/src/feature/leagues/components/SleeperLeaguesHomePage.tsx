@@ -86,7 +86,7 @@ export default function SleeperLeaguesHomePage({
   const [expanded, setExpanded] = useState<number | false>(false);
   const username = useAppSelector((state) => state.authReducer.username);
   const { savedTeam } = useGetSavedTeam(league_id, !username);
-  const { mutate } = useSaveSleeperLeague(league_id);
+  const { mutate } = useSaveSleeperLeague();
 
   const [showAddTeam, setShowAddTeam] = useState<number>(0);
   useEffect(() => {
@@ -357,7 +357,7 @@ export default function SleeperLeaguesHomePage({
                     {savedTeam && team.user_id && (savedTeam.saved_user == team.user_id ? <Chip label="My Team" /> :
                       showAddTeam == team.roster_id && (<Chip label="Set As My Team" onClick={(e) => {
                         e.stopPropagation();
-                        mutate({ user_id: team.user_id! });
+                        mutate({ user_id: team.user_id!, league_id: league_id });
                       }} />)
                     )}
 
