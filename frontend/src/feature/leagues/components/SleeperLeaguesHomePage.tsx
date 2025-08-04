@@ -32,7 +32,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState, type SyntheticEvent } from "react";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
-import useGetPlayersOnRosterSleeper from "@feature/leagues/hooks/useGetPlayersOnRosterSleeper";
 import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -48,6 +47,8 @@ import useGetSavedTeam from "../hooks/useGetSavedTeam";
 import { useAppSelector } from "@app/hooks";
 import useSaveSleeperLeague from "../hooks/useSaveTeam";
 
+//
+import useSleeperPlayers from "../hooks/useSleeperPlayers";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -77,11 +78,10 @@ export default function SleeperLeaguesHomePage({
   } = useGetLeagueTeamsSleeper(league_id);
 
   const {
-    players: roster,
+    data: roster,
     error: rosterError,
-    loading: rosterLoading,
-    refreshRoster,
-  } = useGetPlayersOnRosterSleeper(league_id);
+    isLoading: rosterLoading,
+  } = useSleeperPlayers(league_id);
 
   const [expanded, setExpanded] = useState<number | false>(false);
   const username = useAppSelector((state) => state.authReducer.username);
@@ -103,7 +103,7 @@ export default function SleeperLeaguesHomePage({
 
   useEffect(() => {
     if (rosterError) {
-      showError(rosterError);
+      showError(rosterError.message);
     }
   }, [rosterError, showError]);
 
@@ -316,7 +316,6 @@ export default function SleeperLeaguesHomePage({
                       my: 1,
                     },
                   }}
-                  onClick={() => refreshRoster(team.roster_id)}
                 >
 
                   {/* Team Avatar */}
@@ -376,7 +375,7 @@ export default function SleeperLeaguesHomePage({
                   {/* Error: Roster */}
                   {rosterError && (
                     <Typography color="text.primary" sx={{ textAlign: "center", py: 2 }}>
-                      {rosterError || "Unknown error"}
+                      Unable to load players for this team. Please refresh and try again.
                     </Typography>
                   )}
 
@@ -395,8 +394,8 @@ export default function SleeperLeaguesHomePage({
                     </Typography>
                   )}
 
-                  {/* Roster Render if there are players on roster */}
-                  {!rosterError && !rosterLoading && roster && (
+                  {/* Roster Render for players*/}
+                  {!rosterError && !rosterLoading && roster && roster[team.roster_id] && roster[team.roster_id].length > 0 && (
                     <Box
                       display="grid"
                       gridTemplateColumns={{
@@ -409,24 +408,39 @@ export default function SleeperLeaguesHomePage({
                       {["PG", "SG", "SF", "PF", "C"].map((position) => (
                         <DisplayRosterByPosition
                           key={position}
-                          roster={roster}
+                          roster={roster[team.roster_id]}
                           position={position}
                         />
                       ))}
                     </Box>
                   )}
 
-                  {/* Roster Render if there are no players on roster */}
-                  {!rosterError && !rosterLoading && roster && roster.length === 0 && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ textAlign: "center", py: 2 }}
+                  {!rosterError && !rosterLoading && roster && roster[team.roster_id] && roster[team.roster_id].length === 0 && (
+                    <Box
+                      display="grid"
+                      gridTemplateColumns={{
+                        xs: "repeat(auto-fill, minmax(100px, 1fr))",
+                        sm: "repeat(3, 1fr)",
+                        md: "repeat(5, 1fr)",
+                      }}
+                      gap={2}
                     >
-                      No roster data available for this team.
-                    </Typography>
+                      {["PG", "SG", "SF", "PF", "C"].map((position) => (
+                        <DisplayRosterByPosition
+                          key={position}
+                          roster={roster[team.roster_id]}
+                          position={position}
+                        />
+                      ))}
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ textAlign: "center", py: 2 }}
+                      >
+                        No players on this roster.
+                      </Typography>
+                    </Box>
                   )}
-
                 </AccordionDetails>
               </Accordion>
             ))

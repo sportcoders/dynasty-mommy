@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 
 /**
  * Fetches players using Sleeper API
- * @param leagueId - id of the Sleeper League
+ * @param leagueId id of the Sleeper League
  * @returns {Object} Query result object
- * @returns {Player[] | undefined} returns.data - Array of player data from Sleeper API, undefined while loading or on error
+ * @returns {Record<string, Player[]> | undefined} returns.data - Record mapping roster IDs to their player arrays, undefined while loading or on error
  * @returns {boolean} returns.isLoading - Loading state of the query
  * @returns {Error | null} returns.error - Error object if query fails, null otherwise
  */;
