@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -46,9 +47,11 @@ import useGetSleeperState from "../hooks/useGetSleeperState";
 import useGetSavedTeam from "../hooks/useGetSavedTeam";
 import { useAppSelector } from "@app/hooks";
 import useSaveSleeperLeague from "../hooks/useSaveTeam";
-
-//
 import useSleeperPlayers from "../hooks/useSleeperPlayers";
+import useCheckUserLeague from "@feature/leagues/hooks/useCheckUserLeague";
+
+// TODO: Move out of search hooks as it is used in league feature too
+import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -83,12 +86,24 @@ export default function SleeperLeaguesHomePage({
     isLoading: rosterLoading,
   } = useSleeperPlayers(league_id);
 
+  // Checking if league saved for user 
+  const league = { league_id, platform: "sleeper" };
+  const {
+    data: isUserLeague,
+  } = useCheckUserLeague(league);
+
+  // Add/remove league from user actions
+  // const deleteLeague = useDeleteLeague();
+  // const saveTeam = useSaveSleeperLeague();
+
   const [expanded, setExpanded] = useState<number | false>(false);
   const username = useAppSelector((state) => state.authReducer.username);
   const { savedTeam } = useGetSavedTeam(league_id, !username);
   const { mutate } = useSaveSleeperLeague();
 
   const [showAddTeam, setShowAddTeam] = useState<number>(0);
+
+  // Error Notification useEffect
   useEffect(() => {
     if (leagueError) {
       showError(leagueError);
@@ -201,24 +216,46 @@ export default function SleeperLeaguesHomePage({
       >
 
         {/* Top Box */}
-        <Box display="flex" alignItems="center" gap={2} mb={1}>
-          <BackButton url="/" />
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
 
-          {/* League Avatar */}
-          <Avatar
-            src={leagueInfo.avatar}
-            alt={`${leagueInfo.name} avatar`}
-            sx={{
-              width: 60,
-              height: 60,
-              boxShadow: theme.shadows[3],
-            }}
-          />
+          {/* Left Box */}
+          <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+            <BackButton url="/" />
 
-          {/* League Name */}
-          <Typography variant="h3" component="h1" color="text.primary">
-            {leagueInfo.name}
-          </Typography>
+            {/* League Avatar */}
+            <Avatar
+              src={leagueInfo.avatar}
+              alt={`${leagueInfo.name} avatar`}
+              sx={{
+                width: 60,
+                height: 60,
+                boxShadow: theme.shadows[3],
+              }}
+            />
+
+            {/* League Name */}
+            <Typography variant="h3" component="h1" color="text.primary">
+              {leagueInfo.name}
+            </Typography>
+          </Box>
+
+          {/* Right Box */}
+          <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+            {username && (
+              <>
+                {/* If isUserLeague = false, then user is able to add. Otherwise, user is able to remove */}
+                {!isUserLeague ? (
+                  <Button variant="contained" color="success">
+                    <Typography>Add</Typography>
+                  </Button>
+                ) : (
+                  <Button variant="contained" color="error">
+                    <Typography>Remove</Typography>
+                  </Button>
+                )}
+              </>
+            )}
+          </Box>
         </Box>
 
         {/* Bottom Box */}
@@ -462,7 +499,7 @@ export default function SleeperLeaguesHomePage({
           )}
         </CustomTabPanel>
       </Box>
-    </Box>
+    </Box >
   );
 }
 
