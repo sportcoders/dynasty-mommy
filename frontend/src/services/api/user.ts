@@ -33,6 +33,7 @@ export interface League {
     platform: string;
     league_id: string;
 }
+
 export async function addLeagueToUser(newLeague: League) {
     try {
         await serverPost("/user/addLeague", { league: newLeague });
@@ -40,6 +41,7 @@ export async function addLeagueToUser(newLeague: League) {
         console.error(e);
     }
 }
+
 export async function removeLeagueFromUser(league: League) {
     try {
         await serverDelete(`/user/removeLeague/${league.league_id}/${league.platform}`);
@@ -47,9 +49,19 @@ export async function removeLeagueFromUser(league: League) {
         console.error(e);
     }
 }
+
+export async function isUserLeague(league: League) {
+    try {
+        const check = await serverGet(`/user/isUserLeague/${league.league_id}/${league.platform}`);
+        return check as boolean;
+    } catch (e) {
+        console.error(e);
+    }
+}
 export interface UserLeagues {
     leagues: League[];
 }
+
 export async function fetchUserLeagues() {
     try {
         const response = await serverGet<UserLeagues>("/user/getLeagues");
@@ -58,6 +70,14 @@ export async function fetchUserLeagues() {
         console.error(e);
     }
 }
+
+// export async function isLeagueSaved() {
+//     try {
+
+//     } catch (error) {
+
+//     }
+// }
 
 export async function saveSleeperLeague({ league_id, user_id }: savedTeam) {
     try {

@@ -88,11 +88,19 @@ export interface Transaction {
     status: string,
     roster_ids: number[],
     leg: number,
-    draft_picks: [],
+    draft_picks: sleeper_draftPick[],
     creator: string,
     consenter_ids: [],
     waiver_budget: [],
     drops: {},
     adds: {},
     status_updated: string;
+}
+
+export interface sleeper_draftPick {
+    season: string,
+    round: number,      // which round this draft pick is
+    roster_id: number,  // original owner's roster_id
+    previous_owner_id: number,  // previous owner's roster id (in this trade)
+    owner_id: number,   // the new owner of this pick after the trade
 }

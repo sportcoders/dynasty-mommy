@@ -32,7 +32,7 @@ export async function addLeagueToUser(req: Request, res: Response, next: NextFun
         if (check !== null) {
             throw new AppError({
                 statusCode: HttpError.CONFLICT,
-                message: "League alrady exists for user",
+                message: "League already exists for user",
             });
         }
         await AppDataSource.manager.save(UserLeagues, {
@@ -75,6 +75,38 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
         next(e);
     }
 }
+
+export async function isUserLeague(req: Request, res: Response, next: NextFunction) {
+    try {
+        const league = req.params;
+
+        if (!req.user || !req.user.email || !req.user.user_id) {
+            return res.status(HttpError.UNAUTHORIZED).json({ message: "Unauthorized" });
+        }
+
+        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email });
+        if (user == null) {
+            throw new AppError({
+                statusCode: HttpError.NOT_FOUND,
+                message: "User not found",
+            });
+        }
+
+        const check = await AppDataSource.manager.findOneBy(UserLeagues, {
+            user: {
+                email: req.user.email
+            },
+            league_id: league.league_id,
+            platform: league.platform
+        });
+
+        res.status(HttpSuccess.OK).json(check ? true : false);
+
+    } catch (e) {
+        next(e);
+    }
+}
+
 export async function deleteUserLeagues(req: Request, res: Response, next: NextFunction) {
     try {
         const { league_id, platform } = deleteUserLeagueSchema.parse(req.params);
