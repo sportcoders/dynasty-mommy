@@ -38,7 +38,7 @@ import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNotification } from "@hooks/useNotification";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { sleeper_getPlayer, type Player, type TeamInfo, type Transaction } from "@services/sleeper";
+import { sleeper_getPlayer, type Player, type sleeper_draftPick, type TeamInfo, type Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
@@ -789,9 +789,9 @@ const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams
       }
 
       setPlayerMap(tmap);
-      setLoading(false);
     };
-    loadPlayerMap();
+    transaction.adds || transaction.drops && loadPlayerMap();
+    setLoading(false);
   }, [transaction]);
 
   if (loading) return <CircularProgress />;
@@ -819,7 +819,14 @@ const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams
                 .filter(([_, rosterId]) => rosterId === team.roster_id)
                 .map(([playerName]) => playerName)
               : [];
-
+            const pickAdds: sleeper_draftPick[] = [];
+            const pickDrops: sleeper_draftPick[] = [];
+            transaction.draft_picks.map((pick) => {
+              if (pick.owner_id == team.roster_id)
+                pickAdds.push(pick);
+              else
+                pickDrops.push(pick);
+            });
             return (
               <TableRow key={team.roster_id} hover>
                 <TableCell>
@@ -829,11 +836,16 @@ const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams
                 </TableCell>
 
                 <TableCell>
-                  {teamAdds.length > 0 ? (
+                  {teamAdds.length > 0 || pickAdds.length > 0 ? (
                     <Box>
                       {teamAdds.map((playerName, index) => (
-                        <Box key={playerName} sx={{ display: 'block', mb: 0.5 }}>
+                        <Box key={playerName} sx={{ display: 'block' }}>
                           {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
+                        </Box>
+                      ))}
+                      {pickAdds.map((pick, index) => (
+                        <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
+                          {`${pick.season} Round ${pick.round}`}
                         </Box>
                       ))}
                     </Box>
@@ -845,11 +857,16 @@ const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams
                 </TableCell>
 
                 <TableCell>
-                  {teamDrops.length > 0 ? (
+                  {teamDrops.length > 0 || pickDrops.length > 0 ? (
                     <Box>
                       {teamDrops.map((playerName, index) => (
-                        <Box key={playerName} sx={{ display: 'block', mb: 0.5 }}>
+                        <Box key={playerName} sx={{ display: 'block' }}>
                           {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
+                        </Box>
+                      ))}
+                      {pickDrops.map((pick, index) => (
+                        <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
+                          {`${pick.season} Round ${pick.round}`}
                         </Box>
                       ))}
                     </Box>
