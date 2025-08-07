@@ -8,8 +8,16 @@ export default function useSaveLeague() {
 
     const { mutate, isPending, isError, isSuccess } = useMutation({
         mutationFn: (league: League) => addLeagueToUser(league),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ['userSavedLeagues']
+            });
+
+            // useCheckUserLeague.ts
+            queryClient.invalidateQueries({
+                queryKey: ['league', variables]
+            });
+
             showSuccess("League saved successfully");
         },
         onError: () => {

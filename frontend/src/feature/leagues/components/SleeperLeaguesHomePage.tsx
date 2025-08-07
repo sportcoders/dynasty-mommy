@@ -50,6 +50,10 @@ import useSaveSleeperLeague from "../hooks/useSaveTeam";
 import useSleeperPlayers from "../hooks/useSleeperPlayers";
 import useCheckUserLeague from "@feature/leagues/hooks/useCheckUserLeague";
 
+// Saving League
+import type { League } from "@services/api/user"; // TODO: Find a way to not need this import
+import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
+
 // TODO: Move out of search hooks as it is used in league feature too
 import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
 
@@ -92,9 +96,25 @@ export default function SleeperLeaguesHomePage({
     data: isUserLeague,
   } = useCheckUserLeague(league);
 
-  // Add/remove league from user actions
-  // const deleteLeague = useDeleteLeague();
-  // const saveTeam = useSaveSleeperLeague();
+  // Save Sleeper League Mutate Function From User via User Action Buttons
+  const {
+    mutate: saveLeague,
+    isPending: isSavingLeague,
+  } = useSaveLeague();
+
+  /**
+   * Event handler function that saves the current league to the user's account
+   */
+  const handleSaveLeague = () => {
+    const leagueId = league_id;
+    const platform = "sleeper";
+    const league: League = {
+      platform: platform,
+      league_id: leagueId,
+    };
+    saveLeague(league);
+  };
+
 
   const [expanded, setExpanded] = useState<number | false>(false);
   const username = useAppSelector((state) => state.authReducer.username);
@@ -245,7 +265,7 @@ export default function SleeperLeaguesHomePage({
               <>
                 {/* If isUserLeague = false, then user is able to add. Otherwise, user is able to remove */}
                 {!isUserLeague ? (
-                  <Button variant="contained" color="success">
+                  <Button variant="contained" color="success" onClick={handleSaveLeague} disabled={isSavingLeague}>
                     <Typography>Add</Typography>
                   </Button>
                 ) : (
