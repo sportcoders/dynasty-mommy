@@ -5,27 +5,11 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
   Chip,
   CircularProgress,
-  Container,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
   MenuItem,
-  Paper,
   Select,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tabs,
   Typography,
   useTheme,
@@ -37,13 +21,9 @@ import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
 import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNotification } from "@hooks/useNotification";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { sleeper_getPlayer, type Player, type sleeper_draftPick, type TeamInfo, type Transaction } from "@services/sleeper";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import { useNavigate } from "@tanstack/react-router";
 import BackButton from "@components/BackButton";
-import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
-import useGetSleeperState from "../hooks/useGetSleeperState";
 import useGetSavedTeam from "../hooks/useGetSavedTeam";
 import { useAppSelector } from "@app/hooks";
 import useSaveSleeperLeague from "../hooks/useSaveTeam";
@@ -56,6 +36,7 @@ import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
 
 // TODO: Move out of search hooks as it is used in league feature too?
 import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
+import SleeperTransactionsTab from "@feature/leagues/components/SleeperTransactionsTab";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -530,7 +511,7 @@ export default function SleeperLeaguesHomePage({
 
           {/* Render Transaction Tab Component if teams is not null */}
           {teams ? (
-            <TransactionTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
+            <SleeperTransactionsTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
 
           ) : (
             <Typography variant="h6" color="text.primary" textAlign="center"
@@ -544,137 +525,6 @@ export default function SleeperLeaguesHomePage({
   );
 }
 
-const TransactionTab = ({ league_id, teams, league_season }: { league_id: string, league_season: string, teams: TeamInfo[]; }) => {
-  const { data: state } = useGetSleeperState();
-  /*finding the max week, week set to current week from sleeper state get if it is the current season,
-  otherwise it will be the max number of weeks in a season(which is 20)
-  */
-  const max_week = league_season == state?.league_season ? state.week : 19;
-  //display week max is 20
-  const display_weeks = Array.from({ length: max_week + 1 }, (_, i) => i + 1).reverse();
-
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {display_weeks.map((week) => {
-        return (
-          <TransactionCard week={String(week)} league_id={league_id} teams={teams} open={week == display_weeks.length} key={week} />);
-      })}
-    </Container>
-  );
-};
-
-const TransactionCard = ({ week, league_id, teams, open }: { week: string, league_id: string, teams: TeamInfo[]; open: boolean; }) => {
-  const [showWeek, setShowWeek] = useState<boolean>(open);
-
-  const toggleCard = () => {
-    setShowWeek((prev) => !prev);
-  };
-  return (
-    <Card key={week} sx={{ mb: 3, boxShadow: 3 }}>
-      <CardHeader title={
-        <Typography variant="h5" sx={{ fontWeight: 'bold', }}>
-          {`Week ${week}`}
-        </Typography>}
-        action={
-          <IconButton onClick={toggleCard}>
-            {showWeek ?
-              <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-        }
-      />
-      {showWeek && <TransactionInWeekDisplay week={week} league_id={league_id} teams={teams} />}
-    </Card>
-  );
-
-};
-
-const TransactionInWeekDisplay = ({ week, league_id, teams }: { week: string, league_id: string, teams: TeamInfo[]; }) => {
-  const [expanded, setExpanded] = useState<string | false>("");
-  const { data: transactions } = useGetTransactionByWeek(league_id, Number(week));
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'complete': return 'success';
-      case 'pending': return 'warning';
-      case 'failed': return 'error';
-      default: return 'default';
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'trade': return 'primary';
-      case 'waiver': return 'secondary';
-      case 'commissioner': return 'info';
-      case 'free_agent': return 'default';
-      default: return 'default';
-    }
-  };
-  const handleAccordionChange =
-    (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
-  return (
-    <CardContent>
-
-      {/* <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 2 }}>
-              Week {leg}
-            </Typography>
-            <Badge badgeContent={legTransactions.length} color="primary">
-              <Chip label="Transactions" variant="outlined" />
-            </Badge>
-          </Box>
-          <IconButton onClick={toggleCard}>
-            {showWeek ?
-              <ExpandMore /> : <ExpandLess />
-            }
-          </IconButton>
-        </Box> */}
-
-
-      {transactions ? transactions.map((transaction, index) => (
-        <Accordion key={transaction.transaction_id} sx={{ mb: 2 }} expanded={expanded === transaction.transaction_id} onChange={handleAccordionChange(transaction.transaction_id)}>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2 }}>
-              <Chip
-                label={transaction.type}
-                color={getTypeColor(transaction.type) as any}
-                size="small"
-                variant="outlined"
-                sx={{ width: 100, justifyContent: 'center' }}
-              />
-              <Typography sx={{ flexGrow: 1, ml: 2, fontWeight: 600 }}>
-                {
-                  // transaction.roster_ids.length > 1 ?
-                  transaction.roster_ids.map((id) => teams[id - 1].display_name).join(' ')
-                }
-              </Typography>
-              <Chip
-                label={transaction.status}
-                color={getStatusColor(transaction.status) as any}
-                size="small"
-                sx={{ width: 80, justifyContent: 'center' }}
-              />
-            </Box>
-          </AccordionSummary>
-          {expanded === transaction.transaction_id &&
-            <AccordionDetails>
-              {transaction.type == "trade" ?
-                <DisplayTrades transaction={transaction} teams={[teams[transaction.roster_ids[0] - 1], teams[transaction.roster_ids[1] - 1]]} /> :
-                <DisplayAddDrop transaction={transaction} team={teams[transaction.roster_ids[0] - 1]} />
-              }
-            </AccordionDetails>
-          }
-        </Accordion>
-      )) :
-        <>No transactions found</>
-      }
-    </CardContent>
-
-  );
-};
 
 // Move later
 const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: { league_id: string; current_tab: number; parent?: string; }) => {
@@ -697,237 +547,5 @@ const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: { league_id
         })}
       </Select>
     </Box>
-  );
-};
-
-const DisplayAddDrop = ({ transaction, team }: { transaction: Transaction, team: TeamInfo | undefined; }) => {
-  if (!team) return;
-  const formatUnixTime = (time: string) => {
-    const day = new Date(time);
-    return day.toString().substring(4, 21);
-  };
-  const [addsNames, setAddsNames] = useState<string[]>([]);
-  const [dropsNames, setDropsNames] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchPlayerNames = async () => {
-      if (transaction.adds) {
-        const addEntries = await Promise.all(
-          Object.entries(transaction.adds).map(async ([key]) => {
-            const player = await sleeper_getPlayer(key);
-            return `${player[0].first_name} ${player[0].last_name}`;
-          })
-        );
-        setAddsNames(addEntries);
-      }
-
-      if (transaction.drops) {
-        const dropEntries = await Promise.all(
-          Object.entries(transaction.drops).map(async ([key]) => {
-            const player = await sleeper_getPlayer(key);
-            return `${player[0].first_name} ${player[0].last_name}`;
-          })
-        );
-        setDropsNames(dropEntries);
-      }
-    };
-
-    fetchPlayerNames();
-  }, [transaction]);
-  return (<Grid container spacing={3}>
-    <Grid >
-      <List dense>
-        <ListItem>
-          <ListItemText
-            primary="Team"
-            secondary={team.display_name}
-          />
-        </ListItem>
-
-        {addsNames.length > 0 &&
-          <ListItem>
-            <ListItemText
-              primary="Adds"
-            />
-          </ListItem>
-        }
-        {addsNames.map((player) => {
-          return <ListItem>
-            <ListItemText
-
-              secondary={player} />
-          </ListItem>;
-        })}
-        <ListItem>
-          {dropsNames.length > 0 &&
-            <ListItemText
-              primary="Drops"
-              secondary={dropsNames}
-            />
-          }
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            // primary="Status Updated"
-            secondary={formatUnixTime(transaction.status_updated)}
-          />
-        </ListItem>
-      </List>
-    </Grid>
-
-    <Grid >
-      {/* {transaction.metadata && transaction.metadata.notes && (
-                        <Paper sx={{ p: 2, mb: 2, bgcolor: 'grey.50' }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            Notes
-                          </Typography>
-                          <Typography variant="body2">
-                            {transaction.metadata.notes}
-                          </Typography>
-                        </Paper>
-                      )} */}
-
-      {transaction.waiver_budget && transaction.waiver_budget.length > 0 && (
-        <Paper sx={{ p: 2, bgcolor: 'warning.50' }}>
-          <Typography variant="subtitle2" color="warning.main" gutterBottom>
-            Waiver Budget Changes
-          </Typography>
-          {transaction.waiver_budget.map((budget, idx) => (
-            <Typography key={idx} variant="body2">
-              {/* ${budget.amount} from Roster {budget.sender} to Roster {budget.receiver} */}
-            </Typography>
-          ))}
-        </Paper>
-      )}
-    </Grid>
-  </Grid>);
-};
-const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams: TeamInfo[] | undefined; }) => {
-  if (!teams) return;
-  const formatUnixTime = (time: string) => {
-    const day = new Date(time);
-    return day.toString().substring(4, 21);
-  };
-  const [playerMap, setPlayerMap] = useState<Record<string, Player>>({});
-  const [loading, setLoading] = useState<boolean>(true);
-  useEffect(() => {
-    const loadPlayerMap = async () => {
-      const ids: string[] = [];
-      if (transaction.adds) {
-        Object.entries(transaction.adds).map(([key]) => {
-          ids.push(key);
-        });
-      }
-      if (transaction.drops) {
-        Object.entries(transaction.drops).map(([key]) => {
-          ids.push(key);
-        });
-      }
-      const players = await sleeper_getPlayer(ids.join("&"));
-      const tmap: Record<string, Player> = {};
-      for (const player of players) {
-        tmap[player.id] = player;
-      }
-
-      setPlayerMap(tmap);
-    };
-    transaction.adds || transaction.drops && loadPlayerMap();
-    setLoading(false);
-  }, [transaction]);
-
-  if (loading) return <CircularProgress />;
-
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Team</TableCell>
-            <TableCell>Additions</TableCell>
-            <TableCell>Drops</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {teams.map((team) => {
-            const teamAdds = transaction.adds
-              ? Object.entries(transaction.adds)
-                .filter(([_, rosterId]) => rosterId === team.roster_id)
-                .map(([playerName]) => playerName)
-              : [];
-
-            const teamDrops = transaction.drops
-              ? Object.entries(transaction.drops)
-                .filter(([_, rosterId]) => rosterId === team.roster_id)
-                .map(([playerName]) => playerName)
-              : [];
-            const pickAdds: sleeper_draftPick[] = [];
-            const pickDrops: sleeper_draftPick[] = [];
-            transaction.draft_picks.map((pick) => {
-              if (pick.owner_id == team.roster_id)
-                pickAdds.push(pick);
-              else
-                pickDrops.push(pick);
-            });
-            return (
-              <TableRow key={team.roster_id} hover>
-                <TableCell>
-                  <Typography variant="subtitle2" fontWeight="bold">
-                    {team.display_name}
-                  </Typography>
-                </TableCell>
-
-                <TableCell>
-                  {teamAdds.length > 0 || pickAdds.length > 0 ? (
-                    <Box>
-                      {teamAdds.map((playerName, index) => (
-                        <Box key={playerName} sx={{ display: 'block' }}>
-                          {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
-                        </Box>
-                      ))}
-                      {pickAdds.map((pick, index) => (
-                        <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
-                          {`${pick.season} Round ${pick.round}`}
-                        </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography variant="body2" >
-                      —
-                    </Typography>
-                  )}
-                </TableCell>
-
-                <TableCell>
-                  {teamDrops.length > 0 || pickDrops.length > 0 ? (
-                    <Box>
-                      {teamDrops.map((playerName, index) => (
-                        <Box key={playerName} sx={{ display: 'block' }}>
-                          {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
-                        </Box>
-                      ))}
-                      {pickDrops.map((pick, index) => (
-                        <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
-                          {`${pick.season} Round ${pick.round}`}
-                        </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      —
-                    </Typography>
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-
-      <Box sx={{ p: 2, textAlign: 'right', borderTop: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="caption" color="text.secondary">
-          Completed: {formatUnixTime(transaction.status_updated)}
-        </Typography>
-      </Box>
-    </TableContainer>
   );
 };
