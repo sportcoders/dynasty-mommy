@@ -13,9 +13,11 @@ beforeAll(() => {
     init_app_test();
     api = supertest(app);
 });
+
 afterEach(async () => {
     await clean_db();
 });
+
 const loadUser = async () => {
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
@@ -25,6 +27,7 @@ const loadUser = async () => {
         users[i].id = new_user.id;
     }
 };
+
 const loadUserWithLeagues = async () => {
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
@@ -45,12 +48,14 @@ const createAccessToken = () => {
     const token = createToken(accessTokenPayload);
     return token;
 };
+
 const createRefreshToken = async () => {
     const session = await UserSession.insertOne({ userEmail: users[0].email, userId: users[0].id, useUsername: users[0].username });
     const refreshTokenPayload: RefreshToken = { type: 'refresh', session_id: session._id.toString() };
     const refreshToken = createToken(refreshTokenPayload);
     return refreshToken;
 };
+
 describe("user_leagues", () => {
     describe("addLeague", () => {
         it("should return status code of 200 when league is added successfully", async () => {
@@ -103,6 +108,7 @@ describe("user_leagues", () => {
             expect(response.statusCode).toBe(404);
         });
     });
+
     describe("getLeague", () => {
         it("should return 200 when leagues are retreived", async () => {
             await loadUserWithLeagues();
@@ -128,6 +134,7 @@ describe("user_leagues", () => {
             expect(response.statusCode).toBe(404);
         });
     });
+
     describe("deleteLeague", () => {
         it("should return status code of 204 when league is deleted successfully", async () => {
             await loadUserWithLeagues();
@@ -171,6 +178,7 @@ describe("user_leagues", () => {
             expect(response.statusCode).toBe(404);
         });
     }),
+
         describe("change username", () => {
             it("should return status code 200 when username is changed", async () => {
                 await loadUser();
@@ -213,6 +221,7 @@ describe("user_leagues", () => {
                 expect(response.statusCode).toBe(422);
             });
         });
+
     describe('save teams', () => {
         it("should return status code of 200 when team is changed successfully", async () => {
 
@@ -225,6 +234,7 @@ describe("user_leagues", () => {
             expect(response.statusCode).toBe(200);
         });
     });
+
     describe('get teams', () => {
         it("should return status code of 200 when all teams are fetch successfully", async () => {
             await loadUserWithLeagues();
@@ -232,6 +242,71 @@ describe("user_leagues", () => {
             const response = await api.get('/user/savedTeams').set("Cookie", [`accessToken=${token}`]).send();
             expect(response.body).toEqual(users[0].leagues);
             expect(response.statusCode).toBe(200);
+        });
+    });
+
+    describe('check is user league', () => {
+        it("should return true when user has the league saved", async () => {
+            await loadUserWithLeagues();
+            const token = createAccessToken();
+            const league = users[0].leagues[0];
+
+            const response = await api.get(`/user/isUserLeague/${league.league_id}/${league.platform}`)
+                .set("Cookie", [`accessToken=${token}`])
+                .send();
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual(true);
+        });
+
+        it("should return false when user doesn't have the league saved", async () => {
+            await loadUserWithLeagues();
+            const token = createAccessToken();
+
+            const nonExistentLeague = {
+                league_id: "999999999",
+                platform: "sleeper"
+            };
+
+            const response = await api.get(`/user/isUserLeague/${nonExistentLeague.league_id}/${nonExistentLeague.platform}`)
+                .set("Cookie", [`accessToken=${token}`])
+                .send();
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual(false);
+        });
+
+        it("should return false when user has no leagues at all", async () => {
+            await loadUser();
+            const token = createAccessToken();
+            const league = users[0].leagues[0];
+
+            const response = await api.get(`/user/isUserLeague/${league.league_id}/${league.platform}`)
+                .set("Cookie", [`accessToken=${token}`])
+                .send();
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual(false);
+        });
+
+        it("should return 401 when no auth token is provided", async () => {
+            const league = users[0].leagues[0];
+
+            const response = await api.get(`/user/isUserLeague/${league.league_id}/${league.platform}`)
+                .send();
+
+            expect(response.statusCode).toBe(401);
+        });
+
+        it("should return 404 when user doesn't exist", async () => {
+            const token = createAccessToken();
+            const league = users[0].leagues[0];
+
+            const response = await api.get(`/user/isUserLeague/${league.league_id}/${league.platform}`)
+                .set("Cookie", [`accessToken=${token}`])
+                .send();
+
+            expect(response.statusCode).toBe(404);
         });
     });
 });
