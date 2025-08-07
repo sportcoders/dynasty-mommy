@@ -54,7 +54,7 @@ import useCheckUserLeague from "@feature/leagues/hooks/useCheckUserLeague";
 import type { League } from "@services/api/user"; // TODO: Find a way to not need this import
 import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
 
-// TODO: Move out of search hooks as it is used in league feature too
+// TODO: Move out of search hooks as it is used in league feature too?
 import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
 
 interface SleeperLeaguesHomePage {
@@ -104,6 +104,8 @@ export default function SleeperLeaguesHomePage({
 
   /**
    * Event handler function that saves the current league to the user's account
+   * 
+   * @returns void
    */
   const handleSaveLeague = () => {
     const leagueId = league_id;
@@ -112,8 +114,27 @@ export default function SleeperLeaguesHomePage({
       platform: platform,
       league_id: leagueId,
     };
+
     saveLeague(league);
   };
+
+  // Remove Sleeper League Mutate Function From User via User Action Buttons
+  const {
+    mutate: removeLeague,
+    isPending: isRemovingLeague
+  } = useDeleteLeague();
+
+  const handleRemoveLeague = () => {
+    const leagueId = league_id;
+    const platform = "sleeper";
+    const league: League = {
+      platform: platform,
+      league_id: leagueId,
+    };
+
+    removeLeague(league);
+  };
+
 
 
   const [expanded, setExpanded] = useState<number | false>(false);
@@ -269,7 +290,7 @@ export default function SleeperLeaguesHomePage({
                     <Typography>Add</Typography>
                   </Button>
                 ) : (
-                  <Button variant="contained" color="error">
+                  <Button variant="contained" color="error" onClick={handleRemoveLeague} disabled={isRemovingLeague}>
                     <Typography>Remove</Typography>
                   </Button>
                 )}

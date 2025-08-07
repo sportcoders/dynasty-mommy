@@ -8,8 +8,12 @@ export default function useDeleteLeague() {
 
     const { mutate, isPending, isError, isSuccess } = useMutation({
         mutationFn: (league: League) => removeLeagueFromUser(league),
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
+
+            // useCheckUserLeague.ts
+            queryClient.invalidateQueries({ queryKey: ['league', variables] });
+
             showSuccess("League removed successfully");
         },
         onError: () => {
