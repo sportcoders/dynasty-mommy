@@ -34,3 +34,8 @@ export const saveTeamSleeperSchema = z.object({
 export const getTeamSchema = z.object({
     league_id: z.string()
 });
+
+export const isUserLeagueSchema = z.object({
+    platform: z.string(),
+    league_id: z.string()
+});

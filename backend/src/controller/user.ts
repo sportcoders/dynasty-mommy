@@ -3,7 +3,7 @@ import { User, UserLeagues } from "../models/user";
 import { HttpSuccess, HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { AppDataSource } from "../app";
-import { addUserToLeagueSchema, changeUsernameSchema, deleteUserLeagueSchema, getTeamSchema, saveTeamSleeperSchema } from "../schemas/user";
+import { addUserToLeagueSchema, changeUsernameSchema, deleteUserLeagueSchema, getTeamSchema, isUserLeagueSchema, saveTeamSleeperSchema } from "../schemas/user";
 
 export async function addLeagueToUser(req: Request, res: Response, next: NextFunction) {
     try {
@@ -78,7 +78,7 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
 
 export async function isUserLeague(req: Request, res: Response, next: NextFunction) {
     try {
-        const league = req.params;
+        const { platform, league_id } = isUserLeagueSchema.parse(req.params);
 
         if (!req.user || !req.user.email || !req.user.user_id) {
             return res.status(HttpError.UNAUTHORIZED).json({ message: "Unauthorized" });
@@ -96,8 +96,8 @@ export async function isUserLeague(req: Request, res: Response, next: NextFuncti
             user: {
                 email: req.user.email
             },
-            league_id: league.league_id,
-            platform: league.platform
+            league_id: league_id,
+            platform: platform
         });
 
         res.status(HttpSuccess.OK).json(check ? true : false);
