@@ -36,7 +36,7 @@ import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
 
 // TODO: Move out of search hooks as it is used in league feature too?
 import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
-import { TransactionTab } from "@feature/leagues/components/sleeper_TransactionsTab";
+import SleeperTransactionsTab from "@feature/leagues/components/SleeperTransactionsTab";
 
 interface SleeperLeaguesHomePage {
   league_id: string;
@@ -511,7 +511,7 @@ export default function SleeperLeaguesHomePage({
 
           {/* Render Transaction Tab Component if teams is not null */}
           {teams ? (
-            <TransactionTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
+            <SleeperTransactionsTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
 
           ) : (
             <Typography variant="h6" color="text.primary" textAlign="center"

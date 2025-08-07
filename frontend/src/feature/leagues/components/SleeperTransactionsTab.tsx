@@ -5,11 +5,16 @@ import { useState, useEffect, type SyntheticEvent } from "react";
 import useGetSleeperState from "../hooks/useGetSleeperState";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
 
+/**
+ * 
+ * @param time - Unix time
+ * @returns - MM(3 letter abbreviation) DD YYYY HH:MM
+ */
 const formatUnixTime = (time: string) => {
     const day = new Date(time);
     return day.toString().substring(4, 21);
 };
-export function TransactionTab({ league_id, teams, league_season }: { league_id: string, league_season: string, teams: TeamInfo[]; }) {
+export default function TransactionTab({ league_id, teams, league_season }: { league_id: string, league_season: string, teams: TeamInfo[]; }) {
     const { data: state } = useGetSleeperState();
     /*finding the max week, week set to current week from sleeper state get if it is the current season,
     otherwise it will be the max number of weeks in a season(which is 20)
