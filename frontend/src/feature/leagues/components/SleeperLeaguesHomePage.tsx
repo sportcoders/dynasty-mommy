@@ -71,12 +71,6 @@ export default function SleeperLeaguesHomePage({
     isLoading: rosterLoading,
   } = useSleeperPlayers(league_id);
 
-  // Checking if league saved for user 
-  const league = { league_id, platform: "sleeper" };
-  const {
-    data: isUserLeague,
-  } = useCheckUserLeague(league);
-
   // Save Sleeper League Mutate Function From User via User Action Buttons
   const {
     mutate: saveLeague,
@@ -124,6 +118,12 @@ export default function SleeperLeaguesHomePage({
   const { mutate } = useSaveSleeperLeague();
 
   const [showAddTeam, setShowAddTeam] = useState<number>(0);
+
+  // Checking if league saved for user 
+  const league = { league_id, platform: "sleeper" };
+  const {
+    data: isUserLeague,
+  } = useCheckUserLeague(league, !username);
 
   // Error Notification useEffect
   useEffect(() => {
@@ -475,22 +475,24 @@ export default function SleeperLeaguesHomePage({
                   )}
 
                   {!rosterError && !rosterLoading && roster && roster[team.roster_id] && roster[team.roster_id].length === 0 && (
-                    <Box
-                      display="grid"
-                      gridTemplateColumns={{
-                        xs: "repeat(auto-fill, minmax(100px, 1fr))",
-                        sm: "repeat(3, 1fr)",
-                        md: "repeat(5, 1fr)",
-                      }}
-                      gap={2}
-                    >
-                      {["PG", "SG", "SF", "PF", "C"].map((position) => (
-                        <DisplayRosterByPosition
-                          key={position}
-                          roster={roster[team.roster_id]}
-                          position={position}
-                        />
-                      ))}
+                    <>
+                      <Box
+                        display="grid"
+                        gridTemplateColumns={{
+                          xs: "repeat(auto-fill, minmax(100px, 1fr))",
+                          sm: "repeat(3, 1fr)",
+                          md: "repeat(5, 1fr)",
+                        }}
+                        gap={2}
+                      >
+                        {["PG", "SG", "SF", "PF", "C"].map((position) => (
+                          <DisplayRosterByPosition
+                            key={position}
+                            roster={roster[team.roster_id]}
+                            position={position}
+                          />
+                        ))}
+                      </Box>
                       <Typography
                         variant="body2"
                         color="text.secondary"
@@ -498,7 +500,7 @@ export default function SleeperLeaguesHomePage({
                       >
                         No players on this roster.
                       </Typography>
-                    </Box>
+                    </>
                   )}
                 </AccordionDetails>
               </Accordion>
