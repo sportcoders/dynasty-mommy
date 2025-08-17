@@ -15,44 +15,107 @@ import {
   useTheme,
   type SelectChangeEvent,
 } from "@mui/material";
-import { useEffect, useState, type SyntheticEvent } from "react";
+import { useEffect, useState, useCallback, type SyntheticEvent } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+// Components
+import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
+import BackButton from "@components/BackButton";
+import SleeperTransactionsTab from "@feature/leagues/components/SleeperTransactionsTab";
+
+// Hooks
+import { useNotification } from "@hooks/useNotification";
+import { useAppSelector } from "@app/hooks";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
 import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
-import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useNotification } from "@hooks/useNotification";
 import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
-import { useNavigate } from "@tanstack/react-router";
-import BackButton from "@components/BackButton";
 import useGetSavedTeam from "../hooks/useGetSavedTeam";
-import { useAppSelector } from "@app/hooks";
 import useSaveSleeperLeague from "../hooks/useSaveTeam";
 import useSleeperPlayers from "../hooks/useSleeperPlayers";
 import useCheckUserLeague from "@feature/leagues/hooks/useCheckUserLeague";
-
-// Saving League
-import type { League } from "@services/api/user"; // TODO: Find a way to not need this import
 import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
-
-// TODO: Move out of search hooks as it is used in league feature too?
 import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
-import SleeperTransactionsTab from "@feature/leagues/components/SleeperTransactionsTab";
 
-interface SleeperLeaguesHomePage {
+// Types
+import type { League } from "@services/api/user";
+
+// Component Interfaces
+interface SleeperLeaguesHomePageProps {
   league_id: string;
   tab: number;
   parent?: string;
 }
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  id: number;
+  value: number;
+}
+
+interface PreviousSeasonsDropDownProps {
+  league_id: string;
+  current_tab: number;
+  parent?: string;
+}
+
+// Utility Components
+const CustomTabPanel = ({ children, value, id, ...other }: TabPanelProps) => (
+  <div
+    role="tabpanel"
+    hidden={value !== id}
+    id={`simple-tabpanel-${id}`}
+    aria-labelledby={`simple-tab-${id}`}
+    {...other}
+  >
+    {value === id && <Box sx={{ p: 3 }}>{children}</Box>}
+  </div>
+);
+
+const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: PreviousSeasonsDropDownProps) => {
+  const { prevSeasons } = useGetPreviousSeasons(parent || league_id);
+  const navigate = useNavigate();
+
+  if (!prevSeasons || prevSeasons.length === 0) return null;
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Typography>Previous Seasons</Typography>
+      <Select
+        value={league_id}
+        onChange={(event: SelectChangeEvent) => {
+          navigate({
+            to: `/leagues/${event.target.value}`,
+            search: { tab: current_tab, parent: prevSeasons[0].league_id }
+          });
+        }}
+      >
+        {prevSeasons.map((season) => (
+          <MenuItem key={season.season} value={season.league_id}>
+            {season.season}
+          </MenuItem>
+        ))}
+      </Select>
+    </Box>
+  );
+};
+
+// Main Component
 export default function SleeperLeaguesHomePage({
   league_id,
   tab,
   parent
-}: SleeperLeaguesHomePage) {
+}: SleeperLeaguesHomePageProps) {
   const theme = useTheme();
-
   const { showError } = useNotification();
+  const username = useAppSelector((state) => state.authReducer.username);
 
+  // State
+  const [expanded, setExpanded] = useState<number | false>(false);
+  const [value, setValue] = useState<number>(tab);
+  const [showAddTeam, setShowAddTeam] = useState<number>(0);
+
+  // Data fetching hooks
   const {
     leagueInfo,
     loading: leagueLoading,
@@ -71,161 +134,105 @@ export default function SleeperLeaguesHomePage({
     isLoading: rosterLoading,
   } = useSleeperPlayers(league_id);
 
-  // Save Sleeper League Mutate Function From User via User Action Buttons
-  const {
-    mutate: saveLeague,
-    isPending: isSavingLeague,
-  } = useSaveLeague();
-
-  /**
-   * Event handler function that saves the current league to the user's account
-   * 
-   * @returns void
-   */
-  const handleSaveLeague = () => {
-    const leagueId = league_id;
-    const platform = "sleeper";
-    const league: League = {
-      platform: platform,
-      league_id: leagueId,
-    };
-
-    saveLeague(league);
-  };
-
-  // Remove Sleeper League Mutate Function From User via User Action Buttons
-  const {
-    mutate: removeLeague,
-    isPending: isRemovingLeague
-  } = useDeleteLeague();
-
-  const handleRemoveLeague = () => {
-    const leagueId = league_id;
-    const platform = "sleeper";
-    const league: League = {
-      platform: platform,
-      league_id: leagueId,
-    };
-
-    removeLeague(league);
-  };
-
-
-
-  const [expanded, setExpanded] = useState<number | false>(false);
-  const username = useAppSelector((state) => state.authReducer.username);
+  // User-specific data (only fetch if logged in)
+  const league = { league_id, platform: "sleeper" as const };
+  const { data: isUserLeague } = useCheckUserLeague(league, !username);
   const { savedTeam } = useGetSavedTeam(league_id, !username);
-  const { mutate } = useSaveSleeperLeague();
 
-  const [showAddTeam, setShowAddTeam] = useState<number>(0);
+  // Mutation hooks
+  const { mutate: saveLeague, isPending: isSavingLeague } = useSaveLeague();
+  const { mutate: removeLeague, isPending: isRemovingLeague } = useDeleteLeague();
+  const { mutate: saveSleeperLeague } = useSaveSleeperLeague();
 
-  // Checking if league saved for user 
-  const league = { league_id, platform: "sleeper" };
-  const {
-    data: isUserLeague,
-  } = useCheckUserLeague(league, !username);
+  // Event handlers
+  const handleSaveLeague = useCallback(() => {
+    const league: League = {
+      platform: "sleeper",
+      league_id: league_id,
+    };
+    saveLeague(league);
+  }, [league_id, saveLeague]);
 
-  // Error Notification useEffect
-  useEffect(() => {
-    if (leagueError) {
-      showError(leagueError);
-    }
-  }, [leagueError, showError]);
+  const handleRemoveLeague = useCallback(() => {
+    const league: League = {
+      platform: "sleeper",
+      league_id: league_id,
+    };
+    removeLeague(league);
+  }, [league_id, removeLeague]);
 
-  useEffect(() => {
-    if (teamError) {
-      showError(teamError);
-    }
-  }, [teamError, showError]);
-
-  useEffect(() => {
-    if (rosterError) {
-      showError(rosterError.message);
-    }
-  }, [rosterError, showError]);
-
-  const handleAccordionChange =
-    (panel: number) => (event: SyntheticEvent, newExpanded: boolean) => {
+  const handleAccordionChange = useCallback(
+    (panel: number) => (_event: SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
-    };
+    },
+    []
+  );
 
-  interface TabPanelProps {
-    children?: React.ReactNode;
-    id: number;
-    value: number;
-  }
-
-  function CustomTabPanel(props: TabPanelProps) {
-    const { children, value, id, ...other } = props;
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== id}
-        id={`simple-tabpanel-${id}`}
-        aria-labelledby={`simple-tab-${id}`}
-        {...other}
-      >
-        {value === id && <Box sx={{ p: 3 }}>{children}</Box>}
-      </div>
-    );
-  }
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
+  }, []);
 
-  const [value, setValue] = useState<number>(tab);
+  const handleSetMyTeam = useCallback((event: React.MouseEvent, user_id: string) => {
+    event.stopPropagation();
+    saveSleeperLeague({ user_id, league_id });
+  }, [saveSleeperLeague, league_id]);
 
-  function a11yProps(index: number) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
+  // Accessibility helper
+  const a11yProps = useCallback((index: number) => ({
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  }), []);
 
-  // Loading State: League Info 
+  // Error handling effects
+  useEffect(() => {
+    const errors = [
+      { error: leagueError, message: leagueError },
+      { error: teamError, message: teamError },
+      { error: rosterError, message: rosterError?.message }
+    ];
+
+    errors.forEach(({ error, message }) => {
+      if (error && message) {
+        showError(message);
+      }
+    });
+  }, [leagueError, teamError, rosterError, showError]);
+
+  // Loading state
   if (leagueLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="60vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
         <CircularProgress />
       </Box>
     );
   }
 
-  // Error State: League
+  // Error state
   if (leagueError) {
-    const errorMessage = leagueError;
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="60vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
         <Typography variant="h6" color="text.primary" textAlign="center">
           Oops! Failed to load league information.
           <br />
-          {errorMessage || "Please try again later."}
+          {leagueError || "Please try again later."}
         </Typography>
       </Box>
     );
   }
 
-  // Null: League
+  // No league data
   if (!leagueInfo) {
-    return null;
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Typography variant="h6" color="text.primary" textAlign="center">
+          League not found.
+        </Typography>
+      </Box>
+    );
   }
 
   return (
     <Box sx={{ width: '100%' }}>
-
-      {/* Heading */}
       <Box
         sx={{
           p: { xs: 2, sm: 3, md: 4 },
@@ -236,15 +243,11 @@ export default function SleeperLeaguesHomePage({
           scrollbarGutter: "stable",
         }}
       >
-
-        {/* Top Box */}
+        {/* Header */}
         <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
-
-          {/* Left Box */}
+          {/* Left side - League info */}
           <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
             <BackButton url="/" />
-
-            {/* League Avatar */}
             <Avatar
               src={leagueInfo.avatar}
               alt={`${leagueInfo.name} avatar`}
@@ -254,98 +257,81 @@ export default function SleeperLeaguesHomePage({
                 boxShadow: theme.shadows[3],
               }}
             />
-
-            {/* League Name */}
             <Typography variant="h3" component="h1" color="text.primary">
               {leagueInfo.name}
             </Typography>
           </Box>
 
-          {/* Right Box */}
-          <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
-            {username && (
-              <>
-                {/* If isUserLeague = false, then user is able to add. Otherwise, user is able to remove */}
-                {!isUserLeague ? (
-                  <Button variant="contained" color="success" onClick={handleSaveLeague} disabled={isSavingLeague}>
-                    <Typography>Add</Typography>
-                  </Button>
-                ) : (
-                  <Button variant="contained" color="error" onClick={handleRemoveLeague} disabled={isRemovingLeague}>
-                    <Typography>Remove</Typography>
-                  </Button>
-                )}
-              </>
-            )}
-          </Box>
+          {/* Right side - Action buttons */}
+          {username && (
+            <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+              {!isUserLeague ? (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleSaveLeague}
+                  disabled={isSavingLeague}
+                >
+                  Add
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleRemoveLeague}
+                  disabled={isRemovingLeague}
+                >
+                  Remove
+                </Button>
+              )}
+            </Box>
+          )}
         </Box>
 
-        {/* Bottom Box */}
+        {/* Navigation */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-
-          {/* Navigation Tabs & Dropdown */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tabs value={value} onChange={handleTabChange} aria-label="league tabs">
               <Tab label="Rosters" {...a11yProps(0)} />
               <Tab label="Transactions" {...a11yProps(1)} />
               <Tab label="Item Three" {...a11yProps(2)} />
             </Tabs>
-
             <PreviousSeasonsDropDown league_id={league_id} current_tab={value} parent={parent} />
           </Box>
         </Box>
 
-        {/* Rosters */}
+        {/* Rosters Tab */}
         <CustomTabPanel value={value} id={0}>
-
-          {/* Error: Team */}
+          {/* Team Error State */}
           {teamError && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              minHeight="60vh"
-            >
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
               <Typography variant="h6" color="text.primary" textAlign="center">
-                Oops! Failed to load league information.
+                Oops! Failed to load team information.
                 <br />
                 {teamError || "Please try again later."}
               </Typography>
             </Box>
           )}
 
-          {/* Loading State: Team */}
+          {/* Team Loading State */}
           {!teamError && teamLoading && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              minHeight="60vh"
-            >
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
               <CircularProgress />
             </Box>
           )}
 
-          {/* Null: Team */}
+          {/* No Teams State */}
           {!teamError && !teamLoading && !teams && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              minHeight="60vh"
-            >
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
               <Typography variant="h6" color="text.primary" textAlign="center">
-                Oops! Failed to load team information.
-                <br />
+                No teams found for this league.
               </Typography>
             </Box>
           )}
 
-          {/* Teams Render */}
+          {/* Teams List */}
           {!teamError && !teamLoading && teams && (
             teams.map((team) => (
-
-              // Team Box
               <Accordion
                 key={team.roster_id}
                 expanded={expanded === team.roster_id}
@@ -362,8 +348,7 @@ export default function SleeperLeaguesHomePage({
                 onMouseEnter={() => setShowAddTeam(team.roster_id)}
                 onMouseLeave={() => setShowAddTeam(0)}
               >
-
-                {/* Team Content */}
+                {/* Team Header */}
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   sx={{
@@ -376,53 +361,51 @@ export default function SleeperLeaguesHomePage({
                     },
                   }}
                 >
+                  <Avatar
+                    src={team.avatar || undefined}
+                    alt={`${team.display_name} avatar`}
+                  />
 
-                  {/* Team Avatar */}
-                  {team.avatar ? (
-                    <Avatar src={team.avatar} alt={`${team.display_name} avatar`} />
-                  ) : (
-                    <Avatar />
-                  )}
-
-                  {/* Team Description */}
                   <Box
                     display="flex"
                     flexDirection={{ xs: "column", sm: "row" }}
                     alignItems={{ xs: "flex-start", sm: "center" }}
                     gap={{ xs: 0.5, sm: 1 }}
                   >
-
-                    {/* Team Name */}
                     <Typography
                       variant="body1"
                       component="span"
                       sx={{
                         fontWeight: expanded === team.roster_id ? 600 : 500,
-                        color:
-                          expanded === team.roster_id
-                            ? theme.palette.text.primary
-                            : theme.palette.text.secondary,
+                        color: expanded === team.roster_id
+                          ? theme.palette.text.primary
+                          : theme.palette.text.secondary,
                       }}
                     >
                       {team.team_name || team.display_name}
                     </Typography>
 
-                    {/* Team Record */}
                     <Typography variant="body2" color="text.secondary">
                       ({team.record.wins} - {team.record.ties} - {team.record.losses})
                     </Typography>
 
-                    {savedTeam && team.user_id && (savedTeam.saved_user == team.user_id ? <Chip label="My Team" /> :
-                      showAddTeam == team.roster_id && (<Chip label="Set As My Team" onClick={(e) => {
-                        e.stopPropagation();
-                        mutate({ user_id: team.user_id!, league_id: league_id });
-                      }} />)
+                    {/* Team Action Chips */}
+                    {savedTeam && team.user_id && (
+                      savedTeam.saved_user === team.user_id ? (
+                        <Chip label="My Team" />
+                      ) : (
+                        showAddTeam === team.roster_id && (
+                          <Chip
+                            label="Set As My Team"
+                            onClick={(e) => handleSetMyTeam(e, team.user_id!)}
+                          />
+                        )
+                      )
                     )}
-
                   </Box>
                 </AccordionSummary>
 
-                {/* Roster */}
+                {/* Team Roster Details */}
                 <AccordionDetails
                   sx={{
                     backgroundColor: theme.palette.background.default,
@@ -430,51 +413,29 @@ export default function SleeperLeaguesHomePage({
                     p: { xs: 2, sm: 3 },
                   }}
                 >
-
-                  {/* Error: Roster */}
+                  {/* Roster Error */}
                   {rosterError && (
                     <Typography color="text.primary" sx={{ textAlign: "center", py: 2 }}>
                       Unable to load players for this team. Please refresh and try again.
                     </Typography>
                   )}
 
-                  {/* Loading State: Roster */}
+                  {/* Roster Loading */}
                   {!rosterError && rosterLoading && (
                     <Box display="flex" justifyContent="center" py={3}>
                       <CircularProgress size={32} />
                     </Box>
                   )}
 
-                  {/* Null: Roster */}
+                  {/* No Roster Data */}
                   {!rosterError && !rosterLoading && !roster && (
-                    <Typography variant="h6" color="text.primary" textAlign="center"
-                    >
+                    <Typography variant="h6" color="text.primary" textAlign="center">
                       Oops! Failed to load roster.
                     </Typography>
                   )}
 
-                  {/* Roster Render for players*/}
-                  {!rosterError && !rosterLoading && roster && roster[team.roster_id] && roster[team.roster_id].length > 0 && (
-                    <Box
-                      display="grid"
-                      gridTemplateColumns={{
-                        xs: "repeat(auto-fill, minmax(100px, 1fr))",
-                        sm: "repeat(3, 1fr)",
-                        md: "repeat(5, 1fr)",
-                      }}
-                      gap={2}
-                    >
-                      {["PG", "SG", "SF", "PF", "C"].map((position) => (
-                        <DisplayRosterByPosition
-                          key={position}
-                          roster={roster[team.roster_id]}
-                          position={position}
-                        />
-                      ))}
-                    </Box>
-                  )}
-
-                  {!rosterError && !rosterLoading && roster && roster[team.roster_id] && roster[team.roster_id].length === 0 && (
+                  {/* Roster Display */}
+                  {!rosterError && !rosterLoading && roster && roster[team.roster_id] && (
                     <>
                       <Box
                         display="grid"
@@ -493,13 +454,15 @@ export default function SleeperLeaguesHomePage({
                           />
                         ))}
                       </Box>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ textAlign: "center", py: 2 }}
-                      >
-                        No players on this roster.
-                      </Typography>
+                      {roster[team.roster_id].length === 0 && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ textAlign: "center", py: 2, gridColumn: "1 / -1" }}
+                        >
+                          No players on this roster.
+                        </Typography>
+                      )}
                     </>
                   )}
                 </AccordionDetails>
@@ -508,46 +471,28 @@ export default function SleeperLeaguesHomePage({
           )}
         </CustomTabPanel>
 
-        {/* Transactions */}
+        {/* Transactions Tab */}
         <CustomTabPanel value={value} id={1}>
-
-          {/* Render Transaction Tab Component if teams is not null */}
           {teams ? (
-            <SleeperTransactionsTab teams={teams} league_id={league_id} league_season={leagueInfo.season} />
-
+            <SleeperTransactionsTab
+              teams={teams}
+              league_id={league_id}
+              league_season={leagueInfo.season}
+            />
           ) : (
-            <Typography variant="h6" color="text.primary" textAlign="center"
-            >
+            <Typography variant="h6" color="text.primary" textAlign="center">
               Oops! Failed to load transactions.
             </Typography>
           )}
         </CustomTabPanel>
+
+        {/* Third Tab */}
+        <CustomTabPanel value={value} id={2}>
+          <Typography variant="h6" color="text.primary" textAlign="center">
+            Content for third tab coming soon...
+          </Typography>
+        </CustomTabPanel>
       </Box>
-    </Box >
-  );
-}
-
-
-// Move later
-const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: { league_id: string; current_tab: number; parent?: string; }) => {
-  const { prevSeasons } = useGetPreviousSeasons(parent ? parent : league_id);
-  const navigate = useNavigate();
-  if (!prevSeasons || prevSeasons.length == 0) return null;
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      <Typography >Previous Seasons</Typography>
-      <Select
-        value={league_id}
-        onChange={(event: SelectChangeEvent) => {
-          navigate({ to: `/leagues/${event.target.value}`, search: { tab: current_tab, parent: prevSeasons[0].league_id } });
-        }}
-      >
-        {prevSeasons.map((season) => {
-          return <MenuItem key={season.season} value={season.league_id}>
-            {season.season}
-          </MenuItem>;
-        })}
-      </Select>
     </Box>
   );
-};
+}
