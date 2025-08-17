@@ -101,7 +101,7 @@ const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: PreviousSea
 };
 
 // Main Component
-export default function SleeperLeaguesHomePage({
+export default function SleeperLeague({
   league_id,
   tab,
   parent
