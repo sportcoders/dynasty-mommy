@@ -4,21 +4,15 @@ import { type TeamInfo, type Transaction, sleeper_getPlayer, type Player, type s
 import { useState, useEffect, type SyntheticEvent } from "react";
 import useGetSleeperState from "../hooks/useGetSleeperState";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
+import { formatUnixTime } from "@utils/formatUnixTime";
 
-/**
- * 
- * @param time - Unix time
- * @returns - MM(3 letter abbreviation) DD YYYY HH:MM
- */
-const formatUnixTime = (time: string) => {
-    const day = new Date(time);
-    return day.toString().substring(4, 21);
-};
 export default function TransactionTab({ league_id, teams, league_season }: { league_id: string, league_season: string, teams: TeamInfo[]; }) {
     const { data: state } = useGetSleeperState();
+
     /*finding the max week, week set to current week from sleeper state get if it is the current season,
     otherwise it will be the max number of weeks in a season(which is 20)
     */
+
     const max_week = league_season == state?.league_season ? state.week : 19;
     //display week max is 20
     const display_weeks = Array.from({ length: max_week + 1 }, (_, i) => i + 1).reverse();
