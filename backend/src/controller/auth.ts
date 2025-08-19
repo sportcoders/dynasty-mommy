@@ -9,7 +9,8 @@ import { AppDataSource } from "../app";
 import { userLogin, userSignUp } from "../schemas/user";
 import UserSession from "../models/session";
 
-
+const refreshPath = '/auth/refresh';
+//DEFAULT COOKIE OPTIONS
 const cookieDefaults: CookieOptions = {
     sameSite: "strict",
     httpOnly: true,
@@ -77,7 +78,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
 
         if (!compareSync(password, user!.password)) {
-            return res.status(HttpError.UNAUTHORIZED).send({ message: "invalid credentials" });
+            throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "invalid crendentials" });
         }
         else {
             const auth_payload: AccessToken = {
@@ -90,7 +91,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             setAuthCookies(res, token);
             const refreshToken = await createRefreshToken(user.id, user.email);
             setRefreshToken(res, refreshToken);
-            return res.status(HttpSuccess.OK).send({
+            res.status(HttpSuccess.OK).send({
                 username: user.username
             });
         }
@@ -177,7 +178,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
         };
         const newAccessToken = createToken(auth_payload);
         setAuthCookies(res, newAccessToken);
-        return res.status(HttpSuccess.OK).json({ detail: "accessToken refreshed" });
+        res.status(HttpSuccess.OK).json({ detail: "accessToken refreshed" });
 
     }
     catch (e) {

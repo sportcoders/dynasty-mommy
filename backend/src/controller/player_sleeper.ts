@@ -1,6 +1,6 @@
-import { HttpError } from "../constants/constants";
+import { HttpError, HttpSuccess } from "../constants/constants";
 import { AppError } from "../errors/app_error";
-import Player_Sleeper from "../models/player_sleeper"
+import Player_Sleeper from "../models/player_sleeper";
 import { NextFunction, Request, Response } from 'express';
 
 /**
@@ -10,7 +10,7 @@ import { NextFunction, Request, Response } from 'express';
  * @throws validation error if the id format does not match(4 digit id format)
  */
 const verifyIDs = (ids: string[]) => {
-    const valid = ids.filter(id => /^\d{4}$/.test(id))
+    const valid = ids.filter(id => /^\d{4}$/.test(id));
     if (valid.length !== ids.length)
         throw new AppError({ statusCode: HttpError.UNPROCESSABLE_ENTITY, message: "Invalid ID Format" });
     return valid;
@@ -29,29 +29,34 @@ const verifyIDs = (ids: string[]) => {
  * @error returns status code of 404 if no players from the request are found
  */
 export const getPlayersById = async function (req: Request, res: Response, next: NextFunction) {
-    const ids = req.params.player_id
+    const ids = req.params.player_id;
     if (!ids) {
-        return res.status(404).send({ message: "No Ids Provided" })
+        throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "No Ids Provided" });
     }
     try {
-        const player_ids = verifyIDs(ids.split("&"))
-        const players = await Player_Sleeper.find({ id: { $in: player_ids } }).lean()
+        const player_ids = verifyIDs(ids.split("&"));
+        const players = await Player_Sleeper.find({ id: { $in: player_ids } }).lean();
         if (players.length == 0) {
-            return res.status(404).json({ detail: "No players found" })
+            throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "No Players found" });
             //log that ids were in valid format but does not exist in database
         }
         const foundIds = players.map(p => p.id);
         const missing_ids = player_ids.filter(id => !foundIds.includes(id));
         if (missing_ids.length > 0) {
-            return res.status(206).json({
+            res.status(HttpSuccess.PARTIAL_CONTENT).json({
                 missing_values: true,
                 players: players,
                 missing_ids: missing_ids
-            })
+            });
         }
-        res.status(200).json({ missing_values: false, players: players })
+        else {
+            res.status(HttpSuccess.OK).json({
+                missing_values: false,
+                players: players
+            });
+        }
     }
     catch (e) {
-        next(e)
+        next(e);
     }
 };
