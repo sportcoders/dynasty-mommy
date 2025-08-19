@@ -9,7 +9,8 @@ import { AppDataSource } from "../app";
 import { userLogin, userSignUp } from "../schemas/user";
 import UserSession from "../models/session";
 
-
+const refreshPath = '/auth/refresh';
+//DEFAULT COOKIE OPTIONS
 const cookieDefaults: CookieOptions = {
     sameSite: "strict",
     httpOnly: true,
@@ -21,9 +22,14 @@ const accessOptions: CookieOptions = {
 };
 const refreshOptions: CookieOptions = {
     ...cookieDefaults,
-    path: '/auth/refresh',
+    path: refreshPath,
     maxAge: 30 * 24 * 60 * 60 * 1000 //30 days
 };
+/**
+ * Functions used to set cookies
+ * @param res - express response object
+ * @param token - the jwt token to set
+ */
 const setAuthCookies = (res: Response, accessToken: string) => {
     res.cookie("accessToken", accessToken, accessOptions);
 };
@@ -36,6 +42,12 @@ const clearAccessCookies = (res: Response) => {
 const clearRefreshCookies = (res: Response) => {
     res.clearCookie("refreshToken", refreshOptions);
 };
+/**
+ * Function used to create a refresh token and add the session into the database
+ * @param id user_id from sportscoder backend
+ * @param email email linked to user_id from sports coder backend
+ * @returns a refresh token
+ */
 async function createRefreshToken(id: string, email: string) {
     const session = await UserSession.create({ userId: id, userEmail: email });
     const refreshPayload: RefreshToken = {
@@ -45,6 +57,13 @@ async function createRefreshToken(id: string, email: string) {
     const token = createToken(refreshPayload);
     return token;
 }
+/**
+ * 
+ * REQUEST BODY PARAMS
+ * @param email - users email, sports coder backend
+ * @param password - users password 
+ * @returns response code of 200 if login was successful, 404 login was not
+ */
 export async function login(req: Request, res: Response, next: NextFunction) {
 
 
@@ -59,7 +78,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         }
 
         if (!compareSync(password, user!.password)) {
-            return res.status(HttpError.UNAUTHORIZED).send({ message: "invalid credentials" });
+            throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "invalid crendentials" });
         }
         else {
             const auth_payload: AccessToken = {
@@ -72,7 +91,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
             setAuthCookies(res, token);
             const refreshToken = await createRefreshToken(user.id, user.email);
             setRefreshToken(res, refreshToken);
-            return res.status(HttpSuccess.OK).send({
+            res.status(HttpSuccess.OK).send({
                 username: user.username
             });
         }
@@ -81,7 +100,16 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         next(error);
     }
 }
-
+/**
+ * REQUEST BODY PARAMS
+ * @param email - the email they want to create an account with
+ * @param password - the password the user has chosen
+ * @param username - the username the user has chosen
+ * @returns 
+ *          - 201(SUCCESS)  - if account was created successfully
+ *          - 409(CONFLICT) - if the username the user selected is already taken
+ *                          - if the email already belongs to an account
+ */
 export async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
         const { email: emailInput, password, username } = await userSignUp.parseAsync(req.body);
@@ -111,16 +139,22 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         };
         const token = createToken(auth_payload);
         const refreshToken = await createRefreshToken(user.id, user.email);
+        //setting tokens
         setRefreshToken(res, refreshToken);
         setAuthCookies(res, token);
-        return res.status(HttpSuccess.CREATED).send({ detail: "user created successfully", username: user.username });
+        res.status(HttpSuccess.CREATED).send({ detail: "user created successfully", username: user.username });
 
     }
     catch (err) {
         next(err);
     }
 }
-
+/**
+ * REFRESH ENDPOINT FOR WHEN ACCESS TOKENS ARE EXPIRED
+ * @returns 
+ *          - 200(SUCCESS) - if token was refreshed successfully
+ *          - 401(UNAUTHORIZED) - if token could not be refreshed
+ */
 export async function refresh(req: Request, res: Response, next: NextFunction) {
     try {
         const refreshToken = req.cookies.refreshToken;
@@ -144,7 +178,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
         };
         const newAccessToken = createToken(auth_payload);
         setAuthCookies(res, newAccessToken);
-        return res.status(HttpSuccess.OK).json({ detail: "accessToken refreshed" });
+        res.status(HttpSuccess.OK).json({ detail: "accessToken refreshed" });
 
     }
     catch (e) {
