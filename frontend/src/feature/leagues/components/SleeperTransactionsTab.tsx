@@ -199,8 +199,8 @@ const DisplayAddDrop = ({ transaction, team }: { transaction: Transaction, team:
                         />
                     </ListItem>
                 }
-                {addsNames.map((player) => {
-                    return <ListItem>
+                {addsNames.map((player, index) => {
+                    return <ListItem key={index}>
                         <ListItemText
 
                             secondary={player} />
