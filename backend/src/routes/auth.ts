@@ -1,8 +1,8 @@
 import { Router } from "express";
-import * as auth_controller from "../controller/auth"
-const auth_router = Router()
+import * as auth_controller from "../controller/auth";
+const auth_router = Router();
 
-auth_router.route("/login").post((req, res, next) => { auth_controller.login(req, res, next) })
-auth_router.route("/signup").post((req, res, next) => { auth_controller.signUp(req, res, next) })
-auth_router.route("/refresh").get((req, res, next) => { auth_controller.refresh(req, res, next) })
-export default auth_router
+auth_router.route("/login").post(auth_controller.login);
+auth_router.route("/signup").post(auth_controller.signUp);
+auth_router.route("/refresh").get(auth_controller.refresh);
+export default auth_router;
