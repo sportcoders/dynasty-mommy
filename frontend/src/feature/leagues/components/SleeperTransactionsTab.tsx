@@ -247,14 +247,17 @@ const DisplayAddDrop = ({ transaction, team }: { transaction: Transaction, team:
  */
 const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams: TeamInfo[] | undefined; }) => {
     if (!teams) return;
+
     const formatUnixTime = (time: string) => {
         const day = new Date(time);
         return day.toString().substring(4, 21);
     };
     const [playerMap, setPlayerMap] = useState<Record<string, Player>>({});
     const [loading, setLoading] = useState<boolean>(true);
+
     useEffect(() => {
         const loadPlayerMap = async () => {
+
             const ids: string[] = [];
             if (transaction.adds) {
                 Object.entries(transaction.adds).map(([key]) => {
@@ -267,15 +270,15 @@ const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams
                 });
             }
             const players = await sleeper_getPlayer(ids.join("&"));
+
             const tmap: Record<string, Player> = {};
             for (const player of players) {
                 tmap[player.id] = player;
             }
-
             setPlayerMap(tmap);
+            setLoading(false);
         };
-        transaction.adds || transaction.drops && loadPlayerMap();
-        setLoading(false);
+        (!!transaction.adds || !!transaction.drops || !!transaction.draft_picks) ? loadPlayerMap() : setLoading(false);
     }, [transaction]);
 
     if (loading) return <CircularProgress />;
@@ -321,6 +324,7 @@ const DisplayTrades = ({ transaction, teams }: { transaction: Transaction, teams
 
                                 <TableCell>
                                     {teamAdds.length > 0 || pickAdds.length > 0 ? (
+
                                         <Box>
                                             {teamAdds.map((playerName, index) => (
                                                 <Box key={playerName} sx={{ display: 'block' }}>
