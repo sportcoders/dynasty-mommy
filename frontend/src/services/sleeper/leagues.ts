@@ -254,7 +254,7 @@ export const sleeper_getTradesWeek = async (leagueId: string, round: number) => 
     return trades;
 };
 
-export const sleeper_getLeagueTransactions = async (leagueId: string): Promise<Record<number, Transaction[]>> => {
+export const sleeper_getTransactions = async (leagueId: string): Promise<Record<number, Transaction[]>> => {
     const weeks = [];
     for (let i = 1; i < 27; i++) {
         weeks.push(sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${i}`));
