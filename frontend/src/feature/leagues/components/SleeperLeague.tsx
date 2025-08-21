@@ -111,7 +111,6 @@ export default function SleeperLeague({
   const username = useAppSelector((state) => state.authReducer.username);
 
   // State
-  const [expanded, setExpanded] = useState<number | false>(false);
   const [value, setValue] = useState<number>(tab);
   const [showAddTeam, setShowAddTeam] = useState<number>(0);
 
@@ -161,12 +160,6 @@ export default function SleeperLeague({
     removeLeague(league);
   }, [league_id, removeLeague]);
 
-  const handleAccordionChange = useCallback(
-    (panel: number) => (_event: SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    },
-    []
-  );
 
   const handleTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -334,8 +327,6 @@ export default function SleeperLeague({
             teams.map((team) => (
               <Accordion
                 key={team.roster_id}
-                expanded={expanded === team.roster_id}
-                onChange={handleAccordionChange(team.roster_id)}
                 disableGutters
                 sx={{
                   borderRadius: `${theme.shape.borderRadius}px`,
@@ -376,10 +367,8 @@ export default function SleeperLeague({
                       variant="body1"
                       component="span"
                       sx={{
-                        fontWeight: expanded === team.roster_id ? 600 : 500,
-                        color: expanded === team.roster_id
-                          ? theme.palette.text.primary
-                          : theme.palette.text.secondary,
+                        fontWeight: 500,
+                        color: theme.palette.text.primary
                       }}
                     >
                       {team.team_name || team.display_name}
