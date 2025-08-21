@@ -242,6 +242,10 @@ export const sleeper_getTeamInfo = async (leagueId: string): Promise<TeamInfo[]>
 
 };
 
+// ============================================================================
+// TRANSACTION FUNCTIONS
+// ============================================================================
+
 export const sleeper_getTradesWeek = async (leagueId: string, round: number) => {
     const transactions = await sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${round}`);
     if (!transactions) return;
@@ -250,12 +254,7 @@ export const sleeper_getTradesWeek = async (leagueId: string, round: number) => 
     return trades;
 };
 
-export const sleeper_getTransactionsWeek = async (leagueId: string, round: number) => {
-    const transactions = await sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${round}`);
-    return transactions;
-};
-
-export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promise<Record<number, Transaction[]>> => {
+export const sleeper_getTransactions = async (leagueId: string): Promise<Record<number, Transaction[]>> => {
     const weeks = [];
     for (let i = 1; i < 27; i++) {
         weeks.push(sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${i}`));
@@ -268,6 +267,15 @@ export const sleeper_getAllLeagueTransactions = async (leagueId: string): Promis
     });
     return transactions;
 };
+
+export const sleeper_getTransactionsWeek = async (leagueId: string, round: number) => {
+    const transactions = await sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${round}`);
+    return transactions;
+};
+
+// ============================================================================
+// SLEEPER STATE FUNCTIONS
+// ============================================================================
 
 export const sleeper_get_state = async () => {
     const res = await sleeper_apiGet<State>('/state/nba');

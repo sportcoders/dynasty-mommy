@@ -33,7 +33,7 @@ import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
 import useGetSavedTeam from "../hooks/useGetSavedTeam";
 import useSaveSleeperLeague from "../hooks/useSaveTeam";
 import useSleeperPlayers from "../hooks/useSleeperPlayers";
-import useCheckUserLeague from "@feature/leagues/hooks/useCheckUserLeague";
+import useIsUserLeague from "@feature/leagues/hooks/useIsUserLeague";
 import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
 import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
 
@@ -135,7 +135,7 @@ export default function SleeperLeague({
 
   // User-specific data (only fetch if logged in)
   const league = { league_id, platform: "sleeper" as const };
-  const { data: isUserLeague } = useCheckUserLeague(league, !username);
+  const { data: isUserLeague } = useIsUserLeague(league, !username);
   const { savedTeam } = useGetSavedTeam(league_id, !username);
 
   // Mutation hooks

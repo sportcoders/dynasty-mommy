@@ -11,7 +11,7 @@ export default function useDeleteLeague() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
 
-            // useCheckUserLeague.ts
+            // useIsUserLeague.ts
             queryClient.invalidateQueries({ queryKey: ['league', variables] });
 
             showSuccess("League removed successfully");
