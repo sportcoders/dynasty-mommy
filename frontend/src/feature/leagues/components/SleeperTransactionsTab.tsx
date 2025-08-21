@@ -1,7 +1,7 @@
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { Container, Card, CardHeader, Typography, IconButton, CardContent, Accordion, AccordionSummary, Box, Chip, AccordionDetails, Grid, List, ListItem, ListItemText, Paper, CircularProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Container, Card, CardHeader, Typography, IconButton, CardContent, Accordion, AccordionSummary, Box, Chip, AccordionDetails, Grid, List, ListItem, ListItemText, Paper, CircularProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { type TeamInfo, type Transaction, sleeper_getPlayer, type Player, type sleeper_draftPick } from "@services/sleeper";
-import { useState, useEffect, type SyntheticEvent } from "react";
+import { useState, useEffect, type SyntheticEvent, useMemo } from "react";
 import useGetSleeperState from "../hooks/useGetSleeperState";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
 import { formatUnixTime } from "@utils/formatUnixTime";
@@ -60,6 +60,7 @@ const TransactionCard = ({ week, league_id, teams, open }: { week: string, leagu
     );
 
 };
+
 /**
  * Component used to fetch each weeks transactions
  * Used so only selected week(s) are fetched instead of all weeks
@@ -92,13 +93,63 @@ const TransactionInWeekDisplay = ({ week, league_id, teams }: { week: string, le
             default: return 'default';
         }
     };
+
     const handleAccordionChange =
         (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
             setExpanded(newExpanded ? panel : false);
         };
+
+    const [filterBy, setFilterBy] = useState('');
+
+    const handleFilterChange = (event) => {
+        setFilterBy(event.target.value);
+    };
+
+    const filteredTransactions = useMemo(() => {
+        if (!transactions) return null;
+
+        let filtered = [...transactions];
+
+        // Apply filter
+        if (filterBy) {
+            filtered = filtered.filter(transaction => {
+                switch (filterBy) {
+                    case 'trade':
+                    case 'waiver':
+                    case 'free_agent':
+                    case 'commisioner':
+                        return transaction.type === filterBy;
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        return filtered;
+    }, [transactions, filterBy]);
+
     return (
         <CardContent>
-            {transactions ? transactions.map((transaction, index) => (
+            {/* Filter Controls - Only show when there are transactions */}
+            {transactions && transactions.length > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 1, alignItems: 'center', mb: 2 }}>
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <InputLabel>Filter</InputLabel>
+                        <Select
+                            value={filterBy}
+                            label="Filter"
+                            onChange={handleFilterChange}
+                        >
+                            <MenuItem value="All">All</MenuItem>
+                            <MenuItem value="trade">Trades</MenuItem>
+                            <MenuItem value="waiver">Waivers</MenuItem>
+                            <MenuItem value="free_agent">Free Agent</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
+            )}
+
+            {filteredTransactions ? filteredTransactions.map((transaction, index) => (
                 <Accordion key={transaction.transaction_id} sx={{ mb: 2 }} expanded={expanded === transaction.transaction_id} onChange={handleAccordionChange(transaction.transaction_id)}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2 }}>
@@ -139,6 +190,7 @@ const TransactionInWeekDisplay = ({ week, league_id, teams }: { week: string, le
 
     );
 };
+
 /**
  * Used to display free agent pickups/waiver wire pickups
  * @param transaction - the transaction object to show
