@@ -16,7 +16,6 @@ import { useRouter } from "@tanstack/react-router";
 import { Route as LeagueRoute } from "@routes/leagues.$leagueId";
 import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
-import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 import useDeleteLeague from "../hooks/useDeleteLeague";
@@ -25,6 +24,7 @@ import { useNotification } from "@hooks/useNotification";
 import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { sleeper_getUser } from "@services/sleeper";
+import useSleeperSearchParams from "@feature/search/hooks/useSleeperSearchParams";
 
 type SleeperSearchComponentProps = {
   searchType: string;
@@ -35,6 +35,8 @@ type SleeperSearchComponentProps = {
   setSeason: (s: string) => void;
   handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checkValidParams: () => void;
+  setShowAccount: (value: boolean) => void;
+  // TODO: Might remove
   setParamsFalse: () => void;
   searchByLeagueIdSuccess?: boolean;
   handleLeagueSearch?: () => Promise<boolean>;
@@ -58,13 +60,16 @@ export default function SleeperSearch() {
     season,
     searchText,
     validParams,
+    showAccount,
     handleTextChange,
     setSeason,
     handleSearchTypeChange,
     checkValidParams,
+    setShowAccount,
+    // TODO: Might remove
     setParamsFalse,
     handleLeagueSearch,
-  } = useSearchParamsSleeper();
+  } = useSleeperSearchParams();
   return (
     <Stack
       sx={{
@@ -79,7 +84,7 @@ export default function SleeperSearch() {
       <Typography variant="h2" component="h1" color="primary">
         Sleeper League Search
       </Typography>
-      {validParams ? (
+      {validParams && !showAccount && (
         <SleeperLeagues
           searchType={searchType}
           season={season}
@@ -89,9 +94,12 @@ export default function SleeperSearch() {
           setSeason={setSeason}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
+          setShowAccount={setShowAccount}
+          // TODO: Might remove
           setParamsFalse={setParamsFalse}
         />
-      ) : (
+      )}
+      {showAccount && (
         <SleeperAccount
           searchType={searchType}
           season={season}
@@ -101,6 +109,8 @@ export default function SleeperSearch() {
           setSeason={setSeason}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
+          setShowAccount={setShowAccount}
+          // TODO: Might remove
           setParamsFalse={setParamsFalse}
           handleLeagueSearch={handleLeagueSearch}
 
@@ -121,25 +131,39 @@ function SleeperAccount({
   searchType,
   season,
   searchText,
+  validParams,
   handleTextChange,
   setSeason,
   handleSearchTypeChange,
+  setShowAccount,
   checkValidParams,
   handleLeagueSearch,
 }: SleeperSearchComponentProps) {
-  const { showSuccess, showError, showInfo, showWarning, showNotification } =
+  const { showSuccess, showError } =
     useNotification();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (searchType == 'League ID' && searchText != "") {
       const success = await handleLeagueSearch!();
-      if (success)
-        showSuccess("Navigating to Leauge");
-      else
+
+      if (success) {
+        showSuccess("Navigating to League");
+        setShowAccount(false);
+      }
+      else {
         showError("League not found");
+
+      }
     }
-    else
+    else {
       checkValidParams();
+
+      if (validParams) {
+        setShowAccount(false);
+      }
+    }
   };
 
   return (
@@ -262,6 +286,8 @@ function SleeperLeagues({
   season,
   searchText,
   setSeason,
+  setShowAccount,
+  // TODO: Might remove
   setParamsFalse: back,
 }: SleeperSearchComponentProps) {
   const username = useAppSelector(state => state.authReducer.username);
@@ -305,6 +331,7 @@ function SleeperLeagues({
   if (loading) return <CircularProgress />;
 
   if (error) {
+    // TODO: Might remove and change to another function instead of setParamsFalse (maybe?)
     back();
     return <Snackbar open={error ? true : false} message={error} />;
   }
@@ -334,7 +361,7 @@ function SleeperLeagues({
       >
         <Button
           variant="outlined"
-          onClick={back}
+          onClick={() => { setShowAccount(true); }}
           color="primary"
           sx={{
             height: "56px", // Standard Material-UI TextField height
