@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
 import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
 import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
-import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
+import useSleeperSearchParams from '@feature/search/hooks/useSleeperSearchParams';
 
 
 const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
@@ -78,7 +78,7 @@ const DarkModeToggle = () => {
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void; }) {
     const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false);
 
-    const { setParamsFalse } = useSearchParamsSleeper();
+    const { setParamsFalse } = useSleeperSearchParams();
 
     const username = useAppSelector((state) => state.authReducer.username);
 
