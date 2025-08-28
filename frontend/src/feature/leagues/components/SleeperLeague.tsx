@@ -107,7 +107,7 @@ export default function SleeperLeague({
   parent
 }: SleeperLeaguesHomePageProps) {
   const theme = useTheme();
-  const { showError } = useNotification();
+
   const username = useAppSelector((state) => state.authReducer.username);
   const navigate = useNavigate({ from: `/leagues/$leagueId` });
 
@@ -182,20 +182,6 @@ export default function SleeperLeague({
     'aria-controls': `simple-tabpanel-${index}`,
   }), []);
 
-  // Error handling effects
-  useEffect(() => {
-    const errors = [
-      { error: leagueError, message: leagueError },
-      { error: teamError, message: teamError },
-      { error: rosterError, message: rosterError?.message }
-    ];
-
-    errors.forEach(({ error, message }) => {
-      if (error && message) {
-        showError(message);
-      }
-    });
-  }, [leagueError, teamError, rosterError, showError]);
 
   // Loading state
   if (leagueLoading) {
