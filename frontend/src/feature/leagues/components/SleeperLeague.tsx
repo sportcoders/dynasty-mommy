@@ -15,7 +15,7 @@ import {
   useTheme,
   type SelectChangeEvent,
 } from "@mui/material";
-import { useEffect, useState, useCallback, type SyntheticEvent } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -109,9 +109,9 @@ export default function SleeperLeague({
   const theme = useTheme();
   const { showError } = useNotification();
   const username = useAppSelector((state) => state.authReducer.username);
+  const navigate = useNavigate({ from: `/leagues/$leagueId` });
 
   // State
-  const [value, setValue] = useState<number>(tab);
   const [showAddTeam, setShowAddTeam] = useState<number>(0);
 
   // Data fetching hooks
@@ -161,9 +161,15 @@ export default function SleeperLeague({
   }, [league_id, removeLeague]);
 
 
-  const handleTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  }, []);
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        tab: newValue,
+      }),
+      replace: true
+    });
+  };
 
   const handleSetMyTeam = useCallback((event: React.MouseEvent, user_id: string) => {
     event.stopPropagation();
@@ -284,17 +290,17 @@ export default function SleeperLeague({
         {/* Navigation */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Tabs value={value} onChange={handleTabChange} aria-label="league tabs">
+            <Tabs value={tab} onChange={handleTabChange} aria-label="league tabs">
               <Tab label="Rosters" {...a11yProps(0)} />
               <Tab label="Transactions" {...a11yProps(1)} />
               <Tab label="Item Three" {...a11yProps(2)} />
             </Tabs>
-            <PreviousSeasonsDropDown league_id={league_id} current_tab={value} parent={parent} />
+            <PreviousSeasonsDropDown league_id={league_id} current_tab={tab} parent={parent} />
           </Box>
         </Box>
 
         {/* Rosters Tab */}
-        <CustomTabPanel value={value} id={0}>
+        <CustomTabPanel value={tab} id={0}>
           {/* Team Error State */}
           {teamError && (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
@@ -461,7 +467,7 @@ export default function SleeperLeague({
         </CustomTabPanel>
 
         {/* Transactions Tab */}
-        <CustomTabPanel value={value} id={1}>
+        <CustomTabPanel value={tab} id={1}>
           {teams ? (
             <SleeperTransactionsTab
               teams={teams}
@@ -476,7 +482,7 @@ export default function SleeperLeague({
         </CustomTabPanel>
 
         {/* Third Tab */}
-        <CustomTabPanel value={value} id={2}>
+        <CustomTabPanel value={tab} id={2}>
           <Typography variant="h6" color="text.primary" textAlign="center">
             Content for third tab coming soon...
           </Typography>
