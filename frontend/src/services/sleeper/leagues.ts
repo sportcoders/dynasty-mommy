@@ -176,11 +176,12 @@ export const sleeper_getLeagueInfo = async (leagueId: string): Promise<LeagueInf
         previous_league_id: leagueInfo.previous_league_id,
         season: leagueInfo.season,
         settings: {
-            num_teams: leagueInfo.settings.num_teams
+            num_teams: leagueInfo.settings.num_teams,
+            last_scored_leg: leagueInfo.settings.last_scored_leg
         },
         sport: leagueInfo.sport,
         scoring_settings: leagueInfo.scoring_settings,
-        roster_positions: leagueInfo.roster_positions
+        roster_positions: leagueInfo.roster_positions,
     };
 
 };

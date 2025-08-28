@@ -466,7 +466,7 @@ export default function SleeperLeague({
             <SleeperTransactionsTab
               teams={teams}
               league_id={league_id}
-              league_season={leagueInfo.season}
+              last_scored_leg={leagueInfo.settings.last_scored_leg}
             />
           ) : (
             <Typography variant="h6" color="text.primary" textAlign="center">
