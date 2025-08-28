@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { User, UserLeagues } from "./models/user";
+import { SleeperLeague } from "./models/sleeper_league";
 
 export function createAppDataSource(url: string): DataSource {
     let options: DataSourceOptions;
@@ -11,7 +12,7 @@ export function createAppDataSource(url: string): DataSource {
             synchronize: true,
             dropSchema: true,
             logging: false
-        }
+        };
     }
     else {
         options = {
@@ -26,8 +27,8 @@ export function createAppDataSource(url: string): DataSource {
             // subscribers: [],
             // migrations: [],
             logging: true
-        }
+        };
     }
-    options = { ...options, entities: [User, UserLeagues] }
-    return new DataSource(options)
+    options = { ...options, entities: [User, UserLeagues, SleeperLeague] };
+    return new DataSource(options);
 }
