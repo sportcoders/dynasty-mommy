@@ -13,6 +13,7 @@ import { persistor, store } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppError } from "./utils/errors";
+import { showError } from "@services/notificationService";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -26,10 +27,26 @@ const queryClient = new QueryClient({
         }
         return false;
       },
+    },
+  },
+});
+
+/**
+ * Default Error Handler
+ * if it is an AppError, the message will be displayed to the user through snackbar
+ */
+queryClient.getQueryCache().subscribe((event) => {
+  if (event.type === 'updated') {
+    const query = event.query;
+
+    if (query.state.status === 'error') {
+      const error = query.state.error;
+      if (error instanceof AppError) {
+        showError(error.message);
+      }
     }
   }
 });
-
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
   interface Register {
