@@ -42,7 +42,6 @@ import {
 } from "@services/sleeper";
 
 import { useState, useEffect, type SyntheticEvent, useMemo } from "react";
-import useGetSleeperState from "../hooks/useGetSleeperState";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
 
 import { formatUnixTime } from "@utils/formatUnixTime";
@@ -51,20 +50,15 @@ import { formatUnixTime } from "@utils/formatUnixTime";
 export default function TransactionTab({
     league_id,
     teams,
-    league_season
+    last_scored_leg
 }: {
     league_id: string;
-    league_season: string;
     teams: TeamInfo[];
+    last_scored_leg: number | undefined;
 }) {
-    const { data: state } = useGetSleeperState();
-
-    /* Finding the max week, week set to current week from sleeper state get if it is the current season,
-     * otherwise it will be the max number of weeks in a season(which is 20)
-     */
-    const max_week = league_season == state?.league_season ? state.week : 19;
-    // Display week max is 20
-    const display_weeks = Array.from({ length: max_week + 1 }, (_, i) => i + 1).reverse();
+    //if last_scored_leg exists we use it, otherwise it means season has not started yet so we use first week
+    const max_week = last_scored_leg || 1;
+    const display_weeks = Array.from({ length: max_week }, (_, i) => i + 1).reverse();
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
