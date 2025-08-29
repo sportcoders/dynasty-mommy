@@ -1,4 +1,4 @@
-import { addLeagueToUser, type League } from "@services/api/user";
+import { saveSleeperLeague, type League } from "@services/api/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
 
@@ -7,7 +7,7 @@ export default function useSaveLeague() {
     const { showSuccess, showError } = useNotification();
 
     const { mutate, isPending, isError, isSuccess } = useMutation({
-        mutationFn: (league: League) => addLeagueToUser(league),
+        mutationFn: (league: League) => saveSleeperLeague(league),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
 
