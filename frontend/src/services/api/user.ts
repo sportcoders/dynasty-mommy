@@ -11,6 +11,7 @@ export async function loginUser(email: string, password: string) {
         return user as User;
     } catch (e) {
         console.log(e);
+        throw e;
     }
 }
 export async function createUser(
@@ -27,6 +28,7 @@ export async function createUser(
         return user as User;
     } catch (e) {
         console.log(e);
+        throw e;
     }
 }
 export interface League {
@@ -39,6 +41,7 @@ export async function removeLeagueFromUser(league: League) {
         await serverDelete(`/sleeper_league/${league.league_id}`);
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 
@@ -48,6 +51,7 @@ export async function isUserLeague(league: League) {
         return check as boolean;
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 export interface UserLeagues {
@@ -60,6 +64,7 @@ export async function fetchUserLeagues() {
         return response;
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 
@@ -76,6 +81,7 @@ export async function saveSleeperLeague({ league_id, user_id }: savedTeam) {
     }
     catch (e) {
         console.log(e);
+        throw e;
     }
 }
 
@@ -96,6 +102,7 @@ export async function getSavedTeams() {
     }
     catch (e) {
         console.log(e);
+        throw e;
     }
 }
 
@@ -106,5 +113,6 @@ export async function getSavedTeamSleeperLeague(league_id: string) {
     }
     catch (e) {
         console.log(e);
+        throw e;
     }
 }
