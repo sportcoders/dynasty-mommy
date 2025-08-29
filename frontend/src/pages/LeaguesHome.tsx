@@ -7,6 +7,6 @@ export default function LeagueHome() {
     const { leagueId } = route.useParams();
     const { tab, parent } = route.useSearch();
     return (
-        <SleeperLeague league_id={leagueId} tab={tab!} parent={parent} />
+        <SleeperLeague league_id={leagueId} tab={tab || 0} parent={parent} />
     );
 }
