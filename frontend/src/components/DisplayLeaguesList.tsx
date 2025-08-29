@@ -1,6 +1,6 @@
-import { AddCircle, RemoveCircle } from "@mui/icons-material"
-import { Avatar, Button, CircularProgress, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material"
-import type { League } from "@services/sleeper"
+import { AddCircle, RemoveCircle } from "@mui/icons-material";
+import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
+import type { League } from "@services/sleeper";
 
 interface displayLeaguesListProps {
     /**
@@ -13,23 +13,33 @@ interface displayLeaguesListProps {
      *   optional parameter for styling, enables and disables displaying of avatar
      *   leave empty if avatar should not be displayed
      */
-    leagues: League[]
-    displayAvatar?: boolean
-    onLeagueClick: (league_id: string) => void
-    saveLeague?: (league_id: string) => Promise<boolean>
-    deleteLeague?: (league_id: string) => Promise<boolean>
-    loggedIn?: boolean
-    userLeagues?: string[]
-    background_color?: string
-    show_border?: boolean,
-    fontSize?: string,
-    fontWeight?: string,
-    padding?: string,
-    border_radius?: string,
-    text_color?: string
+    leagues: League[];
+    displayAvatar: boolean;
+    onLeagueClick: (league_id: string) => void;
+    loggedIn: boolean;
+    saveDelete?: {
+        saveLeague: (league_id: string) => Promise<boolean>;
+        deleteLeague: (league_id: string) => Promise<boolean>;
+        userLeagues: string[];
+    };
+    stylingOptions?: {
+        background_color?: string;
+        show_border?: boolean,
+        fontSize?: string,
+        fontWeight?: string,
+        padding?: string,
+        border_radius?: string,
+        text_color?: string,
+    };
+
 }
 
-export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = true, saveLeague, deleteLeague, loggedIn = false, userLeagues = [], show_border = false, background_color, fontSize, fontWeight, padding, border_radius, text_color }: displayLeaguesListProps) {
+export function DisplayLeaguesList({ leagues,
+    onLeagueClick,
+    displayAvatar = true,
+    loggedIn = false,
+    saveDelete,
+    stylingOptions = {} }: displayLeaguesListProps) {
     /**
      * @returns List component that displays all leagues it was passed
      */
@@ -40,12 +50,12 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                     onClick={() => onLeagueClick(league.league_id)}
                     sx={{
                         mb: 1,
-                        borderRadius: border_radius ? border_radius : 2,
-                        p: padding ? padding : 2,
+                        borderRadius: stylingOptions.border_radius || 2,
+                        p: stylingOptions.padding || 2,
                         px: 1,
-                        backgroundColor: background_color ? background_color : 'background.default',
+                        backgroundColor: stylingOptions.background_color || 'background.default',
                         backdropFilter: 'blur(10px)',
-                        border: show_border ? '1px solid' : '',
+                        border: stylingOptions.show_border ? '1px solid' : '',
                         borderColor: 'divider',
                         textTransform: 'none',
                         justifyContent: 'flex-start',
@@ -63,7 +73,7 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                             width: '100%'
                         }
                     }}
-                    secondaryAction={loggedIn && saveLeague && deleteLeague ? (
+                    secondaryAction={loggedIn && saveDelete ? (
                         <IconButton
                             edge="end"
                             aria-label="add"
@@ -75,13 +85,13 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                if (userLeagues.includes(league.league_id))
-                                    deleteLeague(league.league_id)
+                                if (saveDelete.userLeagues.includes(league.league_id))
+                                    saveDelete.deleteLeague(league.league_id);
                                 else
-                                    saveLeague(league.league_id)
+                                    saveDelete.saveLeague(league.league_id);
                             }}
                         >
-                            {userLeagues.includes(league.league_id) ?
+                            {saveDelete.userLeagues.includes(league.league_id) ?
                                 <RemoveCircle /> : <AddCircle />}
                         </IconButton>) : null
                     }
@@ -102,10 +112,10 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                             primary={league.name}
                             sx={{
                                 '& .MuiListItemText-primary': {
-                                    fontWeight: fontWeight ? fontWeight : 500,
-                                    fontSize: fontSize ? fontSize : '1.1rem',
+                                    fontWeight: stylingOptions.fontWeight || 500,
+                                    fontSize: stylingOptions.fontSize || '1.1rem',
                                     transition: 'color 0.3s ease',
-                                    color: text_color ? text_color : 'text.primary',
+                                    color: stylingOptions.text_color || 'text.primary',
                                 },
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -118,5 +128,5 @@ export function DisplayLeaguesList({ leagues, onLeagueClick, displayAvatar = tru
                 </ListItem>
             ))}
         </List>
-    )
+    );
 }
