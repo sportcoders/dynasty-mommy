@@ -149,7 +149,7 @@ const TransactionInWeekDisplay = ({
 }) => {
     // ===== STATE MANAGEMENT =====
     const [expanded, setExpanded] = useState<string | false>("");
-    const [filterBy, setFilterBy] = useState('');
+    const [filterBy, setFilterBy] = useState('All');
     const [teamFilter, setTeamFilter] = useState<number[]>([]);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
