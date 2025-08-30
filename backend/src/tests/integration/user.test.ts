@@ -57,58 +57,6 @@ const createRefreshToken = async () => {
 };
 
 describe("user_leagues", () => {
-    describe("addLeague", () => {
-        it("should return status code of 200 when league is added successfully", async () => {
-            await loadUser();
-            const token = createAccessToken();
-            const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
-                league: {
-                    platform: "Sleeper",
-                    league_id: "sleeper_league_idd"
-                }
-            });
-            expect(response.statusCode).toBe(200);
-        });
-        it("should return 409(conflict) when user has already added league", async () => {
-            await loadUserWithLeagues();
-            const token = createAccessToken();
-
-            const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
-                league: users[0].leagues[0]
-            });
-            expect(response.statusCode).toBe(409);
-        });
-        it("should return status code of 422 when request fields are not as expected", async () => {
-            const token = createAccessToken();
-
-            const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
-                platform: "Sleeper",
-                league_id: "sleeper_league_idd"
-            });
-            expect(response.statusCode).toBe(422);
-        });
-        it("should return status code of 401 when no auth header is sent", async () => {
-            const response = await api.post("/user/addLeague").send({
-                league: users[0].leagues[0]
-            });
-            expect(response.statusCode).toBe(401);
-        });
-        it("should return status code of 401 when invalid auth header is sent", async () => {
-            const response = await api.post("/user/addLeague").set("Cookie", `invalidAuth`).send({
-                league: users[0].leagues[0]
-            });
-            expect(response.statusCode).toBe(401);
-        });
-        it("should return status code of 404 when user belonging to header doesn't exist", async () => {
-            const token = createAccessToken();
-
-            const response = await api.post("/user/addLeague").set("Cookie", [`accessToken=${token}`]).send({
-                league: users[0].leagues[0]
-            });
-            expect(response.statusCode).toBe(404);
-        });
-    });
-
     describe("getLeague", () => {
         it("should return 200 when leagues are retreived", async () => {
             await loadUserWithLeagues();
@@ -135,115 +83,49 @@ describe("user_leagues", () => {
         });
     });
 
-    describe("deleteLeague", () => {
-        it("should return status code of 204 when league is deleted successfully", async () => {
-            await loadUserWithLeagues();
-            const token = createAccessToken();
-            const league = users[0].leagues[0];
-            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", [`accessToken=${token}`]).send();
+    describe("change username", () => {
+        it("should return status code 200 when username is changed", async () => {
+            await loadUser();
 
+            const token = createAccessToken();
+            const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: 'modified_username' });
             expect(response.statusCode).toBe(200);
         });
+        it("should return status code 200 when username is changed to the same value", async () => {
+            await loadUser();
+
+            const token = createAccessToken();
+            const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: users[0].username });
+            expect(response.statusCode).toBe(200);
+        });
+        it("should return status code 409 when username is already taken", async () => {
+            await loadUser();
+
+            const token = createAccessToken();
+            const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: users[1].username });
+            expect(response.statusCode).toBe(409);
+        });
         it("should return status code of 401 when no auth header is sent", async () => {
-            const league = users[0].leagues[0];
-            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).send();
+            const response = await api.patch(`/user/username`).send();
             expect(response.statusCode).toBe(401);
         });
         it("should return status code of 401 when invalid auth header is sent", async () => {
-            const league = users[0].leagues[0];
-            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", `invalidAuth`).send();
+            const response = await api.patch(`/user/username`).set("Cookie", `invalidAuth`).send();
             expect(response.statusCode).toBe(401);
         });
         it("should return status code of 404 when user belonging to header doesn't exist", async () => {
-            const league = users[0].leagues[0];
             const token = createAccessToken();
-            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] });
+            const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: users[1].username });
             expect(response.statusCode).toBe(404);
         });
-        // it("should return status code of 422 when request body is missing fields", async () => {
-        //     await loadUserWithLeagues()
-        //     const token = createAccessToken()
-        //     const response = await api.delete('/user/removeLeague').set("Cookie", [`accessToken=${token}`]).send({
-        //         league: {
-        //             platform: "sleeper"
-        //         }
-        //     })
-        //     expect(response.statusCode).toBe(422)
-        // })
-        it("should return status code of 404 when leauge user is trying to delete a league that doesn't exist", async () => {
+        it("should return status code of 422 when fields aren't as expected", async () => {
             await loadUser();
-            const league = users[0].leagues[0];
             const token = createAccessToken();
-            const response = await api.delete(`/user/removeLeague/${league.league_id}/${league.platform}`).set("Cookie", [`accessToken=${token}`]).send({ league: users[0].leagues[0] });
-            expect(response.statusCode).toBe(404);
-        });
-    }),
-
-        describe("change username", () => {
-            it("should return status code 200 when username is changed", async () => {
-                await loadUser();
-
-                const token = createAccessToken();
-                const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: 'modified_username' });
-                expect(response.statusCode).toBe(200);
-            });
-            it("should return status code 200 when username is changed to the same value", async () => {
-                await loadUser();
-
-                const token = createAccessToken();
-                const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: users[0].username });
-                expect(response.statusCode).toBe(200);
-            });
-            it("should return status code 409 when username is already taken", async () => {
-                await loadUser();
-
-                const token = createAccessToken();
-                const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: users[1].username });
-                expect(response.statusCode).toBe(409);
-            });
-            it("should return status code of 401 when no auth header is sent", async () => {
-                const response = await api.patch(`/user/username`).send();
-                expect(response.statusCode).toBe(401);
-            });
-            it("should return status code of 401 when invalid auth header is sent", async () => {
-                const response = await api.patch(`/user/username`).set("Cookie", `invalidAuth`).send();
-                expect(response.statusCode).toBe(401);
-            });
-            it("should return status code of 404 when user belonging to header doesn't exist", async () => {
-                const token = createAccessToken();
-                const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ new_username: users[1].username });
-                expect(response.statusCode).toBe(404);
-            });
-            it("should return status code of 422 when fields aren't as expected", async () => {
-                await loadUser();
-                const token = createAccessToken();
-                const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ username: users[1].username });
-                expect(response.statusCode).toBe(422);
-            });
-        });
-
-    describe('save teams', () => {
-        it("should return status code of 200 when team is changed successfully", async () => {
-
-            await loadUserWithLeagues();
-            const token = createAccessToken();
-            const response = await api.post('/user/saveTeamSleeper').set("Cookie", [`accessToken=${token}`]).send({
-                league_id: users[0].leagues[0].league_id,
-                user_id: "newrosterId"
-            });
-            expect(response.statusCode).toBe(200);
+            const response = await api.patch(`/user/username`).set("Cookie", [`accessToken=${token}`]).send({ username: users[1].username });
+            expect(response.statusCode).toBe(422);
         });
     });
 
-    describe('get teams', () => {
-        it("should return status code of 200 when all teams are fetch successfully", async () => {
-            await loadUserWithLeagues();
-            const token = createAccessToken();
-            const response = await api.get('/user/savedTeams').set("Cookie", [`accessToken=${token}`]).send();
-            expect(response.body).toEqual(users[0].leagues);
-            expect(response.statusCode).toBe(200);
-        });
-    });
 
     describe('check is user league', () => {
         it("should return true when user has the league saved", async () => {

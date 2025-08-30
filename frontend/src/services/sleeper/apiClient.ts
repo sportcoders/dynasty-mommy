@@ -19,7 +19,7 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
     return response.json() as Promise<T>;
 };
 
-export const serverGet = async <T>(endpoint: string): Promise<T> => {
+export const serverGet = async <T>(endpoint: string): Promise<T | null> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
         credentials: "include",
     }).catch(() => {
@@ -32,6 +32,7 @@ export const serverGet = async <T>(endpoint: string): Promise<T> => {
     if (!response.ok) {
         throw new ServerError(response.status, response.statusText);
     }
+    if (response.status == 204) return null;
 
     return response.json() as Promise<T>;
 };

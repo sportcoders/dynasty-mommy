@@ -1,4 +1,3 @@
-import { ServerError } from "@app/utils/errors";
 import { serverDelete, serverGet, serverPost } from "@services/sleeper";
 interface User {
     username: string;
@@ -48,8 +47,8 @@ export async function removeLeagueFromUser(league: League) {
 
 export async function isUserLeague(league: League) {
     try {
-        const check = await serverGet(`/user/isUserLeague/${league.league_id}/${league.platform}`);
-        return check as boolean;
+        const response = await serverGet<savedTeamResponse>(`/sleeper_league/${league.league_id}`);
+        return !!response;
     } catch (e) {
         console.error(e);
         throw e;

@@ -3,12 +3,8 @@ import * as user_controller from "../controller/user";
 import { authenticate } from "../middleware/authenticate";
 const user_router = Router();
 user_router.use(authenticate);
-user_router.route("/addLeague").post(user_controller.addLeagueToUser);
 user_router.route("/getLeagues").get(user_controller.getUserLeagues);
 user_router.route("/isUserLeague/:league_id/:platform").get(user_controller.isUserLeague);
-user_router.route("/removeLeague/:league_id/:platform").delete(user_controller.deleteUserLeagues);
 user_router.route("/username").patch(user_controller.changeUsername);
-user_router.route("/saveTeamSleeper").post(user_controller.saveTeam);
-user_router.route("/savedTeams").get(user_controller.getSavedTeams);
-user_router.route("/savedTeam/sleeper/:league_id").get(user_controller.getSavedTeamSleeper);
+
 export default user_router;
