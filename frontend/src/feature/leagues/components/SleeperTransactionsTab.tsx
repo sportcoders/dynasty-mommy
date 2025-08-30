@@ -435,9 +435,10 @@ const DisplayAddDrop = ({
     team: TeamInfo | undefined;
 }) => {
     // ===== DATA FETCHING =====
-    const { players } = useGetPlayersInTransaction(transaction);
+    const { players, loading } = useGetPlayersInTransaction(transaction);
 
     if (!team) return;
+    if (loading || !players) return <CircularProgress />;
 
     // ===== RENDER =====
     return (
@@ -521,7 +522,7 @@ const DisplayTrades = ({
 
 
     // ===== LOADING STATE =====
-    if (loading) return <CircularProgress />;
+    if (loading || !playerMap) return <CircularProgress />;
 
     // ===== RENDER =====
     return (

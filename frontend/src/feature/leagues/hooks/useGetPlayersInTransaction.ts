@@ -1,5 +1,5 @@
 import { sleeper_getPlayersInTransaction, type Transaction } from "@services/sleeper";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Custom React hook to retrieve all the players involved in a sleeper transaction.
@@ -10,7 +10,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
  * @returns An dict containing the player_ids(as keys) and corresponding player objects as values
  */
 export default function useGetPlayersInTransaction(transaction: Transaction) {
-    const { data: players, isError: error, isLoading: loading } = useSuspenseQuery({
+    const { data: players, isError: error, isPending: loading } = useQuery({
         queryKey: ['transaction_players', transaction.transaction_id],
         queryFn: () => sleeper_getPlayersInTransaction(transaction)
     });
