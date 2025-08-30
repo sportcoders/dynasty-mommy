@@ -2,16 +2,16 @@ import { sleeper_getPlayersInTransaction, type Transaction } from "@services/sle
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 /**
- * Custom React hook to retrieve all the players on teams in a Sleeper league.
+ * Custom React hook to retrieve all the players involved in a sleeper transaction.
  *
- * Fetches player information for all teams in the specified league and manages loading and error states.
+ * Used as not all players involved in a sleeper transaction are on a team
  *
- * @param {string} league_id - The id of the league.
- * @returns An object containing the players (grouped by team), error message, and loading state.
+ * @param {Transaction} transaction - Sleeper Transaction object
+ * @returns An dict containing the player_ids(as keys) and corresponding player objects as values
  */
 export default function useGetPlayersInTransaction(transaction: Transaction) {
     const { data: players, isError: error, isLoading: loading } = useSuspenseQuery({
-        queryKey: ['nba_players_sleeper_league', transaction.transaction_id],
+        queryKey: ['transaction_players', transaction.transaction_id],
         queryFn: () => sleeper_getPlayersInTransaction(transaction)
     });
 
