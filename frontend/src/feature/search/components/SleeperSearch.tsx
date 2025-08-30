@@ -159,10 +159,6 @@ function SleeperAccount({
     }
     else {
       checkValidParams();
-
-      if (validParams) {
-        setShowAccount(false);
-      }
     }
   };
 

@@ -151,6 +151,9 @@ export default function useSleeperSearchParams() {
             }
             return { previousParams: currentParams };
         },
+        onSuccess: () => {
+            setShowAccount(false);
+        },
         onError: (err, variables, context) => {
             showError("Error validating search params");
             if (context?.previousParams) {
