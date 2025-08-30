@@ -119,12 +119,13 @@ export async function getLeague(req: Request, res: Response, next: NextFunction)
                 "league.saved_user AS saved_user",
                 "'sleeper' AS platform"
             ])
-            .where("league.userId = :user_id", { user_id })
+            .where("league.league_id = :league_id", { league_id })
             .getRawOne();
 
-        if (!savedLeagueInfo) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "league not found" });
-
-        res.status(HttpSuccess.OK).json(savedLeagueInfo);
+        if (!savedLeagueInfo)
+            res.status(HttpSuccess.NO_CONTENT).send();
+        else
+            res.status(HttpSuccess.OK).json(savedLeagueInfo);
 
     }
     catch (e) {

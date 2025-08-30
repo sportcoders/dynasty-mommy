@@ -1,3 +1,4 @@
+import { ServerError } from "@app/utils/errors";
 import { serverDelete, serverGet, serverPost } from "@services/sleeper";
 interface User {
     username: string;
@@ -90,7 +91,7 @@ interface savedTeam {
     user_id?: string,
     platform?: string;
 }
-interface savedTeamResponse {
+export interface savedTeamResponse {
     league_id: string,
     saved_user: string,
     platform?: string;
@@ -107,12 +108,7 @@ export async function getSavedTeams() {
 }
 
 export async function getSavedTeamSleeperLeague(league_id: string) {
-    try {
-        const response = await serverGet<savedTeamResponse>(`/sleeper_league/${league_id}`);
-        return response;
-    }
-    catch (e) {
-        console.log(e);
-        throw e;
-    }
+    const response = await serverGet<savedTeamResponse>(`/sleeper_league/${league_id}`);
+    return response;
+
 }
