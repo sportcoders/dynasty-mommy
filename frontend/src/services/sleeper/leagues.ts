@@ -274,6 +274,20 @@ export const sleeper_getTransactionsWeek = async (leagueId: string, round: numbe
     return transactions;
 };
 
+export const sleeper_getPlayersInTransaction = async (transaction: Transaction) => {
+    const players: Record<string, Player> = {};
+    const player_ids: string[] = [];
+    !!transaction.adds && player_ids.push(...Object.keys(transaction.adds));
+    !!transaction.drops && player_ids.push(...Object.keys(transaction.drops));
+    const player_objects = await sleeper_getPlayer(player_ids.join("&"));
+
+    for (let i = 0; i < player_ids.length; i++) {
+        players[player_ids[i]] = player_objects[i];
+    }
+
+    return players;
+};
+
 // ============================================================================
 // SLEEPER STATE FUNCTIONS
 // ============================================================================
