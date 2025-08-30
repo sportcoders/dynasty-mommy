@@ -1,4 +1,4 @@
-import NavBar from "@feature/navbar/components/navbar";
+import NavBar from "@feature/navbar/components/Navbar";
 import { Box } from "@mui/material";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export const Route = createRootRoute({
     component: () => {
-        const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
+        const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
         return (
             <>
                 <NavBar drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
@@ -25,7 +25,7 @@ export const Route = createRootRoute({
                 </Box>
                 <TanStackRouterDevtools />
             </>
-        )
+        );
     },
     // component: () => <Outlet />
-})
+});

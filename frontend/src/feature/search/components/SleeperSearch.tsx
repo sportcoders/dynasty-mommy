@@ -1,3 +1,4 @@
+// -------------------- Imports --------------------
 import {
   Box,
   Button,
@@ -12,20 +13,29 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+
 import { useRouter } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
 import { Route as LeagueRoute } from "@routes/leagues.$leagueId";
 import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
-import useSearchParamsSleeper from "@feature/search/hooks/useSearchParamsSleeper";
+
 import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
-import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
-import useDeleteLeague from "../hooks/useDeleteLeague";
-import { useAppSelector } from "@app/hooks";
-import { useNotification } from "@hooks/useNotification";
+import useSleeperSearchParams from "@feature/search/hooks/useSleeperSearchParams";
 import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
-import { useSuspenseQuery } from "@tanstack/react-query";
+
+import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
+import { useNotification } from "@hooks/useNotification";
+import { useAppSelector } from "@app/hooks";
+
+import useDeleteLeague from "../hooks/useDeleteLeague";
 import { sleeper_getUser } from "@services/sleeper";
 
+// -------------------- Types --------------------
+/**
+ * Props shared between SleeperSearch sub-components.
+ */
 type SleeperSearchComponentProps = {
   searchType: string;
   season: string;
@@ -35,22 +45,20 @@ type SleeperSearchComponentProps = {
   setSeason: (s: string) => void;
   handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checkValidParams: () => void;
+  setShowAccount: (value: boolean) => void;
   setParamsFalse: () => void;
   searchByLeagueIdSuccess?: boolean;
   handleLeagueSearch?: () => Promise<boolean>;
 };
 
+// -------------------- Parent Component --------------------
 /**
- * SleeperSearch is a component for the Sleeper League Search feature.
+ * Top-level component that manages the Sleeper League Search feature.
  *
- * It manages the search state for leagues, allowing users to search by a specified type,
- * value, and season. When search parameters are set, it displays the SleeperLeagues component
- * with the current search criteria. Otherwise, it renders the SleeperAccount component to allow
- * the user to initiate a new search.
+ * It switches between the **SleeperAccount** form (input stage)
+ * and the **SleeperLeagues** results view based on state.
  *
- * This component is intended to be used as part of a larger feature, not as a standalone page.
- *
- * @returns The rendered search interface for Sleeper leagues.
+ * @returns The rendered Sleeper League Search interface.
  */
 export default function SleeperSearch() {
   const {
@@ -58,15 +66,19 @@ export default function SleeperSearch() {
     season,
     searchText,
     validParams,
+    showAccount,
     handleTextChange,
     setSeason,
     handleSearchTypeChange,
     checkValidParams,
+    setShowAccount,
     setParamsFalse,
     handleLeagueSearch,
-  } = useSearchParamsSleeper();
+  } = useSleeperSearchParams();
+
   return (
     <Stack
+      spacing={4}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -74,12 +86,12 @@ export default function SleeperSearch() {
         height: "100vh",
         width: "100%",
       }}
-      spacing={4}
     >
       <Typography variant="h2" component="h1" color="primary">
         Sleeper League Search
       </Typography>
-      {validParams ? (
+
+      {validParams && !showAccount && (
         <SleeperLeagues
           searchType={searchType}
           season={season}
@@ -89,9 +101,12 @@ export default function SleeperSearch() {
           setSeason={setSeason}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
+          setShowAccount={setShowAccount}
           setParamsFalse={setParamsFalse}
         />
-      ) : (
+      )}
+
+      {showAccount && (
         <SleeperAccount
           searchType={searchType}
           season={season}
@@ -101,21 +116,24 @@ export default function SleeperSearch() {
           setSeason={setSeason}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
+          setShowAccount={setShowAccount}
           setParamsFalse={setParamsFalse}
           handleLeagueSearch={handleLeagueSearch}
-
         />
       )}
     </Stack>
   );
 }
 
+// -------------------- Child Components --------------------
 /**
- * SleeperAccount is a component and form for searching leagues via username/league id and season year.
+ * A form component for searching Sleeper leagues by **Username** or **League ID**.
  *
- * This component is a smaller part of the SleeperSearch feature.
+ * - If searching by `League ID`, it will attempt direct navigation to the league.
+ * - If searching by `Username`, the user must also select a season.
  *
- * @returns The rendered form for searching league(s) via username/league id and season year.
+ * @param props - {@link SleeperSearchComponentProps}
+ * @returns The rendered league search form.
  */
 function SleeperAccount({
   searchType,
@@ -124,22 +142,31 @@ function SleeperAccount({
   handleTextChange,
   setSeason,
   handleSearchTypeChange,
+  setShowAccount,
   checkValidParams,
   handleLeagueSearch,
 }: SleeperSearchComponentProps) {
-  const { showSuccess, showError, showInfo, showWarning, showNotification } =
-    useNotification();
+  const { showSuccess, showError } = useNotification();
+
+  /**
+   * Handles form submission and executes the correct search action.
+   *
+   * @param e - The form submit event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchType == 'League ID' && searchText != "") {
+
+    if (searchType === "League ID" && searchText !== "") {
       const success = await handleLeagueSearch!();
-      if (success)
-        showSuccess("Navigating to Leauge");
-      else
+      if (success) {
+        showSuccess("Navigating to League");
+        setShowAccount(false);
+      } else {
         showError("League not found");
-    }
-    else
+      }
+    } else {
       checkValidParams();
+    }
   };
 
   return (
@@ -156,6 +183,7 @@ function SleeperAccount({
         borderColor: "divider",
       }}
     >
+      {/* Header */}
       <Box sx={{ textAlign: "center", mb: 3 }}>
         <Typography variant="h4" component="h2" gutterBottom color="primary">
           Find League
@@ -165,7 +193,9 @@ function SleeperAccount({
         </Typography>
       </Box>
 
+      {/* Form */}
       <FormControl fullWidth>
+        {/* Radio Selection */}
         <RadioGroup
           row
           value={searchType}
@@ -173,33 +203,24 @@ function SleeperAccount({
           sx={{
             mb: 3,
             justifyContent: "center",
-            "& .MuiFormControlLabel-root": {
-              mx: 2,
-            },
+            "& .MuiFormControlLabel-root": { mx: 2 },
           }}
         >
           <FormControlLabel
             value="Username"
             control={<Radio />}
             label="Username"
-            sx={{
-              "& .MuiFormControlLabel-label": {
-                fontWeight: 500,
-              },
-            }}
+            sx={{ "& .MuiFormControlLabel-label": { fontWeight: 500 } }}
           />
           <FormControlLabel
             value="League ID"
             control={<Radio />}
             label="League ID"
-            sx={{
-              "& .MuiFormControlLabel-label": {
-                fontWeight: 500,
-              },
-            }}
+            sx={{ "& .MuiFormControlLabel-label": { fontWeight: 500 } }}
           />
         </RadioGroup>
 
+        {/* Input Fields */}
         <Box sx={{ mb: 3 }} display="flex" gap={2}>
           <TextField
             label={searchType}
@@ -209,13 +230,10 @@ function SleeperAccount({
             value={searchText}
             sx={{
               flex: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-              },
+              "& .MuiOutlinedInput-root": { borderRadius: 2 },
             }}
           />
-          {
-            searchType == "Username" &&
+          {searchType === "Username" && (
             <Box sx={{ flex: 1 }}>
               <SelectSeasonDropDown
                 updateSeason={setSeason}
@@ -224,9 +242,10 @@ function SleeperAccount({
                 disabled={false}
               />
             </Box>
-          }
+          )}
         </Box>
 
+        {/* Submit Button */}
         <Button
           onClick={handleSubmit}
           variant="contained"
@@ -235,10 +254,8 @@ function SleeperAccount({
           sx={{
             py: 1.5,
             borderRadius: 2,
-            "&:hover": {
-              transform: "translateY(-2px)",
-            },
             transition: "all 0.3s ease",
+            "&:hover": { transform: "translateY(-2px)" },
           }}
         >
           <Typography variant="button" color="primary.contrastText">
@@ -251,62 +268,81 @@ function SleeperAccount({
 }
 
 /**
- * SleeperLeagues is a component that displays the resulting leagues based on the form parameters.
+ * Displays a list of Sleeper leagues that match the current search criteria.
  *
- * This component is a smaller part of the SleeperSearch feature.
- *
- * @returns The rendered leagues list.
+ * @param props - {@link SleeperSearchComponentProps}
+ * @returns The rendered leagues list with options to save/delete.
  */
 function SleeperLeagues({
   searchType,
   season,
   searchText,
   setSeason,
+  setShowAccount,
   setParamsFalse: back,
 }: SleeperSearchComponentProps) {
-  const username = useAppSelector(state => state.authReducer.username);
+  const username = useAppSelector((state) => state.authReducer.username);
 
-  const { leagues, loading, error } = useGetUserLeaguesSleeper(
-    searchText,
-    season
-  );
+  const { leagues, loading, error } = useGetUserLeaguesSleeper(searchText, season);
   const { data: user_id } = useSuspenseQuery({
-    queryKey: ['sleeper_user', searchText],
+    queryKey: ["sleeper_user", searchText],
     queryFn: () => sleeper_getUser(searchText),
-    select: (data) => data?.user_id
+    select: (data) => data?.user_id,
   });
   const { data: userLeagues } = useGetSavedLeagues();
-  const deleteLeauge = useDeleteLeague();
+
+  const deleteLeague = useDeleteLeague();
   const saveTeamMutate = useSaveSleeperLeague();
+
   const sleeperLeagues = userLeagues?.reduce<string[]>((result, league) => {
-    if (league.platform == 'sleeper')
-      result.push(league.league_id);
+    if (league.platform === "sleeper") result.push(league.league_id);
     return result;
   }, []);
+
   const router = useRouter();
+
+  /**
+   * Navigates the user to a given league details page.
+   *
+   * @param id - The league ID to navigate to.
+   */
   const handleNavigateToLeague = (id: string) => {
     router.navigate({
       to: LeagueRoute.to,
       params: { leagueId: id },
     });
   };
+
+  /**
+   * Saves a league for the logged-in user.
+   *
+   * @param league_id - The league ID to save.
+   * @returns Whether the save was successful.
+   */
   const saveLeague = async (league_id: string) => {
     try {
-      saveTeamMutate.mutate({ league_id: league_id, user_id: user_id! });
+      saveTeamMutate.mutate({ league_id, user_id: user_id! });
       return saveTeamMutate.isSuccess;
-    } catch (e) {
+    } catch {
       return false;
     }
   };
-  const handleDeleteLeague = async (league_id: string) => {
-    deleteLeauge.mutate({ platform: "sleeper", league_id: league_id });
-    return deleteLeauge.isSuccess;
-  };
-  if (loading) return <CircularProgress />;
 
+  /**
+   * Deletes a league from the logged-in user's saved list.
+   *
+   * @param league_id - The league ID to delete.
+   * @returns Whether the delete was successful.
+   */
+  const handleDeleteLeague = async (league_id: string) => {
+    deleteLeague.mutate({ platform: "sleeper", league_id });
+    return deleteLeague.isSuccess;
+  };
+
+  if (loading) return <CircularProgress />;
   if (error) {
     back();
-    return <Snackbar open={error ? true : false} message={error} />;
+    return <Snackbar open={!!error} message={error} />;
   }
 
   return (
@@ -334,14 +370,15 @@ function SleeperLeagues({
       >
         <Button
           variant="outlined"
-          onClick={back}
+          onClick={() => setShowAccount(true)}
           color="primary"
           sx={{
-            height: "56px", // Standard Material-UI TextField height
+            height: "56px",
             borderRadius: 2,
             textTransform: "none",
             px: 3,
             borderColor: "primary.main",
+            transition: "all 0.3s ease",
             "&:hover": {
               borderColor: "primary.dark",
               backgroundColor: "primary.main",
@@ -349,7 +386,6 @@ function SleeperLeagues({
               transform: "translateY(-1px)",
               boxShadow: "0 2px 8px primary.light",
             },
-            transition: "all 0.3s ease",
           }}
         >
           <Typography variant="body1">Back</Typography>
@@ -357,7 +393,6 @@ function SleeperLeagues({
 
         <Box display="flex" gap={2} sx={{ flex: 1 }}>
           <TextField disabled label={searchType} value={searchText} />
-
           <FormControl sx={{ flex: 1, minWidth: 150 }}>
             <SelectSeasonDropDown
               updateSeason={setSeason}
@@ -387,11 +422,11 @@ function SleeperLeagues({
             onLeagueClick={handleNavigateToLeague}
             displayAvatar={true}
             leagues={leagues}
-            loggedIn={username != null}
+            loggedIn={!!username}
             saveDelete={{
-              saveLeague: saveLeague,
+              saveLeague,
               userLeagues: sleeperLeagues || [],
-              deleteLeague: handleDeleteLeague
+              deleteLeague: handleDeleteLeague,
             }}
           />
         </Box>
