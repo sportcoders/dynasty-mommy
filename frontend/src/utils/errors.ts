@@ -6,8 +6,9 @@ export class AppError extends Error {
         messagePrefix: string = "Error",
         statusCode: number,
         statusText: string,
+        message?: string
     ) {
-        super(`${messagePrefix}: ${statusCode} ${statusText}`);
+        super(message || `${messagePrefix}: ${statusCode} ${statusText}`);
         this.name = 'AppError';
         this.statusCode = statusCode;
         this.statusText = statusText;
@@ -18,8 +19,9 @@ export class SleeperError extends AppError {
     constructor(
         statusCode: number,
         statusText: string,
+        message?: string
     ) {
-        super(`Sleeper request failed`, statusCode, statusText);
+        super(message || `Sleeper request failed`, statusCode, statusText);
         this.name = 'SleeperError';
     }
 }
@@ -29,8 +31,9 @@ export class ServerError extends AppError {
     constructor(
         statusCode: number,
         statusText: string,
+        message?: string
     ) {
-        super(`Server request failed`, statusCode, statusText);
+        super(message || `Server request failed`, statusCode, statusText);
         this.name = 'ServerError';
     }
 }

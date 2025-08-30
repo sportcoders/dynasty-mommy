@@ -36,14 +36,12 @@ import { type SelectChangeEvent } from "@mui/material/Select";
 import {
     type TeamInfo,
     type Transaction,
-    sleeper_getPlayer,
-    type Player,
     type sleeper_draftPick
 } from "@services/sleeper";
 
-import { useState, useEffect, type SyntheticEvent, useMemo } from "react";
-import useGetSleeperState from "../hooks/useGetSleeperState";
+import { useState, type SyntheticEvent, useMemo } from "react";
 import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
+import useGetPlayersInTransaction from "../hooks/useGetPlayersInTransaction";
 
 import { formatUnixTime } from "@utils/formatUnixTime";
 
@@ -51,20 +49,15 @@ import { formatUnixTime } from "@utils/formatUnixTime";
 export default function TransactionTab({
     league_id,
     teams,
-    league_season
+    last_scored_leg
 }: {
     league_id: string;
-    league_season: string;
     teams: TeamInfo[];
+    last_scored_leg: number | undefined;
 }) {
-    const { data: state } = useGetSleeperState();
-
-    /* Finding the max week, week set to current week from sleeper state get if it is the current season,
-     * otherwise it will be the max number of weeks in a season(which is 20)
-     */
-    const max_week = league_season == state?.league_season ? state.week : 19;
-    // Display week max is 20
-    const display_weeks = Array.from({ length: max_week + 1 }, (_, i) => i + 1).reverse();
+    //if last_scored_leg exists we use it, otherwise it means season has not started yet so we use first week
+    const max_week = last_scored_leg || 1;
+    const display_weeks = Array.from({ length: max_week }, (_, i) => i + 1).reverse();
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -155,7 +148,7 @@ const TransactionInWeekDisplay = ({
 }) => {
     // ===== STATE MANAGEMENT =====
     const [expanded, setExpanded] = useState<string | false>("");
-    const [filterBy, setFilterBy] = useState('');
+    const [filterBy, setFilterBy] = useState('All');
     const [teamFilter, setTeamFilter] = useState<number[]>([]);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -441,36 +434,8 @@ const DisplayAddDrop = ({
     transaction: Transaction;
     team: TeamInfo | undefined;
 }) => {
-    // ===== STATE MANAGEMENT =====
-    const [addsNames, setAddsNames] = useState<string[]>([]);
-    const [dropsNames, setDropsNames] = useState<string[]>([]);
-
     // ===== DATA FETCHING =====
-    useEffect(() => {
-        const fetchPlayerNames = async () => {
-            if (transaction.adds) {
-                const addEntries = await Promise.all(
-                    Object.entries(transaction.adds).map(async ([key]) => {
-                        const player = await sleeper_getPlayer(key);
-                        return `${player[0].first_name} ${player[0].last_name}`;
-                    })
-                );
-                setAddsNames(addEntries);
-            }
-
-            if (transaction.drops) {
-                const dropEntries = await Promise.all(
-                    Object.entries(transaction.drops).map(async ([key]) => {
-                        const player = await sleeper_getPlayer(key);
-                        return `${player[0].first_name} ${player[0].last_name}`;
-                    })
-                );
-                setDropsNames(dropEntries);
-            }
-        };
-
-        fetchPlayerNames();
-    }, [transaction]);
+    const { players } = useGetPlayersInTransaction(transaction);
 
     if (!team) return;
 
@@ -479,36 +444,35 @@ const DisplayAddDrop = ({
         <Grid container spacing={3}>
             <Grid>
                 <List dense>
-                    <ListItem>
-                        <ListItemText
-                            primary="Team"
-                            secondary={team.display_name}
-                        />
-                    </ListItem>
 
-                    {addsNames.length > 0 && (
+                    {!!transaction.adds && (
                         <ListItem>
                             <ListItemText primary="Adds" />
                         </ListItem>
                     )}
 
-                    {addsNames.map((player, index) => {
+                    {!!transaction.adds && Object.keys(transaction.adds).map((key, index) => {
                         return (
-                            <ListItem key={index}>
-                                <ListItemText secondary={player} />
+                            <ListItem key={`${index}-add`}>
+                                <ListItemText secondary={`${players[key].first_name} ${players[key].last_name}`} />
                             </ListItem>
                         );
                     })}
 
                     <ListItem>
-                        {dropsNames.length > 0 && (
+                        {!!transaction.drops && (
                             <ListItemText
                                 primary="Drops"
-                                secondary={dropsNames}
                             />
                         )}
                     </ListItem>
-
+                    {!!transaction.drops && Object.keys(transaction.drops).map((key, index) => {
+                        return (
+                            <ListItem key={index}>
+                                <ListItemText secondary={`${players[key].first_name} ${players[key].last_name}`} />
+                            </ListItem>
+                        );
+                    })}
                     <ListItem>
                         <ListItemText secondary={formatUnixTime(transaction.status_updated)} />
                     </ListItem>
@@ -548,49 +512,10 @@ const DisplayTrades = ({
     transaction: Transaction;
     teams: TeamInfo[] | undefined;
 }) => {
-    // ===== UTILITY FUNCTIONS =====
-    const formatUnixTime = (time: string) => {
-        const day = new Date(time);
-        return day.toString().substring(4, 21);
-    };
-
-    // ===== STATE MANAGEMENT =====
-    const [playerMap, setPlayerMap] = useState<Record<string, Player>>({});
-    const [loading, setLoading] = useState<boolean>(true);
 
     // ===== DATA FETCHING =====
-    useEffect(() => {
-        const loadPlayerMap = async () => {
-            const ids: string[] = [];
+    const { players: playerMap, loading } = useGetPlayersInTransaction(transaction);
 
-            if (transaction.adds) {
-                Object.entries(transaction.adds).map(([key]) => {
-                    ids.push(key);
-                });
-            }
-
-            if (transaction.drops) {
-                Object.entries(transaction.drops).map(([key]) => {
-                    ids.push(key);
-                });
-            }
-
-            const players = await sleeper_getPlayer(ids.join("&"));
-
-            const tmap: Record<string, Player> = {};
-            for (const player of players) {
-                tmap[player.id] = player;
-            }
-            setPlayerMap(tmap);
-            setLoading(false);
-        };
-
-        if (transaction.adds || transaction.drops || transaction.draft_picks) {
-            loadPlayerMap();
-        } else {
-            setLoading(false);
-        }
-    }, [transaction]);
 
     if (!teams) return;
 

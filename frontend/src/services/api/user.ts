@@ -11,6 +11,7 @@ export async function loginUser(email: string, password: string) {
         return user as User;
     } catch (e) {
         console.log(e);
+        throw e;
     }
 }
 export async function createUser(
@@ -27,6 +28,7 @@ export async function createUser(
         return user as User;
     } catch (e) {
         console.log(e);
+        throw e;
     }
 }
 export interface League {
@@ -34,19 +36,12 @@ export interface League {
     league_id: string;
 }
 
-export async function addLeagueToUser(newLeague: League) {
-    try {
-        await serverPost("/user/addLeague", { league: newLeague });
-    } catch (e) {
-        console.error(e);
-    }
-}
-
 export async function removeLeagueFromUser(league: League) {
     try {
-        await serverDelete(`/user/removeLeague/${league.league_id}/${league.platform}`);
+        await serverDelete(`/sleeper_league/${league.league_id}`);
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 
@@ -56,6 +51,7 @@ export async function isUserLeague(league: League) {
         return check as boolean;
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 export interface UserLeagues {
@@ -64,38 +60,34 @@ export interface UserLeagues {
 
 export async function fetchUserLeagues() {
     try {
-        const response = await serverGet<UserLeagues>("/user/getLeagues");
+        const response = await serverGet<UserLeagues>("/sleeper_league/");
         return response;
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 
-// export async function isLeagueSaved() {
-//     try {
-
-//     } catch (error) {
-
-//     }
-// }
-
 export async function saveSleeperLeague({ league_id, user_id }: savedTeam) {
     try {
-        const response = await serverPost('/user/saveTeamSleeper', {
-            league_id: league_id,
-            user_id: user_id
+        const response = await serverPost('/sleeper_league/', {
+            league: {
+                league_id: league_id,
+                user_id: user_id
+            }
         });
 
         return response;
     }
     catch (e) {
         console.log(e);
+        throw e;
     }
 }
 
 interface savedTeam {
     league_id: string,
-    user_id: string,
+    user_id?: string,
     platform?: string;
 }
 interface savedTeamResponse {
@@ -105,20 +97,22 @@ interface savedTeamResponse {
 }
 export async function getSavedTeams() {
     try {
-        const response = await serverGet<savedTeamResponse[]>('/user/savedTeams');
+        const response = await serverGet<savedTeamResponse[]>('/sleeper_league/');
         return response;
     }
     catch (e) {
         console.log(e);
+        throw e;
     }
 }
 
 export async function getSavedTeamSleeperLeague(league_id: string) {
     try {
-        const response = await serverGet<savedTeamResponse>(`/user/savedTeam/sleeper/${league_id}`);
+        const response = await serverGet<savedTeamResponse>(`/sleeper_league/${league_id}`);
         return response;
     }
     catch (e) {
         console.log(e);
+        throw e;
     }
 }

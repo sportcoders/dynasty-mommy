@@ -414,10 +414,12 @@ function SleeperLeagues({
             onLeagueClick={handleNavigateToLeague}
             displayAvatar={true}
             leagues={leagues}
-            saveLeague={saveLeague}
             loggedIn={username != null}
-            userLeagues={sleeperLeagues}
-            deleteLeague={handleDeleteLeague}
+            saveDelete={{
+              saveLeague: saveLeague,
+              userLeagues: sleeperLeagues || [],
+              deleteLeague: handleDeleteLeague
+            }}
           />
         </Box>
       )}

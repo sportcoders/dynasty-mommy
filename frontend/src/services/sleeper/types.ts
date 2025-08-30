@@ -38,6 +38,7 @@ export interface LeagueInfo {
     previous_league_id: string,
     settings: {
         num_teams: number,
+        last_scored_leg?: number,
     };
     scoring_settings: {
         ast: number,

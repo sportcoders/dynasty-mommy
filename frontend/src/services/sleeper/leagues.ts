@@ -176,11 +176,12 @@ export const sleeper_getLeagueInfo = async (leagueId: string): Promise<LeagueInf
         previous_league_id: leagueInfo.previous_league_id,
         season: leagueInfo.season,
         settings: {
-            num_teams: leagueInfo.settings.num_teams
+            num_teams: leagueInfo.settings.num_teams,
+            last_scored_leg: leagueInfo.settings.last_scored_leg
         },
         sport: leagueInfo.sport,
         scoring_settings: leagueInfo.scoring_settings,
-        roster_positions: leagueInfo.roster_positions
+        roster_positions: leagueInfo.roster_positions,
     };
 
 };
@@ -271,6 +272,20 @@ export const sleeper_getTransactions = async (leagueId: string): Promise<Record<
 export const sleeper_getTransactionsWeek = async (leagueId: string, round: number) => {
     const transactions = await sleeper_apiGet<Transaction[]>(`/league/${leagueId}/transactions/${round}`);
     return transactions;
+};
+
+export const sleeper_getPlayersInTransaction = async (transaction: Transaction) => {
+    const players: Record<string, Player> = {};
+    const player_ids: string[] = [];
+    !!transaction.adds && player_ids.push(...Object.keys(transaction.adds));
+    !!transaction.drops && player_ids.push(...Object.keys(transaction.drops));
+    const player_objects = await sleeper_getPlayer(player_ids.join("&"));
+
+    for (let i = 0; i < player_ids.length; i++) {
+        players[player_ids[i]] = player_objects[i];
+    }
+
+    return players;
 };
 
 // ============================================================================

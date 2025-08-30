@@ -42,7 +42,19 @@ const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => 
                 {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 50 }}>
                     <CircularProgress />
                 </Box> :
-                    <DisplayLeaguesList leagues={leagues} onLeagueClick={handleNavigateToLeague} displayAvatar={false} background_color='transparent' fontSize='1rem' fontWeight='500' padding='0' border_radius='16px' text_color='primary.main' />
+                    <DisplayLeaguesList leagues={leagues}
+                        onLeagueClick={handleNavigateToLeague}
+                        displayAvatar={false}
+                        loggedIn={true}
+                        stylingOptions={{
+                            background_color: 'transparent',
+                            fontSize: '1rem',
+                            fontWeight: '500',
+                            padding: '0',
+                            border_radius: '16px',
+                            text_color: 'primary.main'
+                        }}
+                    />
                 }
             </Box>
         </Collapse>

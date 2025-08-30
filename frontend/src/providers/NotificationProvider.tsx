@@ -1,7 +1,8 @@
 import { useSnackbar } from "notistack";
 import { NotificationContext } from "@app/context/NotificationContext";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import type { NotificationOptions } from "@app/types/notification";
+import { setNotificationFns } from "@services/notificationService";
 
 interface NotificationProviderProps {
   children: ReactNode;
@@ -61,6 +62,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     }
   };
 
+  useEffect(() => {
+    setNotificationFns({
+      showError,
+      showSuccess,
+    });
+  }, []);
   return (
     <NotificationContext.Provider
       value={{

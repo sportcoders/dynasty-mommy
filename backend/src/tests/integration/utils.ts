@@ -34,7 +34,7 @@ export const users = [
         username: "username1",
         leagues: [
             { "platform": "sleeper", "league_id": "111333444", saved_user: "12131313" },
-            { "platform": "espn", "league_id": "1e322", saved_user: "12131313" },
+            { "platform": "sleeper", "league_id": "1e322", saved_user: "12131313" },
         ]
     },
     {
