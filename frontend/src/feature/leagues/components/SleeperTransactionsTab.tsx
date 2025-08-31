@@ -16,7 +16,6 @@ import {
     ListItem,
     ListItemText,
     Paper,
-    CircularProgress,
     TableContainer,
     Table,
     TableHead,
@@ -29,7 +28,9 @@ import {
     MenuItem,
     Checkbox,
     Button,
-    Popover
+    Popover,
+    Skeleton,
+    CircularProgress
 } from "@mui/material";
 import { type SelectChangeEvent } from "@mui/material/Select";
 
@@ -153,7 +154,7 @@ const TransactionInWeekDisplay = ({
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     // ===== DATA FETCHING =====
-    const { data: transactions } = useGetTransactionByWeek(league_id, Number(week));
+    const { data: transactions, loading } = useGetTransactionByWeek(league_id, Number(week));
 
     // ===== UTILITY FUNCTIONS =====
     const getStatusColor = (status: string) => {
@@ -256,6 +257,7 @@ const TransactionInWeekDisplay = ({
         return filtered;
     }, [transactions, filterBy, teamFilter]);
 
+    if (loading) return <AccordionSkeleton />;
     // ===== RENDER =====
     return (
         <CardContent>
@@ -420,6 +422,17 @@ const TransactionInWeekDisplay = ({
         </CardContent>
     );
 };
+const AccordionSkeleton = ({ count = 5 }) => {
+    return (
+        <Box>
+            {Array.from({ length: count }).map((_, index) => (
+                <Box key={index} sx={{ mb: 2, border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
+                    <Skeleton variant="text" width='100%' height={30} />
+                </Box>
+            ))}
+        </Box>
+    );
+};
 
 // ===== DISPLAY ADD/DROP COMPONENT =====
 /**
@@ -438,12 +451,12 @@ const DisplayAddDrop = ({
     const { players, loading } = useGetPlayersInTransaction(transaction);
 
     if (!team) return;
-    if (loading || !players) return <CircularProgress />;
 
+    if (loading || !players) return <CircularProgress />;
     // ===== RENDER =====
     return (
-        <Grid container spacing={3}>
-            <Grid>
+        <Box>
+            <Grid sx={{ p: 2, pt: 0 }}>
                 <List dense>
 
                     {!!transaction.adds && (
@@ -474,9 +487,6 @@ const DisplayAddDrop = ({
                             </ListItem>
                         );
                     })}
-                    <ListItem>
-                        <ListItemText secondary={formatUnixTime(transaction.status_updated)} />
-                    </ListItem>
                 </List>
             </Grid>
 
@@ -496,10 +506,41 @@ const DisplayAddDrop = ({
                     </Paper>
                 )}
             </Grid>
-        </Grid>
+            <Box sx={{ p: 2, textAlign: 'right', borderTop: '1px solid', borderColor: 'divider' }}>
+                {loading ?
+                    <Skeleton key='completed-time' variant="text" height={20} sx={{ mb: 0.5 }} /> :
+                    <Typography variant="caption" color="text.secondary">
+                        Completed: {formatUnixTime(transaction.status_updated)}
+                    </Typography>
+                }
+            </Box>
+        </Box>
     );
 };
 
+const DisplayAddDropSkeleton = () => {
+    return (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <List sx={{ width: '50%' }}>
+                <ListItem>
+                    <Skeleton key='drops-1' variant="text" width="80%" height={20} sx={{ mb: 0.5 }} />
+                </ListItem>
+
+                <ListItem >
+                    <Skeleton key='drops-1' variant="text" width="80%" height={20} sx={{ mb: 0.5 }} />
+                </ListItem>
+            </List>
+            <List sx={{ width: '50%' }}>
+                <ListItem>
+                    <Skeleton key='drops-1' variant="text" width="80%" height={20} sx={{ mb: 0.5 }} />
+                </ListItem>
+                <ListItem>
+                    <Skeleton key='drops-1' variant="text" width="80%" height={20} sx={{ mb: 0.5 }} />
+                </ListItem>
+            </List>
+        </Box>
+    );
+};
 // ===== DISPLAY TRADES COMPONENT =====
 /**
  * Used to display trades
@@ -515,14 +556,11 @@ const DisplayTrades = ({
 }) => {
 
     // ===== DATA FETCHING =====
-    const { players: playerMap, loading } = useGetPlayersInTransaction(transaction);
+    const { players: playerMap, loading, isEnabled } = useGetPlayersInTransaction(transaction);
 
 
     if (!teams) return;
 
-
-    // ===== LOADING STATE =====
-    if (loading || !playerMap) return <CircularProgress />;
 
     // ===== RENDER =====
     return (
@@ -535,90 +573,121 @@ const DisplayTrades = ({
                         <TableCell>Drops</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
-                    {teams.map((team) => {
-                        const teamAdds = transaction.adds
-                            ? Object.entries(transaction.adds)
-                                .filter(([rosterId]) => Number(rosterId) === team.roster_id)
-                                .map(([playerName]) => playerName)
-                            : [];
+                {(loading && isEnabled) ? <TransactionSkeleton /> :
+                    <TableBody>
+                        {teams.map((team) => {
+                            const teamAdds = transaction.adds
+                                ? Object.entries(transaction.adds)
+                                    .filter(([rosterId]) => Number(rosterId) === team.roster_id)
+                                    .map(([playerName]) => playerName)
+                                : [];
 
-                        const teamDrops = transaction.drops
-                            ? Object.entries(transaction.drops)
-                                .filter(([rosterId]) => Number(rosterId) === team.roster_id)
-                                .map(([playerName]) => playerName)
-                            : [];
+                            const teamDrops = transaction.drops
+                                ? Object.entries(transaction.drops)
+                                    .filter(([rosterId]) => Number(rosterId) === team.roster_id)
+                                    .map(([playerName]) => playerName)
+                                : [];
 
-                        const pickAdds: sleeper_draftPick[] = [];
-                        const pickDrops: sleeper_draftPick[] = [];
+                            const pickAdds: sleeper_draftPick[] = [];
+                            const pickDrops: sleeper_draftPick[] = [];
 
-                        transaction.draft_picks.map((pick) => {
-                            if (pick.owner_id == team.roster_id)
-                                pickAdds.push(pick);
-                            else
-                                pickDrops.push(pick);
-                        });
+                            transaction.draft_picks.map((pick) => {
+                                if (pick.owner_id == team.roster_id)
+                                    pickAdds.push(pick);
+                                else
+                                    pickDrops.push(pick);
+                            });
 
-                        return (
-                            <TableRow key={team.roster_id} hover>
-                                <TableCell>
-                                    <Typography variant="subtitle2" fontWeight="bold">
-                                        {team.display_name}
-                                    </Typography>
-                                </TableCell>
-
-                                <TableCell>
-                                    {teamAdds.length > 0 || pickAdds.length > 0 ? (
-                                        <Box>
-                                            {teamAdds.map((playerName) => (
-                                                <Box key={playerName} sx={{ display: 'block' }}>
-                                                    {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
-                                                </Box>
-                                            ))}
-                                            {pickAdds.map((pick, index) => (
-                                                <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
-                                                    {`${pick.season} Round ${pick.round}`}
-                                                </Box>
-                                            ))}
-                                        </Box>
-                                    ) : (
-                                        <Typography variant="body2">
-                                            —
+                            return (
+                                <TableRow key={team.roster_id} hover>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" fontWeight="bold">
+                                            {team.display_name}
                                         </Typography>
-                                    )}
-                                </TableCell>
+                                    </TableCell>
 
-                                <TableCell>
-                                    {teamDrops.length > 0 || pickDrops.length > 0 ? (
-                                        <Box>
-                                            {teamDrops.map((playerName) => (
-                                                <Box key={playerName} sx={{ display: 'block' }}>
-                                                    {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
-                                                </Box>
-                                            ))}
-                                            {pickDrops.map((pick, index) => (
-                                                <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
-                                                    {`${pick.season} Round ${pick.round}`}
-                                                </Box>
-                                            ))}
-                                        </Box>
-                                    ) : (
-                                        <Typography variant="body2" color="text.secondary">
-                                            —
-                                        </Typography>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
+                                    <TableCell>
+                                        {teamAdds.length > 0 || pickAdds.length > 0 ? (
+                                            <Box>
+                                                {!!playerMap && teamAdds.map((playerName) => (
+                                                    <Box key={playerName} sx={{ display: 'block' }}>
+                                                        {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
+                                                    </Box>
+                                                ))}
+                                                {pickAdds.map((pick, index) => (
+                                                    <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
+                                                        {`${pick.season} Round ${pick.round}`}
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        ) : (
+                                            <Typography variant="body2">
+                                                —
+                                            </Typography>
+                                        )}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {teamDrops.length > 0 || pickDrops.length > 0 ? (
+                                            <Box>
+                                                {!!playerMap && teamDrops.map((playerName) => (
+                                                    <Box key={playerName} sx={{ display: 'block' }}>
+                                                        {`${playerMap[playerName].first_name} ${playerMap[playerName].last_name}`}
+                                                    </Box>
+                                                ))}
+                                                {pickDrops.map((pick, index) => (
+                                                    <Box key={index} sx={{ display: 'block', mb: 0.5 }}>
+                                                        {`${pick.season} Round ${pick.round}`}
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary">
+                                                —
+                                            </Typography>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                }
             </Table>
 
             <Box sx={{ p: 2, textAlign: 'right', borderTop: '1px solid', borderColor: 'divider' }}>
-                <Typography variant="caption" color="text.secondary">
-                    Completed: {formatUnixTime(transaction.status_updated)}
-                </Typography>
+                {(loading && isEnabled) ?
+                    <Skeleton key='adds-1' variant="text" width="100%" height={20} sx={{ mb: 0.5 }} /> :
+                    <Typography variant="caption" color="text.secondary">
+                        Completed: {formatUnixTime(transaction.status_updated)}
+                    </Typography>
+                }
             </Box>
         </TableContainer>
+    );
+};
+
+const TransactionSkeleton = () => {
+    return (
+        <TableBody>
+            {['team', 'team'].map((team, index) =>
+                <TableRow key={`${team} ${index}`} hover>
+                    <TableCell>
+                        <Skeleton variant="text" width={120} height={28} />
+                    </TableCell>
+
+                    <TableCell>
+                        <Box>
+                            <Skeleton key='adds-1' variant="text" width="80%" height={20} sx={{ mb: 0.5 }} />
+                        </Box>
+                    </TableCell>
+
+                    <TableCell>
+                        <Box>
+                            <Skeleton key='drops-1' variant="text" width="80%" height={20} sx={{ mb: 0.5 }} />
+                        </Box>
+                    </TableCell>
+                </TableRow>
+            )}
+        </TableBody>
     );
 };

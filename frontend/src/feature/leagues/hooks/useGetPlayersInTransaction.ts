@@ -10,10 +10,11 @@ import { useQuery } from "@tanstack/react-query";
  * @returns An dict containing the player_ids(as keys) and corresponding player objects as values
  */
 export default function useGetPlayersInTransaction(transaction: Transaction) {
-    const { data: players, isError: error, isPending: loading } = useQuery({
+    const { data: players, isError: error, isPending: loading, isEnabled } = useQuery({
         queryKey: ['transaction_players', transaction.transaction_id],
-        queryFn: () => sleeper_getPlayersInTransaction(transaction)
+        queryFn: () => sleeper_getPlayersInTransaction(transaction),
+        enabled: !!transaction.drops || !!transaction.adds,
     });
 
-    return { players, error, loading };
+    return { players, error, loading, isEnabled };
 }
