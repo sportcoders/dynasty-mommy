@@ -45,7 +45,6 @@ type SleeperSearchComponentProps = {
   setSeason: (s: string) => void;
   handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checkValidParams: () => void;
-  setShowAccount: (value: boolean) => void;
   setParamsFalse: () => void;
   searchByLeagueIdSuccess?: boolean;
   handleLeagueSearch?: () => Promise<boolean>;
@@ -60,22 +59,19 @@ type SleeperSearchComponentProps = {
  *
  * @returns The rendered Sleeper League Search interface.
  */
-export default function SleeperSearch() {
+export default function SleeperSearch({ season: initSeason = '2025', searchType: initType = "Username", searchText: initText = '', submit = false }: { season?: string, searchType?: string, searchText?: string, submit?: boolean; }) {
   const {
     searchType,
     season,
     searchText,
-    validParams,
-    showAccount,
     handleTextChange,
     setSeason,
     handleSearchTypeChange,
-    checkValidParams,
-    setShowAccount,
     setParamsFalse,
+    checkValidParams,
     handleLeagueSearch,
-  } = useSleeperSearchParams();
-
+  } = useSleeperSearchParams({ initSeason, initType, initText });
+  const showLeagues = searchType == "Username" && !!season && !!searchText && submit;
   return (
     <Stack
       spacing={4}
@@ -91,36 +87,32 @@ export default function SleeperSearch() {
         Sleeper League Search
       </Typography>
 
-      {validParams && !showAccount && (
-        <SleeperLeagues
+      {showLeagues ?
+        <SleeperDisplayUsernameSearchResult
           searchType={searchType}
           season={season}
           searchText={searchText}
-          validParams={validParams}
+          validParams={submit}
           handleTextChange={handleTextChange}
           setSeason={setSeason}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
-          setShowAccount={setShowAccount}
           setParamsFalse={setParamsFalse}
         />
-      )}
-
-      {showAccount && (
-        <SleeperAccount
+        :
+        <SleeperFindLeague
           searchType={searchType}
           season={season}
           searchText={searchText}
-          validParams={validParams}
+          validParams={submit}
           handleTextChange={handleTextChange}
           setSeason={setSeason}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
-          setShowAccount={setShowAccount}
           setParamsFalse={setParamsFalse}
           handleLeagueSearch={handleLeagueSearch}
         />
-      )}
+      }
     </Stack>
   );
 }
@@ -135,14 +127,13 @@ export default function SleeperSearch() {
  * @param props - {@link SleeperSearchComponentProps}
  * @returns The rendered league search form.
  */
-function SleeperAccount({
+function SleeperFindLeague({
   searchType,
   season,
   searchText,
   handleTextChange,
   setSeason,
   handleSearchTypeChange,
-  setShowAccount,
   checkValidParams,
   handleLeagueSearch,
 }: SleeperSearchComponentProps) {
@@ -160,7 +151,6 @@ function SleeperAccount({
       const success = await handleLeagueSearch!();
       if (success) {
         showSuccess("Navigating to League");
-        setShowAccount(false);
       } else {
         showError("League not found");
       }
@@ -273,12 +263,11 @@ function SleeperAccount({
  * @param props - {@link SleeperSearchComponentProps}
  * @returns The rendered leagues list with options to save/delete.
  */
-function SleeperLeagues({
+function SleeperDisplayUsernameSearchResult({
   searchType,
   season,
   searchText,
   setSeason,
-  setShowAccount,
   setParamsFalse: back,
 }: SleeperSearchComponentProps) {
   const username = useAppSelector((state) => state.authReducer.username);
@@ -370,7 +359,7 @@ function SleeperLeagues({
       >
         <Button
           variant="outlined"
-          onClick={() => setShowAccount(true)}
+          onClick={back}
           color="primary"
           sx={{
             height: "56px",
