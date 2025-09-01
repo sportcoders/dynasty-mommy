@@ -26,7 +26,6 @@ export type SleeperSearchComponentProps = {
   handleLeagueSearch?: () => Promise<boolean>;
 };
 
-// -------------------- Parent Component --------------------
 /**
  * Top-level component that manages the Sleeper League Search feature.
  *
@@ -47,7 +46,9 @@ export default function SleeperSearch({ season: initSeason = '2025', searchType:
     checkValidParams,
     handleLeagueSearch,
   } = useSleeperSearchParams({ initSeason, initType, initText });
+
   const showLeagues = searchType == "Username" && !!season && !!searchText && submit;
+
   return (
     <Stack
       spacing={4}
