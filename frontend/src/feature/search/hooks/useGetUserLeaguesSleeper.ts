@@ -25,15 +25,18 @@ export default function useGetUserLeaguesSleeper(
     const { isPending: loading, isError: error, data } = useQuery({
         queryKey: ['getLeaguesSleeperUsername', username, season],
         queryFn: () => sleeper_getLeagues(username, season),
-    })
+    });
+    const [loadingAvatars, setLoadingAvatars] = useState<boolean>(true);
 
     useEffect(() => {
         if (!data) {
             setLeaguesWithAvatars([]);
+            setLoadingAvatars(false || loading);
             return;
         }
 
         const getAvatars = async () => {
+            setLoadingAvatars(true);
             const leaguesWithUrls = await Promise.all(
                 data.map(async (league) => {
                     if (league.avatar) {
@@ -52,6 +55,7 @@ export default function useGetUserLeaguesSleeper(
                 })
             );
             setLeaguesWithAvatars(leaguesWithUrls);
+            setLoadingAvatars(false);
         };
 
         getAvatars();
@@ -63,5 +67,5 @@ export default function useGetUserLeaguesSleeper(
         };
     }, [data]);
 
-    return { leagues: leaguesWithAvatars, loading, error };
+    return { leagues: leaguesWithAvatars, loading: (loading || loadingAvatars), error };
 }
