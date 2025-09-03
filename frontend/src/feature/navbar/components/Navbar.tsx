@@ -1,3 +1,16 @@
+// -------------------- Imports --------------------
+import { useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from '@app/hooks';
+
+import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
+
+import { logout } from '@feature/auth/authSlice';
+import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
+import { resetSearch } from "@feature/search/sleeper/sleeperSearchSlice";
+
+import { Menu, Person, Login, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
+
 import {
     Box,
     Button,
@@ -11,15 +24,10 @@ import {
     Typography,
     useColorScheme,
 } from '@mui/material';
-import { Menu, Person, Login, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
-import { useAppDispatch, useAppSelector } from '@app/hooks';
-import { logout } from '@feature/auth/authSlice';
-import { Link, useLocation, useRouter } from '@tanstack/react-router';
-import { useState } from 'react';
-import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
-import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
+
 import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
-import useSleeperSearchParams from '@feature/search/sleeper/hooks/useSleeperSearchParams';
+
+import { Link, useLocation, useRouter } from '@tanstack/react-router';
 
 
 const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
@@ -63,10 +71,13 @@ const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => 
 
 const DarkModeToggle = () => {
     const { mode, setMode } = useColorScheme();
+
     if (!mode) return null;
+
     const toggleMode = () => {
         setMode(mode === 'light' ? 'dark' : 'light');
     };
+
     return (
         <ListItem sx={{
             borderRadius: '16px',
@@ -87,19 +98,30 @@ const DarkModeToggle = () => {
         </ListItem>
     );
 };
+
 export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void; }) {
+    const router = useRouter();
+
     const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false);
 
-    const { setParamsFalse } = useSleeperSearchParams();
-
-    const username = useAppSelector((state) => state.authReducer.username);
+    const username = useAppSelector((state) => state.auth.username);
 
     const dispatch = useAppDispatch();
 
     const location = useLocation();
 
     const handleFindLeagueClick = () => {
-        setParamsFalse();
+        dispatch(resetSearch());
+
+        router.navigate({
+            to: "/",
+            search: {
+                submit: false,
+                searchText: "",
+                season: "2025", // or default year
+                searchType: "Username", // or default type
+            },
+        });
     };
 
     const handleSignOut = () => {
@@ -107,7 +129,6 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     };
     const drawerItems = [
         { text: 'Find League', icon: <Search />, link: '/', onClick: handleFindLeagueClick },
-        // { text: 'Login', icon: <Person />, link: '/login' },
     ];
 
     const toggleDrawer = () => {
@@ -126,7 +147,6 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         backdropFilter: 'blur(10px)',
                         borderRight: '1px solid rgba(0, 0, 0, 0.1)',
                         pt: '0.5rem',
-                        // pl: '0.75rem',
                     }
                 }}
             >

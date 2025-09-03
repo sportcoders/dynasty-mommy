@@ -44,6 +44,7 @@ export default function SleeperSearchForm({
 
         if (searchType === "League ID" && searchText !== "") {
             const success = await handleLeagueSearch!();
+
             if (success) {
                 showSuccess("Navigating to League");
             } else {

@@ -1,10 +1,12 @@
 // -------------------- Imports --------------------
-import { useState } from "react";
+import { useDispatch } from "react-redux";
+
+import { useAppSelector } from "@app/hooks";
 
 import SleeperLeaguesList from "@feature/search/sleeper/components/SleeperLeaguesList";
 import SleeperSearchForm from "@feature/search/sleeper/components/SleeperSearchForm";
 import useGetLeagueSleeper from "@feature/search/sleeper/hooks/useGetLeagueSleeper";
-import type { SleeperSearchTypeOptions } from "@feature/search/sleeper/types";
+import { setSeason, setSearchText, setSearchType, setSubmit } from "@feature/search/sleeper/sleeperSearchSlice";
 
 import { Stack, Typography } from "@mui/material";
 
@@ -18,28 +20,18 @@ import { useNavigate } from "@tanstack/react-router";
  *
  * @returns The rendered Sleeper League Search interface.
  */
-export default function SleeperSearch({
-  season: initSeason = "2025",
-  searchType: initType = "Username",
-  searchText: initText = "",
-  submit = false,
-}: {
-  season?: string;
-  searchType?: SleeperSearchTypeOptions;
-  searchText?: string;
-  submit?: boolean;
-}) {
-  const [searchType, setSearchType] = useState<SleeperSearchTypeOptions>(initType);
-  const [season, setSeasonState] = useState<string>(initSeason);
-  const [searchText, setSearchText] = useState(initText);
-
+export default function SleeperSearch() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { season, searchText, searchType, submit } = useAppSelector((state) => state.sleeperSearch);
 
   const { refetch } = useGetLeagueSleeper(searchType !== "Username" ? searchText : "");
 
   // -------------------- Handlers --------------------
   const handleLeagueSearch = async (): Promise<boolean> => {
     const result = await refetch();
+
     if (result?.data) {
       navigate({ to: `/leagues/${searchText}` });
       return true;
@@ -51,18 +43,22 @@ export default function SleeperSearch({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.value;
+
     if (value === "Username" || value === "League ID") {
-      setSearchType(value);
-      setSearchText("");
+      dispatch(setSearchType(value));
+      dispatch(setSearchText(""));
     }
   };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
+    const value = event.target.value;
+
+    dispatch(setSearchText(value));
   };
 
   const checkValidParams = () => {
     if (season && searchText) {
+      dispatch(setSubmit(true));
       navigate({
         to: `/`,
         search: {
@@ -80,7 +76,8 @@ export default function SleeperSearch({
       to: `/`,
       search: (prev) => ({ ...prev, season: String(newSeason) }),
     });
-    setSeasonState(newSeason);
+
+    dispatch(setSeason(newSeason));
   };
 
   const validParams = Boolean(season && searchText);

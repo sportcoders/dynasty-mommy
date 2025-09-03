@@ -108,7 +108,7 @@ export default function SleeperLeague({
 }: SleeperLeaguesHomePageProps) {
   const theme = useTheme();
 
-  const username = useAppSelector((state) => state.authReducer.username);
+  const username = useAppSelector((state) => state.auth.username);
   const navigate = useNavigate({ from: `/leagues/$leagueId` });
 
   // State

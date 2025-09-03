@@ -1,4 +1,6 @@
 // -------------------- Imports --------------------
+import { useDispatch } from "react-redux";
+
 import { useAppSelector } from "@app/hooks";
 
 import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
@@ -7,7 +9,9 @@ import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
 import useDeleteLeague from "@feature/search/sleeper/hooks/useDeleteLeague";
 import useGetUserLeaguesSleeper from "@feature/search/sleeper/hooks/useGetUserLeaguesSleeper";
+import { setSubmit } from "@feature/search/sleeper/sleeperSearchSlice";
 import type { SleeperSearchProps } from "@feature/search/sleeper/types";
+
 
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 
@@ -43,7 +47,9 @@ export default function SleeperLeaguesList({
 }: SleeperSearchProps) {
     const navigate = useNavigate();
 
-    const username = useAppSelector((state) => state.authReducer.username);
+    const dispatch = useDispatch();
+
+    const username = useAppSelector((state) => state.auth.username);
 
     const { leagues, loading, error } = useGetUserLeaguesSleeper(searchText, season);
     const { data: user_id } = useSuspenseQuery({
@@ -86,6 +92,8 @@ export default function SleeperLeaguesList({
     };
 
     const handleBack = async () => {
+        dispatch(setSubmit(false));
+
         navigate({
             to: '/',
             search: {
