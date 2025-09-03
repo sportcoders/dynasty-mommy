@@ -1,3 +1,4 @@
+// -------------------- Imports --------------------
 import {
     Box,
     Button,
@@ -9,11 +10,13 @@ import {
     Typography,
 } from "@mui/material";
 
-import type { SleeperSearchComponentProps } from "./SleeperSearch";
+import type { SleeperSearchComponentProps } from "@feature/search/components/SleeperSearch";
+
 import { useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { Route as LeagueRoute } from "@routes/leagues.$leagueId";
+
 import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 
@@ -21,10 +24,13 @@ import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSle
 import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
 
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
+
 import { useAppSelector } from "@app/hooks";
 
-import useDeleteLeague from "../hooks/useDeleteLeague";
+import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
+
 import { sleeper_getUser } from "@services/sleeper";
+
 /**
  * Displays a list of Sleeper leagues that match the current search criteria.
  *
@@ -58,11 +64,7 @@ export default function SleeperLeaguesList({
 
     const router = useRouter();
 
-    /**
-     * Navigates the user to a given league details page.
-     *
-     * @param id - The league ID to navigate to.
-     */
+    // -------------------- Handlers --------------------
     const handleNavigateToLeague = (id: string) => {
         router.navigate({
             to: LeagueRoute.to,
@@ -70,12 +72,6 @@ export default function SleeperLeaguesList({
         });
     };
 
-    /**
-     * Saves a league for the logged-in user.
-     *
-     * @param league_id - The league ID to save.
-     * @returns Whether the save was successful.
-     */
     const saveLeague = async (league_id: string) => {
         try {
             saveTeamMutate.mutate({ league_id, user_id: user_id! });
@@ -85,12 +81,6 @@ export default function SleeperLeaguesList({
         }
     };
 
-    /**
-     * Deletes a league from the logged-in user's saved list.
-     *
-     * @param league_id - The league ID to delete.
-     * @returns Whether the delete was successful.
-     */
     const handleDeleteLeague = async (league_id: string) => {
         deleteLeague.mutate({ platform: "sleeper", league_id });
         return deleteLeague.isSuccess;
@@ -102,6 +92,7 @@ export default function SleeperLeaguesList({
         return <Snackbar open={!!error} message={error} />;
     }
 
+    // -------------------- Render --------------------
     return (
         <Paper
             elevation={3}

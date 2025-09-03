@@ -11,9 +11,11 @@ import {
     Typography,
 } from "@mui/material";
 
+import type { SleeperSearchComponentProps } from "@feature/search/components/SleeperSearch";
+
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
+
 import { useNotification } from "@hooks/useNotification";
-import type { SleeperSearchComponentProps } from "./SleeperSearch";
 
 /**
  * A form component for searching Sleeper leagues by **Username** or **League ID**.

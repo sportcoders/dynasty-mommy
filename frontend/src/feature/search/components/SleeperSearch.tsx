@@ -4,8 +4,9 @@ import { Stack, Typography } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 
 import useGetLeagueSleeper from "@feature/search/hooks/useGetLeagueSleeper";
-import SleeperLeaguesList from "./SleeperLeaguesList";
-import SleeperSearchForm from "./SleeperSearchForm";
+
+import SleeperLeaguesList from "@feature/search/components/SleeperLeaguesList";
+import SleeperSearchForm from "@feature/search/components/SleeperSearchForm";
 
 // -------------------- Types --------------------
 /**
@@ -45,7 +46,6 @@ export default function SleeperSearch({
   searchText?: string;
   submit?: boolean;
 }) {
-  // -------------------- Local state --------------------
   const [searchType, setSearchType] = useState<SleeperSearchTypeOptions>(initType);
   const [season, setSeasonState] = useState<string>(initSeason);
   const [searchText, setSearchText] = useState(initText);
