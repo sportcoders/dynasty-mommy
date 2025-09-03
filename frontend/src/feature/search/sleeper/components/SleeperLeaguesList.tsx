@@ -97,10 +97,10 @@ export default function SleeperLeaguesList({
         navigate({
             to: '/',
             search: {
-                submit: false,
                 searchText,
-                season,
                 searchType,
+                season,
+                submit: false,
             }
         });
     };

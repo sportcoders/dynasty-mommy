@@ -116,10 +116,11 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
         router.navigate({
             to: "/",
             search: {
-                submit: false,
                 searchText: "",
-                season: "2025", // or default year
-                searchType: "Username", // or default type
+                searchType: "Username",
+                season: "2025",
+                submit: false,
+
             },
         });
     };

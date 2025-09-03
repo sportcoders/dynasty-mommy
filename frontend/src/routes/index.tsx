@@ -10,8 +10,8 @@ import Home from '@pages/HomePage';
 import { createFileRoute } from '@tanstack/react-router';
 
 const sleeperSearchSchema = z.object({
-    searchType: z.enum(["Username", "League ID"]).default("Username"),
     searchText: z.string().default(""),
+    searchType: z.enum(["Username", "League ID"]).default("Username"),
     season: z
         .union([z.string(), z.number()])
         .transform((val) => String(val)) // normalize to string
