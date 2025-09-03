@@ -1,10 +1,9 @@
 // -------------------- Imports --------------------
-import {
-  Stack,
-  Typography,
-} from "@mui/material";
+import { useState } from "react";
+import { Stack, Typography } from "@mui/material";
+import { useNavigate } from "@tanstack/react-router";
 
-import useSleeperSearchParams from "@feature/search/hooks/useSleeperSearchParams";
+import useGetLeagueSleeper from "@feature/search/hooks/useGetLeagueSleeper";
 import SleeperLeaguesList from "./SleeperLeaguesList";
 import SleeperSearchForm from "./SleeperSearchForm";
 
@@ -12,8 +11,10 @@ import SleeperSearchForm from "./SleeperSearchForm";
 /**
  * Props shared between SleeperSearch sub-components.
  */
+type SleeperSearchTypeOptions = "Username" | "League ID";
+
 export type SleeperSearchComponentProps = {
-  searchType: string;
+  searchType: SleeperSearchTypeOptions;
   season: string;
   searchText: string;
   validParams: boolean;
@@ -22,33 +23,93 @@ export type SleeperSearchComponentProps = {
   handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checkValidParams: () => void;
   setParamsFalse: () => void;
-  searchByLeagueIdSuccess?: boolean;
   handleLeagueSearch?: () => Promise<boolean>;
 };
 
 /**
  * Top-level component that manages the Sleeper League Search feature.
  *
- * It switches between the **SleeperAccount** form (input stage)
- * and the **SleeperLeagues** results view based on state.
+ * It switches between the **SleeperSearchForm** (input stage)
+ * and the **SleeperLeaguesList** results view based on state.
  *
  * @returns The rendered Sleeper League Search interface.
  */
-export default function SleeperSearch({ season: initSeason = '2025', searchType: initType = "Username", searchText: initText = '', submit = false }: { season?: string, searchType?: string, searchText?: string, submit?: boolean; }) {
-  const {
-    searchType,
-    season,
-    searchText,
-    handleTextChange,
-    setSeason,
-    handleSearchTypeChange,
-    setParamsFalse,
-    checkValidParams,
-    handleLeagueSearch,
-  } = useSleeperSearchParams({ initSeason, initType, initText });
+export default function SleeperSearch({
+  season: initSeason = "2025",
+  searchType: initType = "Username",
+  searchText: initText = "",
+  submit = false,
+}: {
+  season?: string;
+  searchType?: SleeperSearchTypeOptions;
+  searchText?: string;
+  submit?: boolean;
+}) {
+  // -------------------- Local state --------------------
+  const [searchType, setSearchType] = useState<SleeperSearchTypeOptions>(initType);
+  const [season, setSeasonState] = useState<string>(initSeason);
+  const [searchText, setSearchText] = useState(initText);
 
-  const showLeagues = searchType == "Username" && !!season && !!searchText && submit;
+  const navigate = useNavigate();
 
+  const { refetch } = useGetLeagueSleeper(searchType !== "Username" ? searchText : "");
+
+  // -------------------- Handlers --------------------
+  const handleLeagueSearch = async (): Promise<boolean> => {
+    const result = await refetch();
+    if (result?.data) {
+      navigate({ to: `/leagues/${searchText}` });
+      return true;
+    }
+    return false;
+  };
+
+  const handleSearchTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    if (value === "Username" || value === "League ID") {
+      setSearchType(value);
+    }
+  };
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value);
+  };
+
+  const checkValidParams = () => {
+    if (season && searchText) {
+      navigate({
+        to: `/`,
+        search: {
+          submit: true,
+          searchText,
+          season: String(season),
+          searchType,
+        },
+      });
+    }
+  };
+
+  const setParamsFalse = () => {
+    navigate({
+      to: `/`,
+      search: (prev) => ({ ...prev, submit: false }),
+    });
+  };
+
+  const handleSeasonChange = (newSeason: string) => {
+    navigate({
+      to: `/`,
+      search: (prev) => ({ ...prev, season: String(newSeason) }),
+    });
+    setSeasonState(newSeason);
+  };
+
+  const validParams = Boolean(season && searchText);
+  const showLeagues = searchType === "Username" && validParams && submit;
+
+  // -------------------- Render --------------------
   return (
     <Stack
       spacing={4}
@@ -64,32 +125,32 @@ export default function SleeperSearch({ season: initSeason = '2025', searchType:
         Sleeper League Search
       </Typography>
 
-      {showLeagues ?
+      {showLeagues ? (
         <SleeperLeaguesList
           searchType={searchType}
           season={season}
           searchText={searchText}
-          validParams={submit}
+          validParams={validParams}
           handleTextChange={handleTextChange}
-          setSeason={setSeason}
+          setSeason={handleSeasonChange}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
           setParamsFalse={setParamsFalse}
         />
-        :
+      ) : (
         <SleeperSearchForm
           searchType={searchType}
           season={season}
           searchText={searchText}
-          validParams={submit}
+          validParams={validParams}
           handleTextChange={handleTextChange}
-          setSeason={setSeason}
+          setSeason={handleSeasonChange}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
           setParamsFalse={setParamsFalse}
           handleLeagueSearch={handleLeagueSearch}
         />
-      }
+      )}
     </Stack>
   );
 }
