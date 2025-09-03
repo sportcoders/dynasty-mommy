@@ -1,3 +1,4 @@
+// -------------------- Imports --------------------
 import {
     Box,
     Button,
@@ -10,15 +11,10 @@ import {
     Typography,
 } from "@mui/material";
 
-
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
-
-
-
 import { useNotification } from "@hooks/useNotification";
-
-
 import type { SleeperSearchComponentProps } from "./SleeperSearch";
+
 /**
  * A form component for searching Sleeper leagues by **Username** or **League ID**.
  *
@@ -40,11 +36,7 @@ export default function SleeperSearchForm({
 }: SleeperSearchComponentProps) {
     const { showSuccess, showError } = useNotification();
 
-    /**
-     * Handles form submission and executes the correct search action.
-     *
-     * @param e - The form submit event.
-     */
+    // -------------------- Handlers --------------------
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -60,6 +52,7 @@ export default function SleeperSearchForm({
         }
     };
 
+    // -------------------- Render --------------------
     return (
         <Paper
             elevation={3}
