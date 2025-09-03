@@ -7,7 +7,7 @@ import { setSeason, setSearchText, setSearchType, setSubmit } from '@feature/sea
 
 import Home from '@pages/HomePage';
 
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 const sleeperSearchSchema = z.object({
     searchText: z.string().default(""),
@@ -26,10 +26,60 @@ export const Route = createFileRoute('/')({
         // Sync URL params to Redux before component loads
         const { season, searchText, searchType, submit } = search;
 
-        if (season) store.dispatch(setSeason(season));
-        if (searchText) store.dispatch(setSearchText(searchText));
-        if (searchType) store.dispatch(setSearchType(searchType));
-        if (submit !== undefined) store.dispatch(setSubmit(submit));
+        // Search Type validation
+        const validSearchTypes = ["Username", "League ID"];
+        const isValidSearchType = validSearchTypes.includes(searchType);
+        const validSearchType = isValidSearchType ? searchType : "Username";
+
+        if (!isValidSearchType) {
+            throw redirect({
+                to: '/',
+                search: {
+                    searchText,
+                    searchType: validSearchType,
+                    season,
+                    submit
+                }
+            });
+        }
+
+        // Season validation
+        const currentYear = new Date().getFullYear();
+        const seasonNumber = Number(season);
+        const isValidSeason = seasonNumber >= 2017 && seasonNumber <= currentYear;
+        const validSeason = isValidSeason ? season : String(currentYear);
+
+        if (!isValidSeason) {
+            throw redirect({
+                to: '/',
+                search: {
+                    searchText,
+                    searchType: validSearchType,
+                    season: validSeason,
+                    submit
+                }
+            });
+        }
+
+        // Submit validation
+        const isValid = Boolean(searchText && validSearchType && validSeason);
+
+        if (submit && !isValid) {
+            throw redirect({
+                to: '/',
+                search: {
+                    searchText,
+                    searchType: validSearchType,
+                    season: validSeason,
+                    submit: false
+                }
+            });
+        }
+
+        store.dispatch(setSearchText(searchText));
+        store.dispatch(setSearchType(validSearchType));
+        store.dispatch(setSeason(validSeason));
+        store.dispatch(setSubmit(submit));
 
         return { search };
     },
