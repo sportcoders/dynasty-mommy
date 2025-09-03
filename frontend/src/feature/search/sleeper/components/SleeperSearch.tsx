@@ -62,10 +62,10 @@ export default function SleeperSearch() {
       navigate({
         to: `/`,
         search: {
-          submit: true,
           searchText,
-          season: String(season),
           searchType,
+          season: String(season),
+          submit: true,
         },
       });
     }
