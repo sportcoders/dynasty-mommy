@@ -1,4 +1,16 @@
 // -------------------- Imports --------------------
+import { useAppSelector } from "@app/hooks";
+
+import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
+import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
+
+import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
+import useDeleteLeague from "@feature/search/sleeper/hooks/useDeleteLeague";
+import useGetUserLeaguesSleeper from "@feature/search/sleeper/hooks/useGetUserLeaguesSleeper";
+import type { SleeperSearchProps } from "@feature/search/sleeper/types";
+
+import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
+
 import {
     Box,
     Button,
@@ -10,31 +22,17 @@ import {
     Typography,
 } from "@mui/material";
 
-import type { SleeperSearchComponentProps } from "@feature/search/components/SleeperSearch";
-
-import { useRouter } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-
 import { Route as LeagueRoute } from "@routes/leagues.$leagueId";
 
-import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
-import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
-
-import useGetUserLeaguesSleeper from "@feature/search/hooks/useGetUserLeaguesSleeper";
-import useSaveSleeperLeague from "@feature/leagues/hooks/useSaveTeam";
-
-import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
-
-import { useAppSelector } from "@app/hooks";
-
-import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
-
 import { sleeper_getUser } from "@services/sleeper";
+
+import { useRouter, useNavigate } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 /**
  * Displays a list of Sleeper leagues that match the current search criteria.
  *
- * @param props - {@link SleeperSearchComponentProps}
+ * @param props - {@link SleeperSearchProps}
  * @returns The rendered leagues list with options to save/delete.
  */
 export default function SleeperLeaguesList({
@@ -42,8 +40,9 @@ export default function SleeperLeaguesList({
     season,
     searchText,
     setSeason,
-    setParamsFalse: back,
-}: SleeperSearchComponentProps) {
+}: SleeperSearchProps) {
+    const navigate = useNavigate();
+
     const username = useAppSelector((state) => state.authReducer.username);
 
     const { leagues, loading, error } = useGetUserLeaguesSleeper(searchText, season);
@@ -86,9 +85,23 @@ export default function SleeperLeaguesList({
         return deleteLeague.isSuccess;
     };
 
+    const handleBack = async () => {
+        navigate({
+            to: '/',
+            search: {
+                submit: false,
+                searchText,
+                season,
+                searchType,
+            }
+        });
+    };
+
     if (loading) return <CircularProgress />;
     if (error) {
-        back();
+        navigate({
+            to: '/',
+        });
         return <Snackbar open={!!error} message={error} />;
     }
 
@@ -118,7 +131,7 @@ export default function SleeperLeaguesList({
             >
                 <Button
                     variant="outlined"
-                    onClick={back}
+                    onClick={handleBack}
                     color="primary"
                     sx={{
                         height: "56px",

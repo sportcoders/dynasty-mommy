@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
 import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
 import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
-import useSleeperSearchParams from '@feature/search/hooks/useSleeperSearchParams';
+import useSleeperSearchParams from '@feature/search/sleeper/hooks/useSleeperSearchParams';
 
 
 const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {

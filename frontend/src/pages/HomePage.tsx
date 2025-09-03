@@ -1,4 +1,4 @@
-import SleeperSearch from "@feature/search/components/SleeperSearch";
+import SleeperSearch from "@feature/search/sleeper/components/SleeperSearch";
 import { Route as SearchRoute } from '@routes/index';
 import { getRouteApi } from "@tanstack/react-router";
 export default function Home() {

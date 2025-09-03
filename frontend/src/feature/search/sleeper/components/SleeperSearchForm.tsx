@@ -1,4 +1,10 @@
 // -------------------- Imports --------------------
+import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
+
+import type { SleeperSearchProps } from "@feature/search/sleeper/types";
+
+import { useNotification } from "@hooks/useNotification";
+
 import {
     Box,
     Button,
@@ -11,19 +17,13 @@ import {
     Typography,
 } from "@mui/material";
 
-import type { SleeperSearchComponentProps } from "@feature/search/components/SleeperSearch";
-
-import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
-
-import { useNotification } from "@hooks/useNotification";
-
 /**
  * A form component for searching Sleeper leagues by **Username** or **League ID**.
  *
  * - If searching by `League ID`, it will attempt direct navigation to the league.
  * - If searching by `Username`, the user must also select a season.
  *
- * @param props - {@link SleeperSearchComponentProps}
+ * @param props - {@link SleeperSearchProps}
  * @returns The rendered league search form.
  */
 export default function SleeperSearchForm({
@@ -35,7 +35,7 @@ export default function SleeperSearchForm({
     handleSearchTypeChange,
     checkValidParams,
     handleLeagueSearch,
-}: SleeperSearchComponentProps) {
+}: SleeperSearchProps) {
     const { showSuccess, showError } = useNotification();
 
     // -------------------- Handlers --------------------

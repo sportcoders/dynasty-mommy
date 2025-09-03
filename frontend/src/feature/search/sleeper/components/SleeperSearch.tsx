@@ -1,31 +1,14 @@
 // -------------------- Imports --------------------
 import { useState } from "react";
+
+import SleeperLeaguesList from "@feature/search/sleeper/components/SleeperLeaguesList";
+import SleeperSearchForm from "@feature/search/sleeper/components/SleeperSearchForm";
+import useGetLeagueSleeper from "@feature/search/sleeper/hooks/useGetLeagueSleeper";
+import type { SleeperSearchTypeOptions } from "@feature/search/sleeper/types";
+
 import { Stack, Typography } from "@mui/material";
+
 import { useNavigate } from "@tanstack/react-router";
-
-import useGetLeagueSleeper from "@feature/search/hooks/useGetLeagueSleeper";
-
-import SleeperLeaguesList from "@feature/search/components/SleeperLeaguesList";
-import SleeperSearchForm from "@feature/search/components/SleeperSearchForm";
-
-// -------------------- Types --------------------
-/**
- * Props shared between SleeperSearch sub-components.
- */
-type SleeperSearchTypeOptions = "Username" | "League ID";
-
-export type SleeperSearchComponentProps = {
-  searchType: SleeperSearchTypeOptions;
-  season: string;
-  searchText: string;
-  validParams: boolean;
-  handleTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  setSeason: (s: string) => void;
-  handleSearchTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  checkValidParams: () => void;
-  setParamsFalse: () => void;
-  handleLeagueSearch?: () => Promise<boolean>;
-};
 
 /**
  * Top-level component that manages the Sleeper League Search feature.
@@ -70,6 +53,7 @@ export default function SleeperSearch({
     const value = event.target.value;
     if (value === "Username" || value === "League ID") {
       setSearchType(value);
+      setSearchText("");
     }
   };
 
@@ -89,13 +73,6 @@ export default function SleeperSearch({
         },
       });
     }
-  };
-
-  const setParamsFalse = () => {
-    navigate({
-      to: `/`,
-      search: (prev) => ({ ...prev, submit: false }),
-    });
   };
 
   const handleSeasonChange = (newSeason: string) => {
@@ -131,11 +108,9 @@ export default function SleeperSearch({
           season={season}
           searchText={searchText}
           validParams={validParams}
-          handleTextChange={handleTextChange}
           setSeason={handleSeasonChange}
-          handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
-          setParamsFalse={setParamsFalse}
+        // setParamsFalse={setParamsFalse}
         />
       ) : (
         <SleeperSearchForm
@@ -147,7 +122,6 @@ export default function SleeperSearch({
           setSeason={handleSeasonChange}
           handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
-          setParamsFalse={setParamsFalse}
           handleLeagueSearch={handleLeagueSearch}
         />
       )}
