@@ -10,7 +10,9 @@ import { setSeason, setSearchText, setSearchType, setSubmit } from "@feature/sea
 
 import { Stack, Typography } from "@mui/material";
 
-import { useNavigate } from "@tanstack/react-router";
+import { Route as SearchRoute } from '@routes/index';
+
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 
 /**
  * Top-level component that manages the Sleeper League Search feature.
@@ -23,8 +25,16 @@ import { useNavigate } from "@tanstack/react-router";
 export default function SleeperSearch() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const route = getRouteApi(SearchRoute.id);
+
+  const { season: initSeason, searchText: initText, searchType: initType, submit: initSubmit } = route.useSearch();
 
   const { season, searchText, searchType, submit } = useAppSelector((state) => state.sleeperSearch);
+
+  dispatch(setSeason(initSeason));
+  dispatch(setSearchText(initText));
+  dispatch(setSearchType(initType));
+  dispatch(setSubmit(initSubmit));
 
   const { refetch } = useGetLeagueSleeper(searchType !== "Username" ? searchText : "");
 
