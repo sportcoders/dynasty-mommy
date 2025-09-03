@@ -35,7 +35,7 @@ import useSaveSleeperLeague from "../hooks/useSaveTeam";
 import useSleeperPlayers from "../hooks/useSleeperPlayers";
 import useIsUserLeague from "@feature/leagues/hooks/useIsUserLeague";
 import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
-import useDeleteLeague from "@feature/search/hooks/useDeleteLeague";
+import useDeleteLeague from "@feature/search/sleeper/hooks/useDeleteLeague";
 
 // Types
 import type { League } from "@services/api/user";
@@ -108,7 +108,7 @@ export default function SleeperLeague({
 }: SleeperLeaguesHomePageProps) {
   const theme = useTheme();
 
-  const username = useAppSelector((state) => state.authReducer.username);
+  const username = useAppSelector((state) => state.auth.username);
   const navigate = useNavigate({ from: `/leagues/$leagueId` });
 
   // State

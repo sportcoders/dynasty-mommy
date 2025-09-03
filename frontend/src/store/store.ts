@@ -1,6 +1,8 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+// -------------------- Imports --------------------
+import storage from "redux-persist/lib/storage";
 import {
-    persistStore, persistReducer,
+    persistStore,
+    persistReducer,
     FLUSH,
     REHYDRATE,
     PAUSE,
@@ -8,22 +10,28 @@ import {
     PURGE,
     REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+
+
 import authReducer from "@feature/auth/authSlice";
+import sleeperSearchReducer from "@feature/search/sleeper/sleeperSearchSlice";
 
 const persistConfig = {
     key: "root",
     storage,
+    whitelist: ["auth"],
 };
-//TODO: use so store only has one reducer
+
 const rootReducer = combineReducers({
     auth: authReducer,
+    sleeperSearch: sleeperSearchReducer,
 });
-const persistedReducer = persistReducer(persistConfig, authReducer);
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 export const store = configureStore({
-    reducer: {
-        authReducer: persistedReducer
-    },
+    reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
@@ -31,6 +39,7 @@ export const store = configureStore({
             },
         }),
 });
+
 export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
