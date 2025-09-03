@@ -7,9 +7,9 @@ export type SleeperSearchProps = {
     season: string;
     searchText: string;
     validParams: boolean;
-    handleTextChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     setSeason: (s: string) => void;
-    handleSearchTypeChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     checkValidParams: () => void;
     handleLeagueSearch?: () => Promise<boolean>;
+    handleSearchTypeChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleTextChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };

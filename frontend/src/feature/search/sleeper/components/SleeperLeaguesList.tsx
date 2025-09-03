@@ -36,9 +36,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
  * @returns The rendered leagues list with options to save/delete.
  */
 export default function SleeperLeaguesList({
-    searchType,
     season,
     searchText,
+    searchType,
     setSeason,
 }: SleeperSearchProps) {
     const navigate = useNavigate();

@@ -27,14 +27,14 @@ import {
  * @returns The rendered league search form.
  */
 export default function SleeperSearchForm({
-    searchType,
     season,
     searchText,
-    handleTextChange,
+    searchType,
     setSeason,
-    handleSearchTypeChange,
     checkValidParams,
     handleLeagueSearch,
+    handleSearchTypeChange,
+    handleTextChange,
 }: SleeperSearchProps) {
     const { showSuccess, showError } = useNotification();
 

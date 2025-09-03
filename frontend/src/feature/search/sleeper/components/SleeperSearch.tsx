@@ -104,25 +104,24 @@ export default function SleeperSearch({
 
       {showLeagues ? (
         <SleeperLeaguesList
-          searchType={searchType}
           season={season}
           searchText={searchText}
+          searchType={searchType}
           validParams={validParams}
           setSeason={handleSeasonChange}
           checkValidParams={checkValidParams}
-        // setParamsFalse={setParamsFalse}
         />
       ) : (
         <SleeperSearchForm
-          searchType={searchType}
           season={season}
           searchText={searchText}
+          searchType={searchType}
           validParams={validParams}
-          handleTextChange={handleTextChange}
           setSeason={handleSeasonChange}
-          handleSearchTypeChange={handleSearchTypeChange}
           checkValidParams={checkValidParams}
           handleLeagueSearch={handleLeagueSearch}
+          handleSearchTypeChange={handleSearchTypeChange}
+          handleTextChange={handleTextChange}
         />
       )}
     </Stack>
