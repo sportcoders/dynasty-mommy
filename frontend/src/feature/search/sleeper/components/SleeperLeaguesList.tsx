@@ -120,10 +120,13 @@ export default function SleeperLeaguesList({
             sx={{
                 borderRadius: 3,
                 m: 2,
+                height: 600,
                 maxWidth: 800,
                 mx: "auto",
                 border: "1px solid",
                 borderColor: "divider",
+                display: "flex",
+                flexDirection: "column"
             }}
         >
             {/* Search/Filter Section */}
@@ -135,6 +138,7 @@ export default function SleeperLeaguesList({
                     gap: 2,
                     borderBottom: "1px solid",
                     borderColor: "divider",
+                    height: "auto"
                 }}
             >
                 <Button
@@ -186,7 +190,18 @@ export default function SleeperLeaguesList({
                     <Typography variant="body1">No Leagues Found</Typography>
                 </Box>
             ) : (
-                <Box sx={{ p: 2 }}>
+                <Box sx={(theme) => ({
+                    p: 2,
+                    overflowY: "auto",
+                    height: "auto",
+                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.paper}`,
+                    '&::-webkit-scrollbar-track': {
+                        backgroundColor: theme.palette.background.paper,
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: theme.palette.primary.main,
+                    },
+                })}>
                     <DisplayLeaguesList
                         onLeagueClick={handleNavigateToLeague}
                         displayAvatar={true}
