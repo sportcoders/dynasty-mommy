@@ -3,103 +3,47 @@ import { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '@app/hooks';
 
-import { DisplayLeaguesList } from '@components/DisplayLeaguesList';
-
 import { logout } from '@feature/auth/authSlice';
-import { useGetSavedLeaguesNavBar } from '@feature/navbar/hooks/useGetSavedLeaguesNavBar';
+import { DarkModeToggle } from '@feature/navbar/components/DarkModeToggle';
+import { MyLeaguesList } from '@feature/navbar/components/MyLeaguesList';
 import { resetSearch } from "@feature/search/sleeper/sleeperSearchSlice";
 
-import { Menu, Person, Login, Logout, Search, DarkMode, LightMode, SportsBasketball, ExpandMore, ExpandLess } from '@mui/icons-material';
+import {
+    ExpandMore,
+    ExpandLess,
+    Login,
+    Logout,
+    Menu,
+    Person,
+    Search,
+    SportsBasketball,
+} from '@mui/icons-material';
 
 import {
     Box,
     Button,
-    CircularProgress,
-    Collapse,
     Drawer,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     Typography,
-    useColorScheme,
 } from '@mui/material';
-
-import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
 
 import { Link, useLocation, useRouter } from '@tanstack/react-router';
 
-
-const MyLeaguesNestedList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
-    const { leagues, loading, error } = useGetSavedLeaguesNavBar();
-
-    const router = useRouter();
-
-    const handleNavigateToLeague = (id: string) => {
-        router.navigate({
-            to: LeagueRoute.to,
-            params: { leagueId: id },
-        });
-    };
-
-    if (!leagues || error) return null;
-
-    return (
-        <Collapse in={myLeaguesOpen} timeout="auto" unmountOnExit>
-            <Box sx={{ ml: 5, }}>
-                {loading ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 50 }}>
-                    <CircularProgress />
-                </Box> :
-                    <DisplayLeaguesList leagues={leagues}
-                        onLeagueClick={handleNavigateToLeague}
-                        displayAvatar={false}
-                        loggedIn={true}
-                        stylingOptions={{
-                            background_color: 'transparent',
-                            fontSize: '1rem',
-                            fontWeight: '500',
-                            padding: '0',
-                            border_radius: '16px',
-                            text_color: 'primary.main'
-                        }}
-                    />
-                }
-            </Box>
-        </Collapse>
-    );
-};
-
-const DarkModeToggle = () => {
-    const { mode, setMode } = useColorScheme();
-
-    if (!mode) return null;
-
-    const toggleMode = () => {
-        setMode(mode === 'light' ? 'dark' : 'light');
-    };
-
-    return (
-        <ListItem sx={{
-            borderRadius: '16px',
-            cursor: 'pointer',
-            color: 'primary.main',
-        }}
-            onClick={toggleMode}>
-            <ListItemIcon>{mode == "dark" ? <LightMode /> : <DarkMode />}</ListItemIcon>
-            <ListItemText
-                primary="Change Mode"
-                sx={{
-                    '& .MuiListItemText-primary': {
-                        fontWeight: 500,
-                    }
-                }}
-            />
-
-        </ListItem>
-    );
-};
-
-export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (new_val: boolean) => void; }) {
+/**
+ * Navigation bar component with collapsible drawer and user authentication features.
+ * Provides navigation to different sections of the application, user login/logout functionality,
+ * and a collapsible "My Leagues" section for authenticated users.
+ * 
+ * @component
+ * @param props - The component props
+ * @param props.drawerOpen - Controls whether the navigation drawer is open or closed
+ * @param props.setDrawerOpen - Callback function to update the drawer open state
+ * @returns JSX element containing the navigation drawer and fixed header buttons
+ */
+export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean, setDrawerOpen: (newVal: boolean) => void; }) {
     const router = useRouter();
 
     const [myLeaguesOpen, setMyLeaguesOpen] = useState<boolean>(false);
@@ -110,6 +54,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
 
     const location = useLocation();
 
+    // -------------------- Handlers --------------------
     const handleFindLeagueClick = () => {
         dispatch(resetSearch());
 
@@ -128,19 +73,23 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     const handleSignOut = () => {
         dispatch(logout());
     };
+
+    const handleToggleDrawer = () => {
+        setDrawerOpen(!drawerOpen);
+    };
+
+    // -------------------- Navigation Configuration --------------------
     const drawerItems = [
         { text: 'Find League', icon: <Search />, link: '/', onClick: handleFindLeagueClick },
     ];
 
-    const toggleDrawer = () => {
-        setDrawerOpen(!drawerOpen);
-    };
     return (
         <>
+            {/* Navigation Drawer */}
             <Drawer
                 anchor="left"
                 open={drawerOpen}
-                onClose={toggleDrawer}
+                onClose={handleToggleDrawer}
                 variant='persistent'
                 sx={{
                     '& .MuiDrawer-paper': {
@@ -151,13 +100,14 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     }
                 }}
             >
+                {/* Drawer Header - Menu Toggle & App Title */}
                 <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 2
                 }}>
                     <Button
-                        onClick={toggleDrawer}
+                        onClick={handleToggleDrawer}
                         sx={{
                             minWidth: 'auto',
                             color: 'primary',
@@ -182,8 +132,12 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         </Link>
                     </Typography>
                 </Box>
+
+                {/* Drawer Content Container */}
                 <Box sx={{ px: '0.75rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    {/* Main Navigation List */}
                     <List sx={{ flexGrow: 1 }}>
+                        {/* Static Navigation Items */}
                         {drawerItems.map((item, index) => (
                             <ListItem key={index}
                                 sx={{
@@ -208,8 +162,12 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                                 />
                             </ListItem>
                         ))}
+
+                        {/* Authentication-Based Navigation */}
                         {username ?
+                            /* Authenticated User Section */
                             <>
+                                {/* My Leagues Expandable Section */}
                                 <ListItem component={Button} onClick={() => setMyLeaguesOpen(!myLeaguesOpen)} sx={{
                                     borderRadius: '16px',
                                     cursor: 'pointer',
@@ -228,8 +186,10 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
 
                                 </ListItem>
 
-                                {myLeaguesOpen && <MyLeaguesNestedList myLeaguesOpen={myLeaguesOpen} />}
+                                {/* Collapsible My Leagues List */}
+                                {myLeaguesOpen && <MyLeaguesList myLeaguesOpen={myLeaguesOpen} />}
                             </> :
+                            /* Unauthenticated User Section - Login Link */
                             <ListItem sx={{
                                 cursor: 'pointer',
                                 color: 'primary.main',
@@ -250,12 +210,17 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                             </ListItem>
                         }
                     </List>
+
+                    {/* Drawer Footer - Dark Mode Toggle */}
                     <Box sx={{ pb: 1 }}>
                         <DarkModeToggle />
                     </Box>
                 </Box>
             </Drawer >
 
+            {/* Fixed Header Elements */}
+
+            {/* Fixed Menu Button - Top Left */}
             <Box sx={{
                 position: 'fixed',
                 top: '0.75rem',
@@ -267,7 +232,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                 gap: 2,
             }}>
                 <Button
-                    onClick={toggleDrawer}
+                    onClick={handleToggleDrawer}
                     sx={{
                         p: 0,
                         minWidth: 'auto',
@@ -279,9 +244,9 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                 >
                     <Menu />
                 </Button>
-
             </Box>
 
+            {/* Fixed Authentication Section - Top Right */}
             <Box sx={{
                 position: 'fixed',
                 top: '0.75rem',
@@ -292,6 +257,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                 zIndex: 1000,
             }}>
                 {!username ? (
+                    /* Unauthenticated State - Sign In Button */
                     <Button
                         component={Link}
                         to='/login'
@@ -314,9 +280,10 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     >
                         Sign In
                     </Button>
-
                 ) : (
+                    /* Authenticated State - Username Display & Logout Button */
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        {/* Username Display */}
                         <Typography
                             variant="body1"
                             sx={{
@@ -327,6 +294,8 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                         >
                             {username}
                         </Typography>
+
+                        {/* Logout Button */}
                         <Button
                             variant="outlined"
                             size="small"
@@ -354,3 +323,4 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
         </>
     );
 }
+
