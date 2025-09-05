@@ -258,7 +258,6 @@ const TransactionInWeekDisplay = ({
     }, [transactions, filterBy, teamFilter]);
 
     if (loading) return <AccordionSkeleton />;
-    // ===== RENDER =====
     return (
         <CardContent>
             {/* ===== FILTER CONTROLS ===== */}
@@ -447,13 +446,11 @@ const DisplayAddDrop = ({
     transaction: Transaction;
     team: TeamInfo | undefined;
 }) => {
-    // ===== DATA FETCHING =====
     const { players, loading } = useGetPlayersInTransaction(transaction);
 
     if (!team) return;
 
     if (loading || !players) return <CircularProgress />;
-    // ===== RENDER =====
     return (
         <Box>
             <Grid sx={{ p: 2, pt: 0 }}>
@@ -555,14 +552,12 @@ const DisplayTrades = ({
     teams: TeamInfo[] | undefined;
 }) => {
 
-    // ===== DATA FETCHING =====
     const { players: playerMap, loading, isEnabled } = useGetPlayersInTransaction(transaction);
 
 
     if (!teams) return;
 
 
-    // ===== RENDER =====
     return (
         <TableContainer component={Paper}>
             <Table>
