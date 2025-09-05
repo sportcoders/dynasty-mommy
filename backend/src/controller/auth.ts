@@ -190,7 +190,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 }
 
 const YAHOO_REDIRECT_URI = "https://dynasty-mommy.onrender.com/auth/yahoo/callback";
-async function getYahooToken(type: "refresh" | "access", data: string): Promise<{ refreshToken: string, accessToken: string; }> {
+async function getYahooToken(type: "refresh" | "access", data: string): Promise<{ refresh_token: string, access_token: string; }> {
     let body = null;
     const default_yahoo_values = {
         client_id: config.CONSUMER_KEY,
@@ -234,9 +234,21 @@ export async function yahoo(req: Request, res: Response, next: NextFunction) {
 
     //getting refresh token from yahoo
     const access = await getYahooToken('refresh', code);
-    console.log(access);
     //store access token somewhere
     //getting access token from yahoo
     // const refreshedAccessToken = await getYahooToken('access', access.refreshToken);
+    const games = await fetch("https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=nfl/teams",
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${access.access_token}`,
+                // "Content-Type": "application/x-www-form-urlencoded",
+
+            }
+        }
+    );
+    console.log(games);
+    const data = await games.json();
+    console.log(games);
     res.redirect("http://localhost:5173/?platform=yahoo&loggedIn=true");
 }
