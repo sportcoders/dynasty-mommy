@@ -9,8 +9,10 @@ import { AppDataSource } from "../app";
 import { userLogin, userSignUp } from "../schemas/user";
 import UserSession from "../models/session";
 import z from "zod";
+import { XMLParser } from 'fast-xml-parser';
 
 const refreshPath = '/auth/refresh';
+const parser = new XMLParser();
 //DEFAULT COOKIE OPTIONS
 const cookieDefaults: CookieOptions = {
     sameSite: "strict",
@@ -248,7 +250,7 @@ export async function yahoo(req: Request, res: Response, next: NextFunction) {
         }
     );
     console.log(games);
-    const data = await games.json();
-    console.log(games);
+    const data = parser.parse(await games.text());
+    console.log(data);
     res.redirect("http://localhost:5173/?platform=yahoo&loggedIn=true");
 }
