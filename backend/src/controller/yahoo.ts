@@ -153,19 +153,21 @@ export async function yahoo_callback(req: ExpressRequest, res: Response, next: N
     res.redirect("http://localhost:5173/?platform=yahoo&loggedIn=true");
 }
 
-export async function get_games(req: ExpressRequest, res: Response, next: NextFunction) {
+export async function getLeagues(req: ExpressRequest, res: Response, next: NextFunction) {
     try {
         const user = req.user?.user_id;
 
         const tokens = await getTokenForUser(user);
 
-        const nba_games_endpoint = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=nba/teams";
+        const nba_games_endpoint = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=nba/leagues";
 
         const data = await api("GET", nba_games_endpoint, undefined, tokens);
+
         if (!data || Object.keys(data).length == 0) {
             res.status(HttpSuccess.OK).json({ games: {} });
         }
-        res.json({ games: data.fantasy_content.users.user.games });
+
+        res.json({ leagues: data.fantasy_content.users.user.games.game.leagues.league });
     }
     catch (e) {
         next(e);
