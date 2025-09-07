@@ -12,7 +12,7 @@ import auth_router from './routes/auth';
 import sleeper_league_router from './routes/sleeper_league';
 import yahoo_router from './routes/yahoo';
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://localhost:5173'],
     methods: ['GET', 'POST', 'OPTIONS', 'DELETE', 'PATCH'],
     credentials: true
 };

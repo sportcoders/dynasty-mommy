@@ -12,9 +12,9 @@ import UserSession from "../models/session";
 const refreshPath = '/auth/refresh';
 //DEFAULT COOKIE OPTIONS
 const cookieDefaults: CookieOptions = {
-    sameSite: "strict",
+    sameSite: config.nodeEnv == 'development' ? "none" : 'lax',
     httpOnly: true,
-    secure: false, //CHANGE TO TRUE WHEN NOT IN DEVELOPMENT
+    secure: config.nodeEnv == 'development', //CHANGE TO TRUE WHEN NOT IN DEVELOPMENT
 };
 const accessOptions: CookieOptions = {
     ...cookieDefaults,
