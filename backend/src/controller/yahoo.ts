@@ -154,13 +154,20 @@ export async function yahoo_callback(req: ExpressRequest, res: Response, next: N
 }
 
 export async function get_games(req: ExpressRequest, res: Response, next: NextFunction) {
-    const user = req.user?.user_id;
+    try {
+        const user = req.user?.user_id;
 
-    const tokens = await getTokenForUser(user);
+        const tokens = await getTokenForUser(user);
 
-    const nba_games_endpoint = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=nba/teams";
+        const nba_games_endpoint = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=nba/teams";
 
-    const data = await api("GET", nba_games_endpoint, undefined, tokens);
-
-    res.json({ games: data });
+        const data = await api("GET", nba_games_endpoint, undefined, tokens);
+        if (!data || Object.keys(data).length == 0) {
+            res.status(HttpSuccess.OK).json({ games: {} });
+        }
+        res.json({ games: data.fantasy_content.users.user.games });
+    }
+    catch (e) {
+        next(e);
+    }
 }
