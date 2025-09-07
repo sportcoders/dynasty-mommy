@@ -1,6 +1,7 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { User, UserLeagues } from "./models/user";
 import { SleeperLeague } from "./models/sleeper_league";
+import { YahooToken } from "./models/yahoo_tokens";
 
 export function createAppDataSource(url: string): DataSource {
     let options: DataSourceOptions;
@@ -29,6 +30,6 @@ export function createAppDataSource(url: string): DataSource {
             logging: true
         };
     }
-    options = { ...options, entities: [User, UserLeagues, SleeperLeague] };
+    options = { ...options, entities: [User, SleeperLeague, UserLeagues, YahooToken] };
     return new DataSource(options);
 }
