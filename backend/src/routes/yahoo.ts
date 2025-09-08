@@ -6,5 +6,6 @@ yahoo_router.route("/callback").get(yahoo_controller.yahoo_callback);
 yahoo_router.use(authenticate);
 yahoo_router.route("/oauth/start").get(yahoo_controller.request_oauth);
 yahoo_router.route("/leagues").get(yahoo_controller.getLeagues);
+yahoo_router.route("/leagues/:league_key/teams").get(yahoo_controller.getTeamsInLeague);
 
 export default yahoo_router;

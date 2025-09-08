@@ -9,6 +9,7 @@ import { AppDataSource } from "../app";
 import { YahooToken } from "../models/yahoo_tokens";
 
 const YAHOO_REDIRECT_URI = "https://dynasty-mommy.onrender.com/yahoo/callback";
+const YAHOO_API_URL = `https://fantasysports.yahooapis.com/fantasy/v2`;
 const STATE_SECRET = "yahoo_state_sign_secret";
 const parser = new XMLParser();
 
@@ -84,9 +85,9 @@ async function updateTokenForUser(user_id: string, tokens: YahooTokens) {
     await AppDataSource.getRepository(YahooToken).upsert({ ...tokens, access_token_expiry: new Date(Date.now() + (3600 * 1000)), userId: user_id }, ['userId']);
 }
 
-async function api(method: "GET" | "POST", url: string, postData: any, token: YahooTokens) {
+async function api(method: "GET" | "POST", url: string, token: YahooTokens, postData?: any,) {
 
-    const response = await fetch(url, {
+    const response = await fetch(`${YAHOO_API_URL}${url}`, {
         method: method,
         headers: {
             Authorization: `Bearer ${token.access_token}`,
@@ -107,8 +108,8 @@ async function api(method: "GET" | "POST", url: string, postData: any, token: Ya
         }
     }
     return data;
-
 }
+
 const params_from_yahoo_redirect = z.object({
     code: z.string(),
     state: z.string()
@@ -159,15 +160,40 @@ export async function getLeagues(req: ExpressRequest, res: Response, next: NextF
 
         const tokens = await getTokenForUser(user);
 
-        const nba_games_endpoint = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=nba/leagues";
+        const nba_games_endpoint = "/users;use_login=1/games;game_keys=nba/leagues";
 
-        const data = await api("GET", nba_games_endpoint, undefined, tokens);
+        const data = await api("GET", nba_games_endpoint, tokens);
 
         if (!data || Object.keys(data).length == 0) {
             res.status(HttpSuccess.OK).json({ games: {} });
         }
+        const users_leagues = data.fantasy_content.users.user.games.game.leagues.league;
 
-        res.json({ leagues: data.fantasy_content.users.user.games.game.leagues.league });
+        res.json({ leagues: Array.isArray(users_leagues) ? users_leagues : [users_leagues] });
+    }
+    catch (e) {
+        next(e);
+    }
+}
+const getTeamsInLeagueParams = z.object({
+    league_key: z.string()
+});
+export async function getTeamsInLeague(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league_key } = getTeamsInLeagueParams.parse(req.params);
+        const endpoint = `/league/${league_key}/teams`;
+
+        const user = req.user?.user_id;
+
+        const tokens = await getTokenForUser(user);
+
+        const data = await api("GET", endpoint, tokens);
+
+        const teams = data.fantasy_content.league.teams.team;
+
+        if (!data.fantasy_content.league) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
+
+        res.status(HttpSuccess.OK).json({ teams: Array.isArray(teams) ? teams : [teams] });
     }
     catch (e) {
         next(e);
