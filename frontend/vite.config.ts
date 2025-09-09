@@ -9,6 +9,22 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      // '/api': {
+      //   target: 'https://dynasty-mommy.onrender.com',
+      //   changeOrigin: true,
+      //   secure: true,
+      //   rewrite: (path) => path.replace(/^\/api/, ''),
+      // },
+      '/dm': {
+        target: 'https://dynasty-mommy.onrender.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/dm/, ''),
+      },
+    },
+  },
   plugins: [
     TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
     react(),
