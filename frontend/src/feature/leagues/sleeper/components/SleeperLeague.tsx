@@ -64,7 +64,6 @@ interface PreviousSeasonsDropDownProps {
  * @param value - The currently active tab value used to determine visibility
  * @param id - The unique identifier for this tab panel, compared against value
  * @param other - Additional props spread to the root div element
- * 
  * @returns A div element with proper ARIA attributes and conditional content rendering
  */
 const CustomTabPanel = ({ children, value, id, ...other }: TabPanelProps) => (
@@ -89,7 +88,6 @@ const CustomTabPanel = ({ children, value, id, ...other }: TabPanelProps) => (
  * @param league_id - The ID of the currently selected league/season
  * @param current_tab - The active tab to preserve when navigating between seasons
  * @param parent - Optional parent league ID to use for fetching seasons instead of league_id
- * 
  * @returns A dropdown select component with previous seasons, or null if no seasons exist
  */
 const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: PreviousSeasonsDropDownProps) => {
@@ -139,7 +137,6 @@ const PreviousSeasonsDropDown = ({ league_id, current_tab, parent }: PreviousSea
  * @param league_id - The unique identifier for the Sleeper league to display
  * @param tab - The currently active tab index (0: Rosters, 1: Transactions, 2: Other)
  * @param parent - Optional parent league ID for navigating between related seasons
- * 
  * @returns A full-page league interface with tabbed content, or loading/error states
  */
 export default function SleeperLeague({

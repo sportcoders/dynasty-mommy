@@ -1,6 +1,8 @@
+// -------------------- Imports -------------------
+import { useEffect, useState } from "react";
+
 import { sleeper_getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
 import { type TeamInfo } from "@services/sleeper";
-import { useEffect, useState } from "react";
 
 /**
  * Fetches and returns a URL for a league avatar image given its avatar ID.
@@ -59,6 +61,7 @@ export default function useGetLeagueTeamsSleeper(league_id: string) {
             if (teams)
                 teams.forEach((team) => team.avatar && URL.revokeObjectURL(team.avatar));
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [league_id]);
 
     return { loading, error, teams };

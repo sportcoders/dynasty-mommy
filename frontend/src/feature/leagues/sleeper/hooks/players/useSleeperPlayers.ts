@@ -1,14 +1,17 @@
+// -------------------- Imports -------------------
 import { sleeper_getPlayers } from "@services/sleeper";
+
 import { useQuery } from "@tanstack/react-query";
 
 /**
- * Fetches players using Sleeper API
- * @param leagueId id of the Sleeper League
- * @returns {Object} Query result object
- * @returns {Record<string, Player[]> | undefined} returns.data - Record mapping roster IDs to their player arrays, undefined while loading or on error
- * @returns {boolean} returns.isLoading - Loading state of the query
- * @returns {Error | null} returns.error - Error object if query fails, null otherwise
- */;
+ * A custom React hook that uses `@tanstack/react-query` to fetch players from a Sleeper league.
+ *
+ * @param leagueId The ID of the Sleeper league.
+ * @returns A query result object containing the fetched data and its state.
+ * - `data`: A record mapping roster IDs to their player arrays, or `undefined` while loading or on error.
+ * - `isLoading`: A boolean that is `true` while the query is in progress.
+ * - `isError`: A boolean that is `true` if the query failed.
+ */
 export default function useSleeperPlayers(leagueId: string) {
     const { data, isLoading, error } = useQuery({
         queryKey: ['league', leagueId],

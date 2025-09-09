@@ -24,6 +24,7 @@ import {
  * @param league_id - the sleeper_id of the league we are viewing transactions for
  * @param teams - the array of teams(sleeper team objects) in the league
  * @param open - boolean to set the transaction card open by default
+ * @returns the transaction card component
  */
 export const TransactionCard = ({
     week,

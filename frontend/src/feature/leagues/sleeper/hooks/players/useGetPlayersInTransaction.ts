@@ -1,4 +1,6 @@
+// -------------------- Imports -------------------
 import { sleeper_getPlayersInTransaction, type Transaction } from "@services/sleeper";
+
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -6,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
  *
  * Used as not all players involved in a sleeper transaction are on a team
  *
- * @param {Transaction} transaction - Sleeper Transaction object
+ * @param transaction - Sleeper Transaction object
  * @returns An dict containing the player_ids(as keys) and corresponding player objects as values
  */
 export default function useGetPlayersInTransaction(transaction: Transaction) {
