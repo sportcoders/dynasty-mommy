@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from "../app";
 import { YahooToken } from "../models/yahoo_tokens";
 
-const YAHOO_REDIRECT_URI = "https://dynasty-mommy.onrender.com/yahoo/callback";
+const YAHOO_REDIRECT_URI = "https://dynasty-mommy-775797418596.us-west1.run.app/yahoo/callback";
 const YAHOO_API_URL = `https://fantasysports.yahooapis.com/fantasy/v2`;
 const STATE_SECRET = "yahoo_state_sign_secret";
 const parser = new XMLParser();
@@ -178,22 +178,74 @@ export async function getLeagues(req: ExpressRequest, res: Response, next: NextF
 const getTeamsInLeagueParams = z.object({
     league_key: z.string()
 });
+async function getTeams(league_key: string, tokens: YahooTokens) {
+    const endpoint = `/league/${league_key}/teams`;
+
+    const data = await api("GET", endpoint, tokens);
+
+    if (!data.fantasy_content.league) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
+
+    const teams = data.fantasy_content.league.teams.team;
+
+    return teams;
+}
 export async function getTeamsInLeague(req: ExpressRequest, res: Response, next: NextFunction) {
     try {
         const { league_key } = getTeamsInLeagueParams.parse(req.params);
-        const endpoint = `/league/${league_key}/teams`;
 
         const user = req.user?.user_id;
 
         const tokens = await getTokenForUser(user);
 
-        const data = await api("GET", endpoint, tokens);
+        const teams = await getTeams(league_key, tokens);
 
-        const teams = data.fantasy_content.league.teams.team;
-
-        if (!data.fantasy_content.league) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
 
         res.status(HttpSuccess.OK).json({ teams: Array.isArray(teams) ? teams : [teams] });
+    }
+    catch (e) {
+        next(e);
+    }
+}
+async function getTeamWithRoster(team_key: string, tokens: YahooTokens) {
+    const endpoint = `/team/${team_key}/roster/player`;
+    const data = await api("GET", endpoint, tokens);
+    if (!data.fantasy_content.team) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
+    const team_with_players = data.fantasy_content.team;
+
+}
+export async function getLeagueRoster(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league_key } = getTeamsInLeagueParams.parse(req.params);
+
+        const user = req.user?.user_id;
+
+        const tokens = await getTokenForUser(user);
+
+        const teams = await getTeams(league_key, tokens);
+
+        const teams_with_roster = await Promise.all(teams.map(async (team) => {
+            getTeamWithRoster(team.team_key, tokens);
+        }));
+
+        res.status(HttpSuccess.OK).json({ teams: teams_with_roster });
+    }
+    catch (e) {
+        next(e);
+    }
+}
+const getRosterParams = z.object({
+    team_key: z.string()
+});
+export async function getRoster(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { team_key } = getRosterParams.parse(req.params);
+
+        const user = req.user?.user_id;
+
+        const tokens = await getTokenForUser(user);
+        const roster = await getTeamWithRoster(team_key, tokens);
+
+        res.status(HttpSuccess.OK).json({ team: roster });
     }
     catch (e) {
         next(e);
