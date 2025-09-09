@@ -4,14 +4,15 @@ type YahooInitOauthResponse = {
     url: string;
 };
 export async function start_oauth(): Promise<YahooInitOauthResponse> {
-    // const response = await serverGet<YahooInitOauthResponse>("/yahoo/oauth/start");
-    // return response as YahooInitOauthResponse;
-    const response = await fetch("/dm/yahoo/oauth/start", {
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-    });
+    const response = await serverGet<YahooInitOauthResponse>("/yahoo/oauth/start");
+    return response as YahooInitOauthResponse;
 
-    return response.json() as Promise<YahooInitOauthResponse>;
+    // const response = await fetch("/dm/yahoo/oauth/start", {
+    //     credentials: "include",
+    //     headers: { "Content-Type": "application/json" },
+    // });
+
+    // return response.json() as Promise<YahooInitOauthResponse>;
 }
 
 type YahooGetLeaguesResponse = {

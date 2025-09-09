@@ -11,18 +11,18 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   server: {
     proxy: {
-      // '/api': {
+      '/api': {
+        target: 'https://dynasty-mommy-775797418596.us-west1.run.app',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      // '/dm': {
       //   target: 'https://dynasty-mommy.onrender.com',
       //   changeOrigin: true,
       //   secure: true,
-      //   rewrite: (path) => path.replace(/^\/api/, ''),
+      //   rewrite: (path) => path.replace(/^\/dm/, ''),
       // },
-      '/dm': {
-        target: 'https://dynasty-mommy.onrender.com',
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/dm/, ''),
-      },
     },
   },
   plugins: [
