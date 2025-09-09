@@ -28,13 +28,13 @@ import SleeperTransactionsTab from "@feature/leagues/components/SleeperTransacti
 import { useNotification } from "@hooks/useNotification";
 import { useAppSelector } from "@app/hooks";
 import useGetLeagueTeamsSleeper from "@feature/leagues/hooks/useGetLeagueTeamsSleeper";
-import useGetLeagueInfo from "@feature/leagues/hooks/useGetLeagueInfo";
-import useGetPreviousSeasons from "../hooks/useGetPreviousSeasons";
-import useGetSavedTeam from "../hooks/useGetSavedTeam";
-import useSaveSleeperLeague from "../hooks/useSaveTeam";
+import useGetLeagueInfo from "@feature/leagues/hooks/league/useGetLeagueInfo";
+import useGetPreviousSeasons from "../hooks/league/useGetPreviousSeasons";
+import useGetSavedTeam from "../hooks/league/useGetSavedTeam";
+import useSaveSleeperLeague from "../hooks/league/useSaveTeam";
 import useSleeperPlayers from "../hooks/useSleeperPlayers";
-import useIsUserLeague from "@feature/leagues/hooks/useIsUserLeague";
-import useSaveLeague from "@feature/leagues/hooks/useSaveLeague";
+import useIsUserLeague from "@feature/leagues/hooks/league/useIsUserLeague";
+import useSaveLeague from "@feature/leagues/hooks/league/useSaveLeague";
 import useDeleteLeague from "@feature/search/sleeper/hooks/useDeleteLeague";
 
 // Types

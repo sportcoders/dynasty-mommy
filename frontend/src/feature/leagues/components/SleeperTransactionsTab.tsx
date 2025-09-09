@@ -41,8 +41,8 @@ import {
 } from "@services/sleeper";
 
 import { useState, type SyntheticEvent, useMemo } from "react";
-import useGetTransactionByWeek from "../hooks/useGetTransactionByWeek";
-import useGetPlayersInTransaction from "../hooks/useGetPlayersInTransaction";
+import useGetTransactionByWeek from "../hooks/transactions/useGetTransactionByWeek";
+import useGetPlayersInTransaction from "../hooks/transactions/useGetPlayersInTransaction";
 
 import { formatUnixTime } from "@utils/formatUnixTime";
 
