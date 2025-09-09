@@ -1,4 +1,4 @@
-import SleeperLeague from "@feature/leagues/components/SleeperLeague";
+import SleeperLeague from "@feature/leagues/sleeper/components/SleeperLeague";
 import { Route as LeagueRoute } from '@routes/leagues.$leagueId';
 import { getRouteApi } from '@tanstack/react-router';
 
