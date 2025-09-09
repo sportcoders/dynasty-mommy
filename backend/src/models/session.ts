@@ -21,6 +21,6 @@ const SessionSchema = new mongoose.Schema({
         type: Date,
         default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
     },
-})
-const UserSession = mongoose.model("Session", SessionSchema)
-export default UserSession
+});
+const UserSession = mongoose.model("Session", SessionSchema);
+export default UserSession;
