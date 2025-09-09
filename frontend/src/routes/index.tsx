@@ -23,8 +23,14 @@ export const Route = createFileRoute('/')({
     component: Home,
     validateSearch: sleeperSearchSchema,
     beforeLoad: ({ search }) => {
+        // Current Redux state
+        const currentState = store.getState().sleeperSearch;
+
         // Sync URL params to Redux before component loads
         const { season, searchText, searchType, submit } = search;
+
+        // Use Redux state as the source of truth for searchText
+        const preservedSearchText = currentState.searchText || searchText;
 
         // Search Type validation
         const validSearchTypes = ["Username", "League ID"];
@@ -35,7 +41,7 @@ export const Route = createFileRoute('/')({
             throw redirect({
                 to: '/',
                 search: {
-                    searchText,
+                    searchText: preservedSearchText,
                     searchType: validSearchType,
                     season,
                     submit
@@ -53,7 +59,7 @@ export const Route = createFileRoute('/')({
             throw redirect({
                 to: '/',
                 search: {
-                    searchText,
+                    searchText: preservedSearchText,
                     searchType: validSearchType,
                     season: validSeason,
                     submit
@@ -68,7 +74,7 @@ export const Route = createFileRoute('/')({
             throw redirect({
                 to: '/',
                 search: {
-                    searchText,
+                    searchText: preservedSearchText,
                     searchType: validSearchType,
                     season: validSeason,
                     submit: false
@@ -76,7 +82,7 @@ export const Route = createFileRoute('/')({
             });
         }
 
-        store.dispatch(setSearchText(searchText));
+        store.dispatch(setSearchText(preservedSearchText));
         store.dispatch(setSearchType(validSearchType));
         store.dispatch(setSeason(validSeason));
         store.dispatch(setSubmit(submit));
