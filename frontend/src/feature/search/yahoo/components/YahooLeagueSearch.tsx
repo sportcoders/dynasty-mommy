@@ -45,7 +45,7 @@ export default function YahooLeagueSearch() {
                 Yahoo League Search
             </Typography>
 
-            {(data && !(typeof data == "string")) && <>
+            {(data && Array.isArray(data)) && <>
                 <Box
                     sx={{
                         width: '60%',
@@ -87,7 +87,7 @@ export default function YahooLeagueSearch() {
                 </Button>
             </>}
 
-            {(!data || (typeof data == "string")) && <Button
+            {(!data || !Array.isArray(data)) && <Button
                 onClick={handleRedirect}
                 variant="contained"
                 size="large"
