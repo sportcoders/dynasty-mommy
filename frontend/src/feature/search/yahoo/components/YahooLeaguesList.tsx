@@ -14,12 +14,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { getTeamsInLeague, type YahooLeague } from "@services/api/yahoo";
 import ListTest from "./ListTest";
 
-/**
- * Displays a list of Sleeper leagues that match the current search criteria.
- *
- * @param props - {@link SleeperSearchProps}
- * @returns The rendered leagues list with options to save/delete.
- */
 function mapYahooLeagueToLeague(yahooLeague: YahooLeague): League {
     return {
         league_id: yahooLeague.league_key,
@@ -48,12 +42,11 @@ export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; 
                 m: 2,
                 height: '50vh',
                 maxWidth: 800,
-                minWidth: 500,
                 mx: "auto",
                 border: "1px solid",
                 borderColor: "divider",
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: "column"
             }}
         >
 
