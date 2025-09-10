@@ -99,10 +99,10 @@ async function api(method: "GET" | "POST", url: string, token: YahooTokens, post
 
     const data = parser.parse(rawXml);
 
-    if (data.error) {
-        if (/token_expired/i.test(data.error.description)) {
+    if (data["yahoo:error"]) {
+        if (/token_expired/i.test(data["yahoo:error"]['yahoo:description'])) {
             const newToken = await refreshAccessToken(token.refresh_token);
-            return api(method, url, postData, newToken);
+            return api(method, url, newToken, postData);
         } else {
             throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: data.error.description || 'unable to refreh access token' });
         }
@@ -178,6 +178,18 @@ export async function getLeagues(req: ExpressRequest, res: Response, next: NextF
 const getTeamsInLeagueParams = z.object({
     league_key: z.string()
 });
+
+type YahooTeamInfo = {
+    team_key: string;
+    name: string;
+    team_id: number;
+    team_logo: {
+        team_logo: {
+            size: string;
+            url: string;
+        };
+    };
+};
 async function getTeams(league_key: string, tokens: YahooTokens) {
     const endpoint = `/league/${league_key}/teams`;
 
@@ -185,7 +197,7 @@ async function getTeams(league_key: string, tokens: YahooTokens) {
 
     if (!data.fantasy_content.league) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
 
-    const teams = data.fantasy_content.league.teams.team;
+    const teams: YahooTeamInfo[] = data.fantasy_content.league.teams.team;
 
     return teams;
 }
@@ -212,6 +224,7 @@ async function getTeamWithRoster(team_key: string, tokens: YahooTokens) {
     if (!data.fantasy_content.team) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
     const team_with_players = data.fantasy_content.team;
 
+    return team_with_players;
 }
 export async function getLeagueRoster(req: ExpressRequest, res: Response, next: NextFunction) {
     try {
