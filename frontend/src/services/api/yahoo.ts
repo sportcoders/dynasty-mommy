@@ -1,17 +1,19 @@
+import { ServerError } from "@app/utils/errors";
 import { serverGet } from "@services/sleeper";
 
 type YahooInitOauthResponse = {
     url: string;
 };
 export async function start_oauth(): Promise<YahooInitOauthResponse> {
-    // const response = await serverGet<YahooInitOauthResponse>("/yahoo/oauth/start");
-    // return response as YahooInitOauthResponse;
-    const response = await fetch("/dm/yahoo/oauth/start", {
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-    });
+    const response = await serverGet<YahooInitOauthResponse>("/yahoo/oauth/start");
+    return response as YahooInitOauthResponse;
 
-    return response.json() as Promise<YahooInitOauthResponse>;
+    // const response = await fetch("/dm/yahoo/oauth/start", {
+    //     credentials: "include",
+    //     headers: { "Content-Type": "application/json" },
+    // });
+
+    // return response.json() as Promise<YahooInitOauthResponse>;
 }
 
 type YahooGetLeaguesResponse = {
@@ -36,8 +38,21 @@ export type YahooLeague = {
 };
 
 export async function getLeagues() {
-    const response = await serverGet<YahooGetLeaguesResponse>('/yahoo/leagues');
-    return response!.leagues;
+    try {
+        const response = await serverGet<YahooGetLeaguesResponse>('/yahoo/leagues');
+        return response!.leagues;
+    }
+    catch (e: any) {
+        if (e instanceof ServerError) {
+            if (e.statusCode == 403) {
+                return 'No Yahoo League Linked with this account, please link an account to find leagues';
+            }
+            else if (e.statusCode == 401) {
+                throw new ServerError(e.statusCode, "Yahoo OAuth failed, please try again");
+            }
+        }
+        else throw e;
+    }
 }
 
 export async function getTeamsInLeague(league_key: string) {
