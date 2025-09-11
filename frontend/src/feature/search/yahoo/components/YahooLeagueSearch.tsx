@@ -1,10 +1,9 @@
 // -------------------- Imports --------------------
 
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 
 import { useNavigate } from "@tanstack/react-router";
-import { getLeagues, start_oauth, type YahooLeague } from "@services/api/yahoo";
-import { useState } from "react";
+import { start_oauth } from "@services/api/yahoo";
 import YahooLeaguesList from "./YahooLeaguesList";
 import { useAppSelector } from "@app/hooks";
 import { useGetLeagues } from "../hooks/useGetLeagues";
@@ -23,12 +22,13 @@ export default function YahooLeagueSearch() {
     const { data, loading, error } = useGetLeagues(!!username);
     //need to check if user is logged in, if user is logged in we can fetch leagues without requesting login to yahoo
     //can only fetch leagues if we have refresh token for user stored
-    console.log(!data);
+
     const handleRedirect = async () => {
         // Define URL parameters
         const data = await start_oauth();
         window.open(data.url);
     };
+
     // -------------------- Render --------------------
     return (
         <Stack
@@ -41,6 +41,7 @@ export default function YahooLeagueSearch() {
                 width: "100%",
             }}
         >
+
             <Typography variant="h2" component="h1" color="primary">
                 Yahoo League Search
             </Typography>
@@ -123,6 +124,7 @@ export default function YahooLeagueSearch() {
             >
                 Sign In To View Linked Account
             </Button>}
+            {loading && <CircularProgress />}
         </Stack>
     );
 }

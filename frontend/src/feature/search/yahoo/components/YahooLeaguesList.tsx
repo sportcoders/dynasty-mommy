@@ -40,7 +40,7 @@ export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; 
             sx={{
                 borderRadius: 3,
                 m: 2,
-                height: '50vh',
+                maxHeight: '50vh',
                 maxWidth: 800,
                 mx: "auto",
                 border: "1px solid",
