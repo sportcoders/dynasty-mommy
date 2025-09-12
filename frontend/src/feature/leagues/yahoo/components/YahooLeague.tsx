@@ -1,7 +1,4 @@
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
     Avatar,
     Box,
     Button,
@@ -17,10 +14,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState, useCallback } from "react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Components
-import DisplayRosterByPosition from "@components/DisplayRosterByPosition";
 import BackButton from "@components/BackButton";
 
 
@@ -30,15 +25,12 @@ import { useAppSelector } from "@app/hooks";
 
 // Types
 import { useGetTeams } from "../hooks/useGetTeams";
-import TeamAccordion from "./TeamAccordion";
 import RosterTab from "./RosterTab";
+import useSaveLeague from "../hooks/useSaveLeague";
+import useGetSavedLeague from "@feature/search/yahoo/hooks/useGetSavedLeague";
+import useDeleteLeague from "../hooks/useDeleteLeague";
 
 // Component Interfaces
-interface SleeperLeaguesHomePageProps {
-    league_id: string;
-    tab: number;
-    parent?: string;
-}
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -46,11 +38,6 @@ interface TabPanelProps {
     value: number;
 }
 
-interface PreviousSeasonsDropDownProps {
-    league_id: string;
-    current_tab: number;
-    parent?: string;
-}
 
 // Utility Components
 const CustomTabPanel = ({ children, value, id, ...other }: TabPanelProps) => (
@@ -78,14 +65,28 @@ export default function YahooLeague({
     const navigate = useNavigate({ from: `/leagues/$leagueId` });
 
     // State
-    const [showAddTeam, setShowAddTeam] = useState<number>(0);
     const { data: league, loading, error, errorMessage } = useGetTeams(league_key);
+    const { mutate: saveLeague, isPending: isSavingLeague } = useSaveLeague();
+    const { mutate: removeLeague, isPending: isRemovingLeague } = useDeleteLeague();
+    const { data: isSavedLeague } = useGetSavedLeague(league_key);
+
     // Data fetching hooks
 
     // User-specific data (only fetch if logged in)
 
     // Mutation hooks
-
+    const handleSaveLeague = useCallback(() => {
+        const league = {
+            league_key: league_key,
+        };
+        saveLeague(league);
+    }, [league_key, saveLeague]);
+    const handleRemoveLeague = useCallback(() => {
+        const league = {
+            league_key: league_key,
+        };
+        removeLeague(league);
+    }, [league_key, removeLeague]);
 
     // Event handlers
 
@@ -174,12 +175,12 @@ export default function YahooLeague({
                     {/* Right side - Action buttons */}
                     {username && (
                         <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
-                            {false ? (
+                            {isSavedLeague == null ? (
                                 <Button
                                     variant="contained"
                                     color="success"
-                                // onClick={handleSaveLeague}
-                                // disabled={isSavingLeague}
+                                    onClick={handleSaveLeague}
+                                    disabled={isSavingLeague}
                                 >
                                     Add
                                 </Button>
@@ -187,8 +188,8 @@ export default function YahooLeague({
                                 <Button
                                     variant="contained"
                                     color="error"
-                                // onClick={handleRemoveLeague}
-                                // disabled={isRemovingLeague}
+                                    onClick={handleRemoveLeague}
+                                    disabled={isRemovingLeague}
                                 >
                                     Remove
                                 </Button>
