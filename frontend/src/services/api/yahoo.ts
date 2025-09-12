@@ -1,5 +1,5 @@
 import { ServerError } from "@app/utils/errors";
-import { serverGet } from "@services/sleeper";
+import { serverDelete, serverGet } from "@services/sleeper";
 
 type YahooInitOauthResponse = {
     url: string;
@@ -40,7 +40,6 @@ export type YahooLeague = {
 export async function getLeagues() {
     try {
         const response = await serverGet<YahooGetLeaguesResponse>('/yahoo/leagues');
-        console.log(response);
         return response!.leagues;
     }
     catch (e: any) {
@@ -175,4 +174,7 @@ export async function getLeagueAndTeams(league_key: string) {
 export async function getRosterForTeam(team_key: string) {
     const response = await serverGet<YahooTeamWithRoster>(`/yahoo/roster/${team_key}`);
     return response;
+}
+export async function unlinkYahooAccount() {
+    await serverDelete('/yahoo/unlink');
 }
