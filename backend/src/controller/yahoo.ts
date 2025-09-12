@@ -283,3 +283,21 @@ export async function getLeagueAndTeams(req: ExpressRequest, res: Response, next
         next(e);
     }
 }
+
+export async function unlinkYahoo(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const user = req.user?.user_id;
+
+        const response = await AppDataSource.getRepository(YahooToken).delete({ userId: user });
+
+        if (response.affected == 1) {
+            res.status(HttpSuccess.NO_CONTENT).send();
+        }
+        else {
+            throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "unable to unlink account" });
+        }
+    }
+    catch (e) {
+        next(e);
+    }
+}
