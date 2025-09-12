@@ -368,3 +368,16 @@ async function getAllYahooLeagues(user_id: string) {
         .getRawMany();
     return leagues;
 }
+export async function getAllSavedYahooLeague(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const user = req.user?.user_id;
+        if (!user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "invalid user" });
+
+        const leagues = await getAllYahooLeagues(user);
+
+        res.status(HttpSuccess.OK).json(leagues);
+    }
+    catch (e) {
+        next(e);
+    }
+}
