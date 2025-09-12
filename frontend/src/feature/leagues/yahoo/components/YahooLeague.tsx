@@ -27,7 +27,7 @@ import { useAppSelector } from "@app/hooks";
 import { useGetTeams } from "../hooks/useGetTeams";
 import RosterTab from "./RosterTab";
 import useSaveLeague from "../hooks/useSaveLeague";
-import useGetSavedLeague from "@feature/search/yahoo/hooks/useGetSavedLeague";
+import useGetSavedLeague from "@feature/leagues/yahoo/hooks/useGetSavedLeague";
 import useDeleteLeague from "../hooks/useDeleteLeague";
 
 // Component Interfaces

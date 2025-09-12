@@ -24,6 +24,12 @@ export default function YahooLeagueSearch() {
     //need to check if user is logged in, if user is logged in we can fetch leagues without requesting login to yahoo
     //can only fetch leagues if we have refresh token for user stored
 
+
+    // Data fetching hooks
+
+    // User-specific data (only fetch if logged in)
+
+    // Mutation hooks
     const handleRedirect = async () => {
         // Define URL parameters
         const data = await start_oauth();
