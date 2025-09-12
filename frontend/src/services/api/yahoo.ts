@@ -193,3 +193,12 @@ export async function getSavedYahooLeague(league_key: string) {
     const response = await serverGet<LeagueYahooParams>(`/yahoo/league/${league_key}`);
     return response;
 }
+interface SavedLeagueResponse {
+    league_key: string,
+    platform?: string;
+    team_key?: string;
+}
+export async function getAllSavedYahooLeague() {
+    const response = await serverGet<SavedLeagueResponse[]>(`/yahoo/league/allSaved`);
+    return response;
+}
