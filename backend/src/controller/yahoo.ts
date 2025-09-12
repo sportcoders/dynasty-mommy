@@ -222,7 +222,7 @@ export async function getTeamsInLeague(req: ExpressRequest, res: Response, next:
     }
 }
 async function getTeamWithRoster(team_key: string, tokens: YahooTokens) {
-    const endpoint = `/team/${team_key}/roster/player`;
+    const endpoint = `/team/${team_key}/roster`;
     const data = await api("GET", endpoint, tokens);
     if (!data.fantasy_content.team) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
     const team_with_players = data.fantasy_content.team;
