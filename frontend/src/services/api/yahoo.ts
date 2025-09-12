@@ -1,5 +1,5 @@
 import { ServerError } from "@app/utils/errors";
-import { serverDelete, serverGet } from "@services/sleeper";
+import { serverDelete, serverGet, serverPost } from "@services/sleeper";
 
 type YahooInitOauthResponse = {
     url: string;
@@ -177,4 +177,19 @@ export async function getRosterForTeam(team_key: string) {
 }
 export async function unlinkYahooAccount() {
     await serverDelete('/yahoo/unlink');
+}
+
+export type LeagueYahooParams = {
+    league_key: string,
+    team_key?: string;
+};
+export async function saveYahooLeague(league: LeagueYahooParams) {
+    await serverPost('/yahoo/league', { league: league });
+}
+export async function removeYahooLeague(league_key: string) {
+    await serverDelete(`/yahoo/league/${league_key}`);
+}
+export async function getSavedYahooLeague(league_key: string) {
+    const response = await serverGet<LeagueYahooParams>(`/yahoo/league/${league_key}`);
+    return response;
 }
