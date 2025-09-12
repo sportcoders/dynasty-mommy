@@ -27,7 +27,7 @@ export default function YahooLeagueSearch() {
     const handleRedirect = async () => {
         // Define URL parameters
         const data = await start_oauth();
-        window.open(data.url);
+        window.location.href = data.url;
     };
 
     // -------------------- Render --------------------
