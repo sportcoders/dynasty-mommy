@@ -25,6 +25,7 @@ export default function useSaveLeague() {
         mutationFn: (league: LeagueYahooParams) => saveYahooLeague(league),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
+            queryClient.invalidateQueries({ queryKey: ['allSavedYahooLeagues'] });
 
             queryClient.invalidateQueries({ queryKey: ['savedYahooLeague'] });
 

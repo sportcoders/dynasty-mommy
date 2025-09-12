@@ -12,6 +12,7 @@ export default function useDeleteLeague() {
         mutationFn: (league: LeagueYahooParams) => removeYahooLeague(league.league_key),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
+            queryClient.invalidateQueries({ queryKey: ['allSavedYahooLeagues'] });
 
             queryClient.invalidateQueries({ queryKey: ['savedYahooLeague'] });
 
