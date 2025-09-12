@@ -107,6 +107,9 @@ async function api(method: "GET" | "POST", url: string, token: YahooTokens, post
             throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: data.error.description || 'unable to refreh access token' });
         }
     }
+    if (data.error) {
+        throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: data.error.description });
+    }
     return data;
 }
 
@@ -219,7 +222,7 @@ export async function getTeamsInLeague(req: ExpressRequest, res: Response, next:
     }
 }
 async function getTeamWithRoster(team_key: string, tokens: YahooTokens) {
-    const endpoint = `/team/${team_key}/roster/player`;
+    const endpoint = `/team/${team_key}/roster`;
     const data = await api("GET", endpoint, tokens);
     if (!data.fantasy_content.team) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
     const team_with_players = data.fantasy_content.team;
@@ -259,6 +262,22 @@ export async function getRoster(req: ExpressRequest, res: Response, next: NextFu
         const roster = await getTeamWithRoster(team_key, tokens);
 
         res.status(HttpSuccess.OK).json({ team: roster });
+    }
+    catch (e) {
+        next(e);
+    }
+}
+export async function getLeagueAndTeams(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league_key } = getTeamsInLeagueParams.parse(req.params);
+
+        const endpoint = `/league/${league_key}?out=teams,standings`;
+
+        const tokens = await getTokenForUser(req.user?.user_id);
+
+        const data = await api("GET", endpoint, tokens);
+        const league = data.fantasy_content.league;
+        res.status(HttpSuccess.OK).json(league);
     }
     catch (e) {
         next(e);

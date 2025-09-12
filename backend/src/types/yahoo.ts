@@ -1,61 +1,4 @@
-import { ServerError } from "@app/utils/errors";
-import { serverGet } from "@services/sleeper";
-
-type YahooInitOauthResponse = {
-    url: string;
-};
-export async function start_oauth(): Promise<YahooInitOauthResponse> {
-    const response = await serverGet<YahooInitOauthResponse>("/yahoo/oauth/start");
-    return response as YahooInitOauthResponse;
-
-    // const response = await fetch("/dm/yahoo/oauth/start", {
-    //     credentials: "include",
-    //     headers: { "Content-Type": "application/json" },
-    // });
-
-    // return response.json() as Promise<YahooInitOauthResponse>;
-}
-
-type YahooGetLeaguesResponse = {
-    leagues: YahooLeague[];
-};
-export type YahooLeague = {
-    current_week: number,
-    end_week: number,
-    game_code: string,
-    league_id: number,
-    league_key: string,
-    league_type: string,
-    logo_url: string,
-    matchup_week: number,
-    name: string,
-    num_teams: number,
-    season: number,
-    start_week: number,
-    url: string,
-    start_date: string,
-    end_date: string;
-};
-
-export async function getLeagues() {
-    try {
-        const response = await serverGet<YahooGetLeaguesResponse>('/yahoo/leagues');
-        console.log(response);
-        return response!.leagues;
-    }
-    catch (e: any) {
-        if (e instanceof ServerError) {
-            if (e.statusCode == 403) {
-                return 'No Yahoo League Linked with this account, please link an account to find leagues';
-            }
-            else if (e.statusCode == 401) {
-                throw new ServerError(e.statusCode, "Yahoo OAuth failed, please try again");
-            }
-        }
-        else throw e;
-    }
-}
-export type getTeamsAndLeagueResponse = {
+type getTeamsAndLeagueResponse = {
     allow_add_to_dl_extra_pos: number;
     current_date: string;
     current_week: number;
@@ -117,7 +60,7 @@ interface YahooTeam {
     url: string;
     waiver_priority: string;
 };
-export interface YahooTeamWithStandings extends YahooTeam {
+interface YahooTeamWithStandings extends YahooTeam {
     team_standings: {
         outcome_totals: {
             wins: number;
@@ -142,11 +85,10 @@ type YahooTeamLogo = {
     url: string;
 };
 interface YahooTeamWithRoster extends YahooTeam {
-    team: {
-        roster: {
-            players: {
-                player: YahooPlayer[];
-            };
+    roster: {
+        players: {
+            count: number;
+            player: YahooPlayer;
         };
     };
 }
@@ -160,19 +102,9 @@ interface YahooPlayer {
     };
     editorial_team_abbr: string;
     display_position: string;
-    primary_position: string;
     eligible_positions: string[];
     selected_position: {
         coverage_type: string;
         position: string;
     };
-}
-export async function getLeagueAndTeams(league_key: string) {
-    const response = await serverGet<getTeamsAndLeagueResponse>(`/yahoo/leagues/${league_key}/teams`);
-    return response as getTeamsAndLeagueResponse;
-}
-
-export async function getRosterForTeam(team_key: string) {
-    const response = await serverGet<YahooTeamWithRoster>(`/yahoo/roster/${team_key}`);
-    return response;
 }

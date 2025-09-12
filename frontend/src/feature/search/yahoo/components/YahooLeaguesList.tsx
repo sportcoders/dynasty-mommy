@@ -1,6 +1,4 @@
 // -------------------- Imports --------------------
-import type { SleeperSearchProps } from "@feature/search/sleeper/types";
-
 
 import {
     Box,
@@ -11,7 +9,7 @@ import {
 import type { League } from "@services/sleeper";
 
 import { useNavigate } from "@tanstack/react-router";
-import { getTeamsInLeague, type YahooLeague } from "@services/api/yahoo";
+import { type YahooLeague } from "@services/api/yahoo";
 import ListTest from "./ListTest";
 
 function mapYahooLeagueToLeague(yahooLeague: YahooLeague): League {
@@ -27,11 +25,7 @@ export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; 
     const navigate = useNavigate();
 
     const navigateToLeague = (league_key: string) => {
-        const getTeams = async () => {
-            const response = await getTeamsInLeague(league_key);
-            console.log(response);
-        };
-        getTeams();
+        navigate({ to: `/league/yahoo/${league_key}` });
     };
     // -------------------- Render --------------------
     return (
