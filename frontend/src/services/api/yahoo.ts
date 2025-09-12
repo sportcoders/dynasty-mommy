@@ -55,7 +55,7 @@ export async function getLeagues() {
         else throw e;
     }
 }
-type getTeamsAndLeagueResponse = {
+export type getTeamsAndLeagueResponse = {
     allow_add_to_dl_extra_pos: number;
     current_date: string;
     current_week: number;
@@ -117,7 +117,7 @@ interface YahooTeam {
     url: string;
     waiver_priority: string;
 };
-interface YahooTeamWithStandings extends YahooTeam {
+export interface YahooTeamWithStandings extends YahooTeam {
     team_standings: {
         outcome_totals: {
             wins: number;
@@ -141,7 +141,38 @@ type YahooTeamLogo = {
     size: string;
     url: string;
 };
+interface YahooTeamWithRoster extends YahooTeam {
+    team: {
+        roster: {
+            players: {
+                player: YahooPlayer[];
+            };
+        };
+    };
+}
+interface YahooPlayer {
+    player_key: string;
+    player_id: string;
+    name: {
+        full: string;
+        first: string;
+        last: string;
+    };
+    editorial_team_abbr: string;
+    display_position: string;
+    primary_position: string;
+    eligible_positions: string[];
+    selected_position: {
+        coverage_type: string;
+        position: string;
+    };
+}
 export async function getLeagueAndTeams(league_key: string) {
     const response = await serverGet<getTeamsAndLeagueResponse>(`/yahoo/leagues/${league_key}/teams`);
     return response as getTeamsAndLeagueResponse;
+}
+
+export async function getRosterForTeam(team_key: string) {
+    const response = await serverGet<YahooTeamWithRoster>(`/yahoo/roster/${team_key}`);
+    return response;
 }
