@@ -88,7 +88,7 @@ export default function YahooLeagueSearch() {
                 </Button>
             </>}
 
-            {(!data || !Array.isArray(data)) && <Button
+            {!(data || Array.isArray(data)) && !!username && <Button
                 onClick={handleRedirect}
                 variant="contained"
                 size="large"
@@ -124,7 +124,7 @@ export default function YahooLeagueSearch() {
             >
                 Sign In To View Linked Account
             </Button>}
-            {loading && <CircularProgress />}
+            {loading && !!username && <CircularProgress />}
         </Stack>
     );
 }
