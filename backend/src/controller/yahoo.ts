@@ -7,6 +7,7 @@ import { AppError } from "../errors/app_error";
 import jwt from 'jsonwebtoken';
 import { AppDataSource } from "../app";
 import { YahooToken } from "../models/yahoo_tokens";
+import { YahooLeague } from "../models/yahoo_league";
 
 const YAHOO_REDIRECT_URI = "https://dynasty-mommy-775797418596.us-west1.run.app/yahoo/callback";
 const YAHOO_API_URL = `https://fantasysports.yahooapis.com/fantasy/v2`;
@@ -278,6 +279,103 @@ export async function getLeagueAndTeams(req: ExpressRequest, res: Response, next
         const data = await api("GET", endpoint, tokens);
         const league = data.fantasy_content.league;
         res.status(HttpSuccess.OK).json(league);
+    }
+    catch (e) {
+        next(e);
+    }
+}
+
+export async function unlinkYahoo(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const user = req.user?.user_id;
+
+        const response = await AppDataSource.getRepository(YahooToken).delete({ userId: user });
+
+        if (response.affected == 1) {
+            res.status(HttpSuccess.NO_CONTENT).send();
+        }
+        else {
+            throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "unable to unlink account" });
+        }
+    }
+    catch (e) {
+        next(e);
+    }
+}
+
+const YahooSaveTeamParams = z.object({
+    league: z.object({
+        team_key: z.string().optional(),
+        league_key: z.string()
+    })
+});
+export async function saveLeague(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league } = YahooSaveTeamParams.parse(req.body);
+
+        const user_id = req.user?.user_id;
+
+        await AppDataSource.getRepository(YahooLeague).upsert({ userId: user_id, league_key: league.league_key, team_key: league.team_key }, ['userId', 'league_key']);
+
+        res.status(HttpSuccess.OK).send({ detail: "successful save" });
+    }
+    catch (e) {
+        next(e);
+    }
+}
+const YahooLeagueParams = z.object({
+    league_key: z.string()
+});
+export async function removeLeague(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league_key } = YahooLeagueParams.parse(req.params);
+
+        const user_id = req.user?.user_id;
+
+        const response = await AppDataSource.getRepository(YahooLeague).delete({ userId: user_id, league_key: league_key });
+
+        if (response.affected == 1)
+            res.status(HttpSuccess.OK).send({ detail: "successful save" });
+        else
+            throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "unable to remove league" });
+    }
+    catch (e) {
+        next(e);
+    }
+}
+export async function getLeague(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league_key } = YahooLeagueParams.parse(req.params);
+
+        const user_id = req.user?.user_id;
+
+        const response = await AppDataSource.getRepository(YahooLeague).findOneBy({ userId: user_id, league_key: league_key });
+
+        res.status(HttpSuccess.OK).json(response);
+    }
+    catch (e) {
+        next(e);
+    }
+}
+async function getAllYahooLeagues(user_id: string) {
+    const leagues = await AppDataSource.getRepository(YahooLeague).createQueryBuilder("league")
+        .select([
+            "league.league_key AS league_key",
+            "league.team_key AS team_key",
+            "'yahoo' AS platform"
+        ])
+        .where("league.userId = :user_id", { user_id })
+        .getRawMany();
+    return leagues;
+}
+export async function getAllSavedYahooLeague(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const user = req.user?.user_id;
+        if (!user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "invalid user" });
+
+        const leagues = await getAllYahooLeagues(user);
+
+        res.status(HttpSuccess.OK).json(leagues);
     }
     catch (e) {
         next(e);

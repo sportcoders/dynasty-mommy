@@ -7,6 +7,7 @@ import { start_oauth } from "@services/api/yahoo";
 import YahooLeaguesList from "./YahooLeaguesList";
 import { useAppSelector } from "@app/hooks";
 import { useGetLeagues } from "../hooks/useGetLeagues";
+import useUnlinkAccount from "../hooks/useUnlinkAccount";
 
 /**
  * Top-level component that manages the Yahoo Search feature.
@@ -18,15 +19,21 @@ import { useGetLeagues } from "../hooks/useGetLeagues";
 export default function YahooLeagueSearch() {
     const navigate = useNavigate();
     const username = useAppSelector((state) => state.auth.username);
-
+    const { mutate: unlink } = useUnlinkAccount();
     const { data, loading, error } = useGetLeagues(!!username);
     //need to check if user is logged in, if user is logged in we can fetch leagues without requesting login to yahoo
     //can only fetch leagues if we have refresh token for user stored
 
+
+    // Data fetching hooks
+
+    // User-specific data (only fetch if logged in)
+
+    // Mutation hooks
     const handleRedirect = async () => {
         // Define URL parameters
         const data = await start_oauth();
-        window.open(data.url);
+        window.location.href = data.url;
     };
 
     // -------------------- Render --------------------
@@ -68,7 +75,7 @@ export default function YahooLeagueSearch() {
                     <YahooLeaguesList leagues={data} />
                 </Box>
                 <Button
-                    onClick={() => { }}
+                    onClick={() => unlink()}
                     variant="outlined"
                     color="error"
                     size="medium"
@@ -88,7 +95,7 @@ export default function YahooLeagueSearch() {
                 </Button>
             </>}
 
-            {!(data || Array.isArray(data)) && !!username && <Button
+            {data && !Array.isArray(data) && !!username && <Button
                 onClick={handleRedirect}
                 variant="contained"
                 size="large"

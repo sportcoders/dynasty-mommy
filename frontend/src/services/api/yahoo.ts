@@ -1,5 +1,5 @@
 import { ServerError } from "@app/utils/errors";
-import { serverGet } from "@services/sleeper";
+import { serverDelete, serverGet, serverPost } from "@services/sleeper";
 
 type YahooInitOauthResponse = {
     url: string;
@@ -40,7 +40,6 @@ export type YahooLeague = {
 export async function getLeagues() {
     try {
         const response = await serverGet<YahooGetLeaguesResponse>('/yahoo/leagues');
-        console.log(response);
         return response!.leagues;
     }
     catch (e: any) {
@@ -174,5 +173,32 @@ export async function getLeagueAndTeams(league_key: string) {
 
 export async function getRosterForTeam(team_key: string) {
     const response = await serverGet<YahooTeamWithRoster>(`/yahoo/roster/${team_key}`);
+    return response;
+}
+export async function unlinkYahooAccount() {
+    await serverDelete('/yahoo/unlink');
+}
+
+export type LeagueYahooParams = {
+    league_key: string,
+    team_key?: string;
+};
+export async function saveYahooLeague(league: LeagueYahooParams) {
+    await serverPost('/yahoo/league', { league: league });
+}
+export async function removeYahooLeague(league_key: string) {
+    await serverDelete(`/yahoo/league/${league_key}`);
+}
+export async function getSavedYahooLeague(league_key: string) {
+    const response = await serverGet<LeagueYahooParams>(`/yahoo/league/${league_key}`);
+    return response;
+}
+interface SavedLeagueResponse {
+    league_key: string,
+    platform?: string;
+    team_key?: string;
+}
+export async function getAllSavedYahooLeague() {
+    const response = await serverGet<SavedLeagueResponse[]>(`/yahoo/league/allSaved`);
     return response;
 }
