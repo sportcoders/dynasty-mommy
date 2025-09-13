@@ -9,7 +9,12 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    crx({ manifest }),
+    crx({
+      manifest,
+      contentScripts: {
+        injectCss: true,
+      }
+    })
   ],
   server: {
     port: 3000,
