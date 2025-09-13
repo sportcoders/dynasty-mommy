@@ -8,6 +8,7 @@ import YahooLeaguesList from "./YahooLeaguesList";
 import { useAppSelector } from "@app/hooks";
 import { useGetLeagues } from "../hooks/useGetLeagues";
 import useUnlinkAccount from "../hooks/useUnlinkAccount";
+import SelectPlatform from "@components/SelectPlatform";
 
 /**
  * Top-level component that manages the Yahoo Search feature.
@@ -35,7 +36,6 @@ export default function YahooLeagueSearch() {
         const data = await start_oauth();
         window.location.href = data.url;
     };
-
     // -------------------- Render --------------------
     return (
         <Stack
@@ -52,6 +52,8 @@ export default function YahooLeagueSearch() {
             <Typography variant="h2" component="h1" color="primary">
                 Yahoo League Search
             </Typography>
+
+            <SelectPlatform platform="yahoo" />
 
             {(data && Array.isArray(data)) && <>
                 <Box

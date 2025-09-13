@@ -11,6 +11,7 @@ import { setSeason, setSearchText, setSearchType, setSubmit } from "@feature/sea
 import { Stack, Typography } from "@mui/material";
 
 import { useNavigate } from "@tanstack/react-router";
+import SelectPlatform from "@components/SelectPlatform";
 
 /**
  * Top-level component that manages the Sleeper League Search feature.
@@ -98,7 +99,7 @@ export default function SleeperSearch() {
       <Typography variant="h2" component="h1" color="primary">
         Sleeper League Search
       </Typography>
-
+      <SelectPlatform platform="sleeper" />
       {showLeagues ? (
         <SleeperLeaguesList
           season={season}
