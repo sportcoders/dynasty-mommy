@@ -21,17 +21,18 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
             bgcolor: 'action.hover',
             borderRadius: 2,
             border: 'none',
-            boxShadow: 'none'
+            boxShadow: 'none',
+            background: 'grey'
         }}>
             <Button
                 variant="text"
                 onClick={() => setPlatform('sleeper')}
                 sx={{
-                    bgcolor: platform === 'sleeper' ? 'rgba(0, 212, 170, 0.15)' : 'transparent',
+                    bgcolor: platform === 'sleeper' ? '#5f5396d1' : 'transparent',
                     color: platform === 'sleeper' ? '#00d4aa' : 'text.secondary',
                     border: platform === 'sleeper' ? '1px solid rgba(0, 212, 170, 0.3)' : 'none',
                     '&:hover': {
-                        bgcolor: 'rgba(0, 212, 170, 0.1)',
+                        bgcolor: '#5f5396',
                         color: '#00d4aa',
                     },
                     textTransform: 'none',
@@ -43,18 +44,18 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
                     transition: 'all 0.2s ease'
                 }}
             >
-                sleeper
+                <img src="/SleeperWhite.svg" />
             </Button>
 
             <Button
                 variant="text"
                 onClick={() => setPlatform('espn')}
                 sx={{
-                    bgcolor: platform === 'espn' ? 'rgba(204, 0, 0, 0.15)' : 'transparent',
+                    bgcolor: platform === 'espn' ? 'rgba(204, 0, 0, 0.8)' : 'transparent',
                     color: platform === 'espn' ? '#cc0000' : 'text.secondary',
                     border: platform === 'espn' ? '1px solid rgba(204, 0, 0, 0.3)' : 'none',
                     '&:hover': {
-                        bgcolor: 'rgba(204, 0, 0, 0.1)',
+                        bgcolor: 'rgba(204, 0, 0, 1)',
                         color: '#cc0000',
                     },
                     textTransform: 'none',
@@ -67,18 +68,18 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
                     transition: 'all 0.2s ease'
                 }}
             >
-                ESPN
+                <img src="/ESPNWhite.svg" />
             </Button>
 
             <Button
                 variant="text"
                 onClick={() => setPlatform('yahoo')}
                 sx={{
-                    bgcolor: platform === 'yahoo' ? 'rgba(123, 0, 153, 0.15)' : 'transparent',
+                    bgcolor: platform === 'yahoo' ? 'rgba(123, 0, 153, 0.8)' : 'transparent',
                     color: platform === 'yahoo' ? '#7b0099' : 'text.secondary',
                     border: platform === 'yahoo' ? '1px solid rgba(123, 0, 153, 0.3)' : 'none',
                     '&:hover': {
-                        bgcolor: 'rgba(123, 0, 153, 0.1)',
+                        bgcolor: 'rgba(123, 0, 153, 1)',
                         color: '#7b0099',
                     },
                     textTransform: 'none',
@@ -90,7 +91,7 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
                     transition: 'all 0.2s ease'
                 }}
             >
-                yahoo!
+                <img src="/YahooWhite.svg" />
             </Button>
         </Box>
     );
