@@ -357,10 +357,10 @@ export async function getLeague(req: ExpressRequest, res: Response, next: NextFu
         next(e);
     }
 }
-async function getAllYahooLeagues(user_id: string) {
+export async function getAllYahooLeagues(user_id: string, league_key_name: "league_key" | "league_id") {
     const leagues = await AppDataSource.getRepository(YahooLeague).createQueryBuilder("league")
         .select([
-            "league.league_key AS league_key",
+            `league.league_key AS "${league_key_name}"`,
             "league.team_key AS team_key",
             "'yahoo' AS platform"
         ])
@@ -373,7 +373,7 @@ export async function getAllSavedYahooLeague(req: ExpressRequest, res: Response,
         const user = req.user?.user_id;
         if (!user) throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "invalid user" });
 
-        const leagues = await getAllYahooLeagues(user);
+        const leagues = await getAllYahooLeagues(user, "league_key");
 
         res.status(HttpSuccess.OK).json(leagues);
     }
