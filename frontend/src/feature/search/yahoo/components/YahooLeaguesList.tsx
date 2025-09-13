@@ -1,6 +1,4 @@
 // -------------------- Imports --------------------
-import type { SleeperSearchProps } from "@feature/search/sleeper/types";
-
 
 import {
     Box,
@@ -11,8 +9,11 @@ import {
 import type { League } from "@services/sleeper";
 
 import { useNavigate } from "@tanstack/react-router";
-import { getTeamsInLeague, type YahooLeague } from "@services/api/yahoo";
+import { type YahooLeague } from "@services/api/yahoo";
 import ListTest from "./ListTest";
+import useSaveLeague from "@feature/leagues/yahoo/hooks/useSaveLeague";
+import useDeleteLeague from "@feature/leagues/yahoo/hooks/useDeleteLeague";
+import useGetAllSavedYahooLeagues from "../hooks/useGetAllSavedYahooLeagues";
 
 function mapYahooLeagueToLeague(yahooLeague: YahooLeague): League {
     return {
@@ -25,29 +26,54 @@ function mapYahooLeagueToLeague(yahooLeague: YahooLeague): League {
 export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; }) {
     const yahooLeagueResult = leagues.map((league) => mapYahooLeagueToLeague(league));
     const navigate = useNavigate();
-
+    const { mutate: saveLeague, isPending: isSavingLeague, isSuccess: saveLeagueSuccess } = useSaveLeague();
+    const { mutate: removeLeague, isPending: isRemovingLeague, isSuccess: removeLeagueSuccess } = useDeleteLeague();
+    const { data: savedLeagues, loading: loadingSavedLeagues } = useGetAllSavedYahooLeagues();
     const navigateToLeague = (league_key: string) => {
-        const getTeams = async () => {
-            const response = await getTeamsInLeague(league_key);
-            console.log(response);
-        };
-        getTeams();
+        navigate({ to: `/league/yahoo/${league_key}` });
+    };
+    const handleSaveLeague = async (league_id: string) => {
+        try {
+            saveLeague({ league_key: league_id });
+            return saveLeagueSuccess;
+        } catch {
+            return false;
+        }
+    };
+    const handleRemoveLeague = async (league_id: string) => {
+        try {
+            removeLeague({ league_key: league_id });
+            return removeLeagueSuccess;
+        } catch {
+            return false;
+        }
     };
     // -------------------- Render --------------------
     return (
         <Paper
             elevation={3}
-            sx={{
+            sx={(theme) => ({
                 borderRadius: 3,
                 m: 2,
-                maxHeight: '50vh',
+                p: 1.5,
+                maxHeight: '60vh',
                 maxWidth: 800,
                 mx: "auto",
                 border: "1px solid",
                 borderColor: "divider",
                 display: "flex",
-                flexDirection: "column"
-            }}
+                flexDirection: "column",
+                overflowY: "auto",
+                height: "auto",
+                scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.paper}`,
+                '&::-webkit-scrollbar-track': {
+                    backgroundColor: theme.palette.background.paper,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: theme.palette.primary.main,
+                },
+
+            })}
         >
 
 
@@ -65,20 +91,14 @@ export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; 
                     <Typography variant="body1">No Leagues Found</Typography>
                 </Box>
             ) : (
-                <Box sx={(theme) => ({
-                    p: 2,
-                    overflowY: "auto",
-                    height: "auto",
-                    maxHeight: '100%',
-                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.paper}`,
-                    '&::-webkit-scrollbar-track': {
-                        backgroundColor: theme.palette.background.paper,
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        backgroundColor: theme.palette.primary.main,
-                    },
-                })}>
-                    <ListTest leagues={yahooLeagueResult} displayAvatar={true} loggedIn={false} onLeagueClick={navigateToLeague} />
+                <Box>
+                    <ListTest leagues={yahooLeagueResult} displayAvatar={true} loggedIn={true} onLeagueClick={navigateToLeague}
+                        saveDelete={savedLeagues ? {
+                            saveLeague: handleSaveLeague,
+                            deleteLeague: handleRemoveLeague,
+                            userLeagues: savedLeagues.map((league) => league.league_key)
+                        } : undefined}
+                    />
                 </Box>
             )}
         </Paper>

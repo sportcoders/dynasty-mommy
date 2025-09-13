@@ -57,12 +57,12 @@ export const serverPost = async <T, U>(
     return response.json() as Promise<T>;
 };
 
-export const serverDelete = async <T>(endpoint: string): Promise<T> => {
+export const serverDelete = async <T>(endpoint: string): Promise<T | null> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
         method: "DELETE",
         credentials: 'include',
     });
-
+    if (response.status == 204) return null;
     if (!response.ok) {
         throw new ServerError(response.status, response.statusText);
     }

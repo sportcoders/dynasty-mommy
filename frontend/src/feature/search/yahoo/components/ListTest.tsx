@@ -75,7 +75,7 @@ export default function ListTest({ leagues,
                             width: '100%'
                         }
                     }}
-                    secondaryAction={loggedIn && saveDelete ? (
+                    secondaryAction={saveDelete ? (
                         <IconButton
                             edge="end"
                             aria-label="add"

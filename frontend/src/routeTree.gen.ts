@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LeaguesLeagueIdRouteImport } from './routes/leagues.$leagueId'
+import { Route as LeagueYahooLeague_keyRouteImport } from './routes/league.yahoo.$league_key'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -34,18 +35,25 @@ const LeaguesLeagueIdRoute = LeaguesLeagueIdRouteImport.update({
   path: '/leagues/$leagueId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeagueYahooLeague_keyRoute = LeagueYahooLeague_keyRouteImport.update({
+  id: '/league/yahoo/$league_key',
+  path: '/league/yahoo/$league_key',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/leagues/$leagueId': typeof LeaguesLeagueIdRoute
+  '/league/yahoo/$league_key': typeof LeagueYahooLeague_keyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/leagues/$leagueId': typeof LeaguesLeagueIdRoute
+  '/league/yahoo/$league_key': typeof LeagueYahooLeague_keyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,30 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/leagues/$leagueId': typeof LeaguesLeagueIdRoute
+  '/league/yahoo/$league_key': typeof LeagueYahooLeague_keyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup' | '/leagues/$leagueId'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/leagues/$leagueId'
+    | '/league/yahoo/$league_key'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/leagues/$leagueId'
-  id: '__root__' | '/' | '/login' | '/signup' | '/leagues/$leagueId'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/leagues/$leagueId'
+    | '/league/yahoo/$league_key'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/leagues/$leagueId'
+    | '/league/yahoo/$league_key'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +92,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   LeaguesLeagueIdRoute: typeof LeaguesLeagueIdRoute
+  LeagueYahooLeague_keyRoute: typeof LeagueYahooLeague_keyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaguesLeagueIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/league/yahoo/$league_key': {
+      id: '/league/yahoo/$league_key'
+      path: '/league/yahoo/$league_key'
+      fullPath: '/league/yahoo/$league_key'
+      preLoaderRoute: typeof LeagueYahooLeague_keyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   LeaguesLeagueIdRoute: LeaguesLeagueIdRoute,
+  LeagueYahooLeague_keyRoute: LeagueYahooLeague_keyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

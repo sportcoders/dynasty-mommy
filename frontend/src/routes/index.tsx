@@ -9,7 +9,11 @@ import Home from '@pages/HomePage';
 
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
+export const supportedFantasyPlatforms = ["yahoo", 'sleeper', 'espn'] as const;
+export type SupportedFantasyPlatform = typeof supportedFantasyPlatforms[number];
+
 const sleeperSearchSchema = z.object({
+    platform: z.enum(supportedFantasyPlatforms).default("sleeper"),
     searchText: z.string().default(""),
     searchType: z.enum(["Username", "League ID"]).default("Username"),
     season: z
