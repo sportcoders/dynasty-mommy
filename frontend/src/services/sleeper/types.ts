@@ -3,6 +3,7 @@ export interface League {
     name: string;
     season: string;
     avatar: string;
+    platform?: string;
 }
 
 export interface User {
