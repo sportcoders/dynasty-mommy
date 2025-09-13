@@ -18,20 +18,15 @@ import * as z from "zod/v4";
  * @returns the sleeper leagues belonging to the user
  */
 export async function getAllSleeperLeaguesUser(user_id: string) {
-    try {
-        const sleeperLeagues = await AppDataSource.getRepository(SleeperLeague).createQueryBuilder("league")
-            .select([
-                "league.league_id AS league_id",
-                "league.saved_user AS saved_user",
-                "'sleeper' AS platform"
-            ])
-            .where("league.userId = :user_id", { user_id })
-            .getRawMany();
-        return sleeperLeagues;
-    }
-    catch (e) {
-        console.error("Failed fetching all sleeper leagues");
-    }
+    const sleeperLeagues = await AppDataSource.getRepository(SleeperLeague).createQueryBuilder("league")
+        .select([
+            "league.league_id AS league_id",
+            "league.saved_user AS saved_user",
+            "'sleeper' AS platform"
+        ])
+        .where("league.userId = :user_id", { user_id })
+        .getRawMany();
+    return sleeperLeagues;
 }
 /**
  * function to check that the user_id from the jwt is valid

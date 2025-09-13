@@ -4,20 +4,18 @@ import { HttpSuccess, HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { AppDataSource } from "../app";
 import { changeUsernameSchema } from "../schemas/user";
-
-
+import { checkUserId } from "../utils/checkUserId";
+import { getAllSleeperLeaguesUser } from "./sleeper_league";
+import { getAllYahooLeagues } from "./yahoo";
 
 export async function getUserLeagues(req: Request, res: Response, next: NextFunction) {
     try {
-        const userCheck = await AppDataSource.getRepository(User).findOneBy({ id: req.user?.user_id });
-        if (!userCheck) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "user not found" });
+        const user_id = await checkUserId(req.user?.user_id);
+        const [sleeper_leagues, yahoo_leagues] = await Promise.all([getAllSleeperLeaguesUser(user_id) ?? [], getAllYahooLeagues(user_id, "league_id") ?? []]);
 
-        const leagues = await AppDataSource.getRepository(UserLeagues).find({
-            where: { userId: req.user?.user_id },
-            select: ['league_id', 'platform']
-        });
+        const result = sleeper_leagues.concat(yahoo_leagues);
 
-        res.status(HttpSuccess.OK).send({ leagues });
+        res.status(HttpSuccess.OK).json({ leagues: result });
     }
     catch (e) {
         next(e);

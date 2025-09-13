@@ -1,11 +1,17 @@
 // -------------------- Imports --------------------
 import { useGetSavedLeagues } from "@hooks/useGetSavedLeagues";
 
-import { type League } from "@services/api/user";
-import { sleeper_getLeagueInfo, type League as SleeperLeague, } from "@services/sleeper";
+import { type League } from "@services/sleeper/types";
+import { type League as L } from "@services/api/user";
+import { getLeagueAndTeams } from "@services/api/yahoo";
+import { sleeper_getLeagueInfo } from "@services/sleeper";
 
 import { useQueries, } from "@tanstack/react-query";
-
+// interface UserLeague extends League {
+//     platform: "sleeper" | "yahoo",
+//     name: string,
+//     league_id: string;
+// };
 /**
  * Custom hook that fetches saved leagues and their detailed information for navigation bar display.
  * Combines saved leagues data with individual league information queries to provide
@@ -32,7 +38,6 @@ export function useGetSavedLeaguesNavBar() {
     });
 
     const leagues = queries.map((league) => league.data).filter((l) => l != undefined);
-
     return { leagues, loading, error };
 }
 
@@ -46,16 +51,26 @@ export function useGetSavedLeaguesNavBar() {
  * @returns Promise that resolves to a SleeperLeague object with standardized league information
  * @throws {Error} When an unsupported platform is provided
  */
-const leagueInfoForPlatform = async (savedLeague: League): Promise<SleeperLeague> => {
+const leagueInfoForPlatform = async (savedLeague: L): Promise<League> => {
     switch (savedLeague.platform) {
         case "sleeper": {
             const league = await sleeper_getLeagueInfo(savedLeague.league_id);
             return {
                 name: league!.name,
                 league_id: savedLeague.league_id,
-                season: league!.season,
-                avatar: league!.avatar
-
+                avatar: "",
+                season: "",
+                platform: "sleeper"
+            };
+        }
+        case "yahoo": {
+            const league = await getLeagueAndTeams(savedLeague.league_id);
+            return {
+                name: league!.name,
+                league_id: savedLeague.league_id,
+                avatar: "",
+                season: "",
+                platform: "yahoo"
             };
         }
         default:
