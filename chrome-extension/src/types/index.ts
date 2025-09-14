@@ -1,18 +1,20 @@
+export type ExtensionMessage =
+    | { type: "GET_COOKIES"; }
+    | { type: "SYNC_TEAM"; leagueId: string; }; // ✅ new message type
+
+
 export interface ESPNCookies {
     swid: string | null;
     espn_s2: string | null;
-    extractedAt: string;
     isValid: boolean;
-    extractedFromESPNPage?: boolean;
 }
 
-export interface ExtensionMessage {
-    type: 'GET_COOKIES' | 'COOKIES_EXTRACTED' | 'COPY_TO_CLIPBOARD';
-    payload?: any;
-}
-
-export interface CookieExtractionResult {
+export interface ExtensionResponse {
     success: boolean;
-    cookies?: ESPNCookies;
     error?: string;
+    cookies?: ESPNCookies;
+    syncedTeam?: {
+        leagueId: string;
+        timestamp: number;
+    };
 }

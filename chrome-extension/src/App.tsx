@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { ESPNCookies, ExtensionMessage } from './types';
-import { StatusIndicator } from './components/StatusIndicator';
-import { CookieDisplay } from './components/CookieDisplay';
-import { RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import browser from "webextension-polyfill";
+import { ESPNCookies, ExtensionMessage, ExtensionResponse } from "./types";
+import { StatusIndicator } from "./components/StatusIndicator";
+import { CookieDisplay } from "./components/CookieDisplay";
+import { RefreshCw } from "lucide-react";
 
 export const App: React.FC = () => {
   const [cookies, setCookies] = useState<ESPNCookies | null>(null);
@@ -16,10 +17,10 @@ export const App: React.FC = () => {
 
   const checkCurrentPage = async () => {
     try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      setIsESPNPage(tab.url?.includes('espn.com') || false);
+      const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+      setIsESPNPage(tab.url?.includes("espn.com") || false);
     } catch (error) {
-      console.error('Failed to check current page:', error);
+      console.error("Failed to check current page:", error);
     }
   };
 
@@ -29,40 +30,45 @@ export const App: React.FC = () => {
     setCookies(null);
 
     try {
-      const message: ExtensionMessage = { type: 'GET_COOKIES' };
-      const response = await chrome.runtime.sendMessage(message);
+      const message: ExtensionMessage = { type: "GET_COOKIES" };
+      const response: ExtensionResponse = await browser.runtime.sendMessage(message);
 
-      if (response.success) {
-        if (!response.cookies.isValid || !response.cookies.swid || !response.cookies.espn_s2) {
-          if (isESPNPage) {
-            setError('No valid ESPN cookies found. Please make sure you are logged into ESPN.');
-          } else {
-            setError('No valid ESPN cookies found. Please navigate to ESPN Fantasy Football and log in.');
-          }
-
-          setCookies(null);
+      if (response.success && response.cookies) {
+        if (!response.cookies.isValid) {
+          setError(
+            isESPNPage
+              ? "No valid ESPN cookies found. Please make sure you are logged into ESPN."
+              : "No valid ESPN cookies found. Please navigate to ESPN Fantasy Football and log in."
+          );
           return;
         }
-
-        if (!isESPNPage) {
-          setError('No valid ESPN cookies found. Please navigate to ESPN Fantasy Football and log in.');
-          return;
-        }
-
         setCookies(response.cookies);
       } else {
-        if (isESPNPage) {
-          setError(response.error || 'Failed to extract cookies from current page.');
-        } else {
-          setError('Please navigate to ESPN Fantasy Football first.');
-        }
-        setCookies(null);
+        setError(response.error || "Failed to extract cookies.");
       }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Unknown error');
-      setCookies(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const syncTeam = async (leagueId: string) => {
+    try {
+      const message: ExtensionMessage = { type: "SYNC_TEAM", leagueId };
+      const response: ExtensionResponse = await browser.runtime.sendMessage(message);
+
+      if (response.success && response.syncedTeam) {
+        console.log(
+          `✅ Synced league ${response.syncedTeam.leagueId} at ${new Date(
+            response.syncedTeam.timestamp
+          ).toLocaleTimeString()}`
+        );
+      } else {
+        console.error("❌ Sync failed:", response.error);
+      }
+    } catch (err) {
+      console.error("❌ Sync error:", err);
     }
   };
 
@@ -75,8 +81,8 @@ export const App: React.FC = () => {
 
       <div className="glass rounded-lg p-4 mb-4">
         <StatusIndicator
-          status={isESPNPage ? 'online' : 'warning'}
-          text={isESPNPage ? 'ESPN page detected' : 'Navigate to ESPN Fantasy Football'}
+          status={isESPNPage ? "online" : "warning"}
+          text={isESPNPage ? "ESPN page detected" : "Navigate to ESPN Fantasy Football"}
         />
       </div>
 
@@ -94,8 +100,14 @@ export const App: React.FC = () => {
           disabled={loading || !isESPNPage}
           className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-3 rounded-lg font-semibold transition-all"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          {loading ? 'Extracting...' : 'Extract Cookies'}
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          {loading ? "Extracting..." : "Extract Cookies"}
+        </button>
+        <button
+          onClick={() => syncTeam("12345")} // example leagueId
+          className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-3 rounded-lg font-semibold transition-all"
+        >
+          🔄 Sync Team
         </button>
       </div>
 

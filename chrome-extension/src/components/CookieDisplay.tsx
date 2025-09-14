@@ -1,7 +1,7 @@
 import React from 'react';
 import { ESPNCookies } from '../types';
 import { CopyButton } from './CopyButton';
-import { CookieExtractor } from '../utils/cookieExtractor';
+import { formatForEnv, formatForJSON } from '../utils/cookieExtractor';
 
 interface CookieDisplayProps {
     cookies: ESPNCookies;
@@ -34,17 +34,13 @@ export const CookieDisplay: React.FC<CookieDisplayProps> = ({ cookies }) => {
 
             <div className="flex flex-col gap-2">
                 <CopyButton
-                    text={CookieExtractor.formatForJSON(cookies)}
+                    text={formatForJSON(cookies)}
                     label="JSON"
                 />
                 <CopyButton
-                    text={CookieExtractor.formatForEnv(cookies)}
+                    text={formatForEnv(cookies)}
                     label="ENV"
                 />
-            </div>
-
-            <div className="text-xs text-gray-400 text-center">
-                Extracted: {new Date(cookies.extractedAt).toLocaleString()}
             </div>
         </div>
     );
