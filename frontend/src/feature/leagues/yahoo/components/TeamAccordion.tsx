@@ -1,4 +1,4 @@
-import { Box, Typography, Accordion, AccordionSummary, Avatar, useTheme, AccordionDetails } from "@mui/material";
+import { Box, Typography, Accordion, AccordionSummary, Avatar, useTheme, AccordionDetails, Chip } from "@mui/material";
 import { type YahooTeamWithStandings } from "@services/api/yahoo";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -10,6 +10,10 @@ export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; 
     const handleToggleAccordion = () => {
         setOpen((prev) => !prev);
     };
+    const isUserTeam = Array.isArray(team.managers.manager) ?
+        team.managers.manager.some((manager) => !!manager.is_current_login) :
+        !!team.managers.manager.is_current_login;
+
     return (
         <Accordion
             key={team.team_key}
@@ -63,7 +67,10 @@ export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; 
                     <Typography variant="body2" color="text.secondary">
                         ({team.team_standings.outcome_totals.wins} - {team.team_standings.outcome_totals.ties} - {team.team_standings.outcome_totals.losses})
                     </Typography>
+                    {isUserTeam &&
+                        <Chip label="My Team" />
 
+                    }
                 </Box>
             </AccordionSummary>
             <AccordionDetails

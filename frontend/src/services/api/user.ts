@@ -60,7 +60,7 @@ export interface UserLeagues {
 
 export async function fetchUserLeagues() {
     try {
-        const response = await serverGet<UserLeagues>("/sleeper_league/");
+        const response = await serverGet<UserLeagues>("/user/leagues");
         return response;
     } catch (e) {
         console.error(e);

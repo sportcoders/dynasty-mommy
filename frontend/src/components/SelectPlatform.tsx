@@ -44,7 +44,7 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
                     transition: 'all 0.2s ease'
                 }}
             >
-                <img src="/SleeperWhite.svg" />
+                <img src="/assets/SleeperWhite.svg" />
             </Button>
 
             <Button
@@ -68,7 +68,7 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
                     transition: 'all 0.2s ease'
                 }}
             >
-                <img src="/ESPNWhite.svg" />
+                <img src="/assets/ESPNWhite.svg" />
             </Button>
 
             <Button
@@ -91,7 +91,7 @@ export default function SelectPlatform({ platform }: { platform: SupportedFantas
                     transition: 'all 0.2s ease'
                 }}
             >
-                <img src="/YahooWhite.svg" />
+                <img src="/assets/YahooWhite.svg" />
             </Button>
         </Box>
     );

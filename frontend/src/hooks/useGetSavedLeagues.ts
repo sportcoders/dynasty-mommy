@@ -11,6 +11,5 @@ export function useGetSavedLeagues() {
         enabled: !!username,
         select: (leagues) => leagues?.leagues
     });
-
     return { isPending, isError, data, error };
 }
