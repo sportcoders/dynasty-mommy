@@ -3,6 +3,7 @@ export interface ESPNCookies {
     espn_s2: string | null;
     extractedAt: string;
     isValid: boolean;
+    extractedFromESPNPage?: boolean;
 }
 
 export interface ExtensionMessage {

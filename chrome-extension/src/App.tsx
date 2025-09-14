@@ -12,7 +12,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     checkCurrentPage();
-    loadStoredCookies();
   }, []);
 
   const checkCurrentPage = async () => {
@@ -24,32 +23,44 @@ export const App: React.FC = () => {
     }
   };
 
-  const loadStoredCookies = async () => {
-    try {
-      const result = await chrome.storage.local.get('espnCookies');
-      if (result.espnCookies) {
-        setCookies(result.espnCookies);
-      }
-    } catch (error) {
-      console.error('Failed to load stored cookies:', error);
-    }
-  };
-
   const extractCookies = async () => {
     setLoading(true);
     setError(null);
+    setCookies(null);
 
     try {
       const message: ExtensionMessage = { type: 'GET_COOKIES' };
       const response = await chrome.runtime.sendMessage(message);
 
       if (response.success) {
+        if (!response.cookies.isValid || !response.cookies.swid || !response.cookies.espn_s2) {
+          if (isESPNPage) {
+            setError('No valid ESPN cookies found. Please make sure you are logged into ESPN.');
+          } else {
+            setError('No valid ESPN cookies found. Please navigate to ESPN Fantasy Football and log in.');
+          }
+
+          setCookies(null);
+          return;
+        }
+
+        if (!isESPNPage) {
+          setError('No valid ESPN cookies found. Please navigate to ESPN Fantasy Football and log in.');
+          return;
+        }
+
         setCookies(response.cookies);
       } else {
-        setError(response.error || 'Failed to extract cookies');
+        if (isESPNPage) {
+          setError(response.error || 'Failed to extract cookies from current page.');
+        } else {
+          setError('Please navigate to ESPN Fantasy Football first.');
+        }
+        setCookies(null);
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unknown error');
+      setCookies(null);
     } finally {
       setLoading(false);
     }
@@ -72,7 +83,7 @@ export const App: React.FC = () => {
       {!isESPNPage && (
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-4">
           <p className="text-yellow-400 text-sm">
-            📝 Please navigate to ESPN Fantasy Football and log in to extract cookies.
+            🔍 Please navigate to ESPN Fantasy Football and log in to extract cookies.
           </p>
         </div>
       )}
@@ -80,10 +91,10 @@ export const App: React.FC = () => {
       <div className="flex gap-2 mb-4">
         <button
           onClick={extractCookies}
-          disabled={loading}
+          disabled={loading || !isESPNPage}
           className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-3 rounded-lg font-semibold transition-all"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'spin-slow' : ''}`} />
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Extracting...' : 'Extract Cookies'}
         </button>
       </div>

@@ -3,6 +3,16 @@ import { ESPNCookies, CookieExtractionResult } from '../types';
 export class CookieExtractor {
     static async extractFromChrome(): Promise<CookieExtractionResult> {
         try {
+            const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            const isOnESPN = activeTab.url?.includes('espn.com') || false;
+
+            if (!isOnESPN) {
+                return {
+                    success: false,
+                    error: 'Must be on ESPN website to extract cookies'
+                };
+            }
+
             const [swidCookie, espnS2Cookie] = await Promise.all([
                 chrome.cookies.get({
                     url: 'https://fantasy.espn.com',
@@ -21,11 +31,19 @@ export class CookieExtractor {
                 isValid: !!(swidCookie?.value && espnS2Cookie?.value)
             };
 
+            if (!cookies.isValid) {
+                return {
+                    success: false,
+                    error: 'No valid ESPN cookies found. Please log in to ESPN Fantasy Football.'
+                };
+            }
+
             return {
                 success: true,
                 cookies
             };
         } catch (error) {
+            console.error('Cookie extraction error:', error);
             return {
                 success: false,
                 error: error instanceof Error ? error.message : 'Unknown error'
@@ -33,27 +51,12 @@ export class CookieExtractor {
         }
     }
 
-    static async extractFromDocument(): Promise<ESPNCookies> {
-        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-            const [name, value] = cookie.trim().split('=');
-            acc[name] = value;
-            return acc;
-        }, {} as Record<string, string>);
-
-        return {
-            swid: cookies.SWID || null,
-            espn_s2: cookies.espn_s2 || null,
-            extractedAt: new Date().toISOString(),
-            isValid: !!(cookies.SWID && cookies.espn_s2)
-        };
-    }
-
     static formatForEnv(cookies: ESPNCookies): string {
         return `# ESPN Fantasy Football Credentials
-# Extracted on: ${cookies.extractedAt}
-SWID=${cookies.swid || ''}
-ESPN_S2=${cookies.espn_s2 || ''}
-`;
+                # Extracted on: ${cookies.extractedAt}
+                SWID=${cookies.swid || ''}
+                ESPN_S2=${cookies.espn_s2 || ''}
+                `;
     }
 
     static formatForJSON(cookies: ESPNCookies): string {
