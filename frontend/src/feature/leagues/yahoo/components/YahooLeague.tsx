@@ -4,16 +4,18 @@ import {
     Button,
     Chip,
     CircularProgress,
+    IconButton,
     MenuItem,
     Select,
     Tab,
     Tabs,
+    Tooltip,
     Typography,
     useTheme,
     type SelectChangeEvent,
 } from "@mui/material";
 import { useEffect, useState, useCallback } from "react";
-import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import { getRouteApi, useCanGoBack, useNavigate, useRouter } from "@tanstack/react-router";
 
 // Components
 import BackButton from "@components/BackButton";
@@ -29,6 +31,7 @@ import RosterTab from "./RosterTab";
 import useSaveLeague from "../hooks/useSaveLeague";
 import useGetSavedLeague from "@feature/leagues/yahoo/hooks/useGetSavedLeague";
 import useDeleteLeague from "../hooks/useDeleteLeague";
+import { ArrowBack } from "@mui/icons-material";
 
 // Component Interfaces
 
@@ -63,7 +66,8 @@ export default function YahooLeague({
 
     const username = useAppSelector((state) => state.auth.username);
     const navigate = useNavigate({ from: `/leagues/$leagueId` });
-
+    const canGoBack = useCanGoBack();
+    const router = useRouter();
     // State
     const { data: league, loading, error, errorMessage } = useGetTeams(league_key);
     const { mutate: saveLeague, isPending: isSavingLeague } = useSaveLeague();
@@ -157,7 +161,21 @@ export default function YahooLeague({
                 <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
                     {/* Left side - League info */}
                     <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
-                        <BackButton url="/" />
+                        {canGoBack ?
+                            <Tooltip title="Go back">
+                                <IconButton
+                                    onClick={() => router.history.back()}
+                                    sx={{
+                                        mr: 2,
+                                        '&:hover': {
+                                            backgroundColor: 'action.hover',
+                                        }
+                                    }}>
+                                    <ArrowBack />
+                                </IconButton>
+                            </Tooltip>
+                            :
+                            <BackButton url="/" />}
                         <Avatar
                             // src={leagueInfo.avatar}
                             // alt={`${leagueInfo.name} avatar`}
@@ -219,6 +237,6 @@ export default function YahooLeague({
                     </Typography>
                 </CustomTabPanel>
             </Box>
-        </Box>
+        </Box >
     );
 }

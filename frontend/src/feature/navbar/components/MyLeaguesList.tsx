@@ -24,17 +24,24 @@ import { useRouter } from '@tanstack/react-router';
  */
 export const MyLeaguesList = ({ myLeaguesOpen }: { myLeaguesOpen: boolean; }) => {
     const { leagues, loading, error } = useGetSavedLeaguesNavBar();
-
     const router = useRouter();
 
     if (!leagues || error) return null;
 
     // -------------------- Handlers --------------------
     const handleNavigateToLeague = (id: string) => {
-        router.navigate({
-            to: LeagueRoute.to,
-            params: { leagueId: id },
-        });
+        const sleeper_pattern = /^\d+$/;
+        if (sleeper_pattern.test(id)) {
+            router.navigate({
+                to: LeagueRoute.to,
+                params: { leagueId: id },
+            });
+        }
+        else {
+            router.navigate({
+                to: `/league/yahoo/${id}`
+            });
+        }
     };
 
     return (

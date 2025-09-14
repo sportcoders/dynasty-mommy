@@ -99,7 +99,7 @@ export type getTeamsAndLeagueResponse = {
 interface YahooTeam {
     has_draft_grade: number;
     league_scoring_type: string;
-    managers: YahooManager | YahooManager[]; //can normalize to an array
+    managers: { manager: YahooManager | YahooManager[]; }; //can normalize to an array
     name: string;
     number_of_moves: number;
     number_of_trades: number;
@@ -135,6 +135,7 @@ type YahooManager = {
     image_url: string;
     manager_id: number;
     nickname: string;
+    is_current_login?: number;
 };
 type YahooTeamLogo = {
     size: string;
