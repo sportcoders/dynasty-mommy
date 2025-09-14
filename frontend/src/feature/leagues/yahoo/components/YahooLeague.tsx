@@ -32,6 +32,7 @@ import useSaveLeague from "../hooks/useSaveLeague";
 import useGetSavedLeague from "@feature/leagues/yahoo/hooks/useGetSavedLeague";
 import useDeleteLeague from "../hooks/useDeleteLeague";
 import { ArrowBack } from "@mui/icons-material";
+import { DisplayAvatar } from "@components/AvatarGetDisplay";
 
 // Component Interfaces
 
@@ -176,15 +177,8 @@ export default function YahooLeague({
                             </Tooltip>
                             :
                             <BackButton url="/" />}
-                        <Avatar
-                            // src={leagueInfo.avatar}
-                            // alt={`${leagueInfo.name} avatar`}
-                            sx={{
-                                width: 60,
-                                height: 60,
-                                boxShadow: theme.shadows[3],
-                            }}
-                        />
+                        <DisplayAvatar avatar_url={league.logo_url} platform="yahoo" />
+
                         <Typography variant="h3" component="h1" color="text.primary">
                             {league.name}
                         </Typography>
