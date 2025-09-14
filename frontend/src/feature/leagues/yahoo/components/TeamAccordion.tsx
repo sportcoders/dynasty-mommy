@@ -3,6 +3,7 @@ import { type YahooTeamWithStandings } from "@services/api/yahoo";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DisplayRoster } from "./RosterByPosition";
+import { DisplayAvatar } from "@components/AvatarGetDisplay";
 
 export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; }) {
     const [open, setOpen] = useState(false);
@@ -13,7 +14,9 @@ export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; 
     const isUserTeam = Array.isArray(team.managers.manager) ?
         team.managers.manager.some((manager) => !!manager.is_current_login) :
         !!team.managers.manager.is_current_login;
-
+    const teamLogo = Array.isArray(team.team_logos.team_logo) ?
+        team.team_logos.team_logo[0].url
+        : team.team_logos.team_logo.url;
     return (
         <Accordion
             key={team.team_key}
@@ -42,11 +45,10 @@ export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; 
                     },
                 }}
             >
-                <Avatar
-                    // src={team.team_logos || undefined}
-                    alt={`${team.name} avatar`}
+                <DisplayAvatar platform="yahoo"
+                    avatar_url={teamLogo}
+                    size={40}
                 />
-
                 <Box
                     display="flex"
                     flexDirection={{ xs: "column", sm: "row" }}
