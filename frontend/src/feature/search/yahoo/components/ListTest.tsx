@@ -1,7 +1,7 @@
 import { AddCircle, RemoveCircle } from "@mui/icons-material";
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
+import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
 import type { League } from "@services/sleeper";
-import { useGetAvatars } from "./useGetAvatars";
+import { DisplayAvatar } from "@components/AvatarGetDisplay";
 
 interface displayLeaguesListProps {
     /**
@@ -44,7 +44,6 @@ export default function ListTest({ leagues,
     /**
      * @returns List component that displays all leagues it was passed
      */
-    const { objectUrls: avatars } = useGetAvatars(leagues.flatMap((league) => league.avatar));
     return (
         <List sx={{ p: 0 }}>
             {leagues.map((league) => (
@@ -100,13 +99,7 @@ export default function ListTest({ leagues,
                 >
                     {displayAvatar && (
                         <ListItemAvatar>
-                            <Avatar
-                                src={avatars[league.avatar]}
-                                sx={{
-                                    width: 48,
-                                    height: 48,
-                                }}
-                            />
+                            <DisplayAvatar platform="yahoo" avatar_url={league.avatar} size={48} />
                         </ListItemAvatar>
                     )}
                     <Tooltip title={league.name} arrow>
