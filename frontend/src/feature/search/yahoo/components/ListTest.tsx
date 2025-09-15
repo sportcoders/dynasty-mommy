@@ -99,7 +99,7 @@ export default function ListTest({ leagues,
                 >
                     {displayAvatar && (
                         <ListItemAvatar>
-                            <DisplayAvatar avatar_url={league.avatar} size={48} />
+                            <DisplayAvatar avatar_url={league.avatar} size={48} platform="yahoo" />
                         </ListItemAvatar>
                     )}
                     <Tooltip title={league.name} arrow>

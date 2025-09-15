@@ -27,10 +27,13 @@ export default function RosterTab({ league, error, loading }: { league: getTeams
         {!league && !loading && <DisplayMessage message="No teams found for this league." />}
 
         {/* Teams List */}
-        {league && !loading && league.standings.teams && (
+        {league && !loading && (Array.isArray(league.standings.teams.team) ?
             league.standings.teams.team.map((team) => (
                 <TeamAccordion team={team} key={team.team_id} />
             ))
-        )}
+            :
+            <TeamAccordion team={league.standings.teams.team} />
+        )
+        }
     </>;
 }
