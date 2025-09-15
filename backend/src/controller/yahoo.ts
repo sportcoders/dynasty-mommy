@@ -111,7 +111,9 @@ async function api(method: "GET" | "POST", url: string, token: YahooTokens, post
     if (data.error) {
         throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: data.error.description });
     }
-    return data;
+    if (!data.fantasy_content) throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "no fantasy content in response" });
+
+    return data.fantasy_content;
 }
 
 const params_from_yahoo_redirect = z.object({
@@ -171,7 +173,7 @@ export async function getLeagues(req: ExpressRequest, res: Response, next: NextF
         if (!data || Object.keys(data).length == 0) {
             res.status(HttpSuccess.OK).json({ games: {} });
         }
-        const users_leagues = data.fantasy_content.users.user.games.game.leagues.league;
+        const users_leagues = data.users.user.games.game.leagues.league;
 
         res.json({ leagues: Array.isArray(users_leagues) ? users_leagues : [users_leagues] });
     }
@@ -199,9 +201,9 @@ async function getTeams(league_key: string, tokens: YahooTokens) {
 
     const data = await api("GET", endpoint, tokens);
 
-    if (!data.fantasy_content.league) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
+    if (!data.league) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
 
-    const teams: YahooTeamInfo[] = data.fantasy_content.league.teams.team;
+    const teams: YahooTeamInfo[] = data.league.teams.team;
 
     return teams;
 }
@@ -225,8 +227,8 @@ export async function getTeamsInLeague(req: ExpressRequest, res: Response, next:
 async function getTeamWithRoster(team_key: string, tokens: YahooTokens) {
     const endpoint = `/team/${team_key}/roster`;
     const data = await api("GET", endpoint, tokens);
-    if (!data.fantasy_content.team) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
-    const team_with_players = data.fantasy_content.team;
+    if (!data.team) throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "League not found" });
+    const team_with_players = data.team;
 
     return team_with_players;
 }
@@ -277,7 +279,7 @@ export async function getLeagueAndTeams(req: ExpressRequest, res: Response, next
         const tokens = await getTokenForUser(req.user?.user_id);
 
         const data = await api("GET", endpoint, tokens);
-        const league = data.fantasy_content.league;
+        const league = data.league;
         res.status(HttpSuccess.OK).json(league);
     }
     catch (e) {
@@ -376,6 +378,22 @@ export async function getAllSavedYahooLeague(req: ExpressRequest, res: Response,
         const leagues = await getAllYahooLeagues(user, "league_key");
 
         res.status(HttpSuccess.OK).json(leagues);
+    }
+    catch (e) {
+        next(e);
+    }
+}
+export async function getTransactions(req: ExpressRequest, res: Response, next: NextFunction) {
+    try {
+        const { league_key } = YahooLeagueParams.parse(req.params);
+        const endpoint = `/league/${league_key}/transactions`;
+
+
+        const tokens = await getTokenForUser(req.user?.user_id);
+
+        const data = await api("GET", endpoint, tokens);
+
+        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions });
     }
     catch (e) {
         next(e);
