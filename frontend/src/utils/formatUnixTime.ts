@@ -14,6 +14,9 @@
  * ```
  */
 export const formatUnixTime = (time: string | number): string => {
-    const day = new Date(Number(time));
+    const timestamp = Number(time);
+    const millis = timestamp < 1e12 ? timestamp * 1000 : timestamp;
+
+    const day = new Date(millis);
     return day.toString().substring(4, 21);
 };
