@@ -88,11 +88,11 @@ export type getTeamsAndLeagueResponse = {
     standings: {
         teams: {
             team:
-            YahooTeamWithStandings[];
+            YahooTeamWithStandings[] | YahooTeamWithStandings;
         };
     };
     teams: {
-        team: YahooTeam[];
+        team: YahooTeam[] | YahooTeam;
     };
 
 };
@@ -162,10 +162,6 @@ interface YahooPlayer {
     display_position: string;
     primary_position: string;
     eligible_positions: string[];
-    selected_position: {
-        coverage_type: string;
-        position: string;
-    };
 }
 export async function getLeagueAndTeams(league_key: string) {
     const response = await serverGet<getTeamsAndLeagueResponse>(`/yahoo/leagues/${league_key}/teams`);
@@ -202,4 +198,32 @@ interface SavedLeagueResponse {
 export async function getAllSavedYahooLeague() {
     const response = await serverGet<SavedLeagueResponse[]>(`/yahoo/league/allSaved`);
     return response;
+}
+
+export type YahooTransaction = {
+    players: {
+        player: YahooTransactionPlayer[] | YahooTransactionPlayer,
+    },
+    status: string,
+    timestamp: number,
+    transaction_id: number,
+    transaction_key: string,
+    type: string;
+};
+
+export async function getTransactions(league_key: string) {
+    const response = await serverGet<{ transactions: { transaction: YahooTransaction[]; }; }>(`/yahoo/league/${league_key}/transactions`);
+    return response?.transactions.transaction ?? null;
+
+}
+export interface YahooTransactionPlayer extends YahooPlayer {
+    transaction_data: {
+        destination_team_key: string;
+        destination_team_name: string;
+        destination_type: string;
+        source_type: string;
+        source_team_key: string;
+        source_team_name: string;
+        type: string;
+    };
 }
