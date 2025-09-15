@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from "../app";
 import { YahooToken } from "../models/yahoo_tokens";
 import { YahooLeague } from "../models/yahoo_league";
+import { mapTransactions } from "../utils/yahoo/yahoo_transaction";
 
 const YAHOO_REDIRECT_URI = "https://dynasty-mommy-775797418596.us-west1.run.app/yahoo/callback";
 const YAHOO_API_URL = `https://fantasysports.yahooapis.com/fantasy/v2`;
@@ -393,7 +394,7 @@ export async function getTransactions(req: ExpressRequest, res: Response, next: 
 
         const data = await api("GET", endpoint, tokens);
 
-        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions });
+        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions ? mapTransactions(data.league.transactions) : [] });
     }
     catch (e) {
         next(e);
