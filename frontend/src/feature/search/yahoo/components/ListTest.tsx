@@ -1,7 +1,7 @@
 import { AddCircle, RemoveCircle } from "@mui/icons-material";
 import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
 import type { League } from "@services/sleeper";
-import { DisplayAvatar } from "@components/AvatarGetDisplay";
+import { DisplayAvatar } from "@components/DisplayAvatar";
 
 interface displayLeaguesListProps {
     /**
@@ -99,7 +99,7 @@ export default function ListTest({ leagues,
                 >
                     {displayAvatar && (
                         <ListItemAvatar>
-                            <DisplayAvatar platform="yahoo" avatar_url={league.avatar} size={48} />
+                            <DisplayAvatar avatar_url={league.avatar} size={48} />
                         </ListItemAvatar>
                     )}
                     <Tooltip title={league.name} arrow>
