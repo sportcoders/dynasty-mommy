@@ -202,7 +202,7 @@ export async function getAllSavedYahooLeague() {
 
 export type YahooTransaction = {
     players: {
-        player: YahooTransactionPlayer[] | YahooTransactionPlayer,
+        player: YahooTransactionPlayer[],
     },
     status: string,
     timestamp: number,

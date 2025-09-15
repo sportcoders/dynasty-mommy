@@ -3,7 +3,6 @@ import { Accordion, AccordionSummary, Box, Chip, Typography, AccordionDetails } 
 import { type YahooTransaction, type YahooTransactionPlayer } from "@services/api/yahoo";
 import { useState, type SyntheticEvent } from "react";
 import { DisplayAddDrop, DisplayTrades } from "./TransactionContent";
-import { NormalizeToArray } from "@app/utils/adapter";
 
 export const TransactionAccordion = ({
     transaction
@@ -43,7 +42,7 @@ export const TransactionAccordion = ({
 
 
 
-    const players = NormalizeToArray<YahooTransactionPlayer>(transaction.players.player);
+    const players = transaction.players.player;
     const teams = new Set<string>();
     for (const player of players) {
         if (!!player.transaction_data.destination_team_name)

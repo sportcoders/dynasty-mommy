@@ -19,7 +19,6 @@ import {
 
 import { formatUnixTime } from "@utils/formatUnixTime";
 import { type YahooTransaction, type YahooTransactionPlayer } from "@services/api/yahoo";
-import { NormalizeToArray } from "@app/utils/adapter";
 
 // -------------------- Components --------------------
 /**
@@ -34,7 +33,7 @@ export const DisplayAddDrop = ({
     transaction: YahooTransaction;
 }) => {
 
-    const transactions = NormalizeToArray<YahooTransactionPlayer>(transaction.players.player);
+    const transactions = transaction.players.player;
     const adds = transactions.filter((player) => player.transaction_data.type == "add");
     const drops = transactions.filter((player) => player.transaction_data.type == "drop");
     return (
@@ -100,8 +99,6 @@ export const DisplayTrades = ({
 }) => {
 
     const teams: Record<string, TradeDisplayTeam> = {};
-    if (!Array.isArray(transaction.players.player)) return;
-
 
     for (const player of transaction.players.player) {
         if (teams[player.transaction_data.destination_team_key])
