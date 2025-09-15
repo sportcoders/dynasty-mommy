@@ -32,7 +32,7 @@ import useSaveLeague from "../hooks/useSaveLeague";
 import useGetSavedLeague from "@feature/leagues/yahoo/hooks/useGetSavedLeague";
 import useDeleteLeague from "../hooks/useDeleteLeague";
 import { ArrowBack } from "@mui/icons-material";
-import { DisplayAvatar } from "@components/AvatarGetDisplay";
+import { DisplayAvatar } from "@components/DisplayAvatar";
 
 // Component Interfaces
 

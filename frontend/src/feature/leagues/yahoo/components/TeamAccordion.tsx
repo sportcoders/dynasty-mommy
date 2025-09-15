@@ -3,7 +3,7 @@ import { type YahooTeamWithStandings } from "@services/api/yahoo";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DisplayRoster } from "./RosterByPosition";
-import { DisplayAvatar } from "@components/AvatarGetDisplay";
+import { DisplayAvatar } from "@components/DisplayAvatar";
 
 export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; }) {
     const [open, setOpen] = useState(false);
@@ -45,8 +45,9 @@ export default function TeamAccordion({ team }: { team: YahooTeamWithStandings; 
                     },
                 }}
             >
-                <DisplayAvatar platform="yahoo"
+                <DisplayAvatar
                     avatar_url={teamLogo}
+                    platform="yahoo"
                     size={40}
                 />
                 <Box

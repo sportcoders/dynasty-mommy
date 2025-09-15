@@ -1,6 +1,7 @@
 import { AddCircle, RemoveCircle } from "@mui/icons-material";
 import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
 import type { League } from "@services/sleeper";
+import { DisplayAvatar } from "./DisplayAvatar";
 
 interface displayLeaguesListProps {
     /**
@@ -98,12 +99,10 @@ export function DisplayLeaguesList({ leagues,
                 >
                     {displayAvatar && (
                         <ListItemAvatar>
-                            <Avatar
-                                src={league.avatar}
-                                sx={{
-                                    width: 48,
-                                    height: 48,
-                                }}
+                            <DisplayAvatar
+                                avatar_url={league.avatar}
+                                size={48}
+                                platform="sleeper"
                             />
                         </ListItemAvatar>
                     )}
