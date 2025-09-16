@@ -1,5 +1,6 @@
 // -------------------- Imports -------------------
-import { isUserLeague, type League } from "@services/api/user";
+import { isUserLeague } from "@services/api/sleeper_league";
+import type { UserLeague } from "@services/api/user";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
  * @param props.disabled - A flag to disable the query from running.
  * @returns An object containing the query data (true if it's a user league, false otherwise), error state, and loading state.
  */
-export default function useIsUserLeague(league: League, disabled: boolean) {
+export default function useIsUserLeague(league: UserLeague, disabled: boolean) {
     const { data, isError, isPending: loading } = useQuery({
         queryKey: ['league', league],
         queryFn: () => isUserLeague(league),
