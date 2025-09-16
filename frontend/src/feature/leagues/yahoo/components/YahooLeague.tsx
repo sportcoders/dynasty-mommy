@@ -33,6 +33,7 @@ import useGetSavedLeague from "@feature/leagues/yahoo/hooks/useGetSavedLeague";
 import useDeleteLeague from "../hooks/useDeleteLeague";
 import { ArrowBack } from "@mui/icons-material";
 import { DisplayAvatar } from "@components/DisplayAvatar";
+import TransactionTab from "./TransactionTab";
 
 // Component Interfaces
 
@@ -209,7 +210,16 @@ export default function YahooLeague({
                         </Box>
                     )}
                 </Box>
-
+                {/* Navigation */}
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Tabs value={tab} onChange={handleTabChange} aria-label="league tabs">
+                            <Tab label="Rosters" {...a11yProps(0)} />
+                            <Tab label="Transactions" {...a11yProps(1)} />
+                            <Tab label="Item Three" {...a11yProps(2)} />
+                        </Tabs>
+                    </Box>
+                </Box>
 
                 {/* Rosters Tab */}
                 <CustomTabPanel value={tab} id={0}>
@@ -218,10 +228,7 @@ export default function YahooLeague({
 
                 {/* Transactions Tab */}
                 <CustomTabPanel value={tab} id={1}>
-
-                    <Typography variant="h6" color="text.primary" textAlign="center">
-                        Oops! Failed to load transactions.
-                    </Typography>
+                    <TransactionTab league_key={league.league_key} />
                 </CustomTabPanel>
 
                 {/* Third Tab */}

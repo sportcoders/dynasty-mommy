@@ -85,10 +85,11 @@ type YahooTeamLogo = {
     url: string;
 };
 interface YahooTeamWithRoster extends YahooTeam {
-    roster: {
-        players: {
-            count: number;
-            player: YahooPlayer;
+    team: {
+        roster: {
+            players: {
+                player: YahooPlayer[];
+            };
         };
     };
 }
@@ -102,9 +103,27 @@ interface YahooPlayer {
     };
     editorial_team_abbr: string;
     display_position: string;
+    primary_position: string;
     eligible_positions: string[];
-    selected_position: {
-        coverage_type: string;
-        position: string;
+}
+export type YahooTransaction = {
+    players: {
+        player: YahooTransactionPlayer[] | YahooTransactionPlayer,
+    },
+    status: string,
+    timestamp: number,
+    transaction_id: number,
+    transaction_key: string,
+    type: string;
+};
+export interface YahooTransactionPlayer extends YahooPlayer {
+    transaction_data: {
+        destination_team_key: string;
+        destination_team_name: string;
+        destination_type: string;
+        source_type: string;
+        source_team_key: string;
+        source_team_name: string;
+        type: string;
     };
 }
