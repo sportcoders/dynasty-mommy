@@ -13,4 +13,5 @@ yahoo_router.route("/league").post(yahoo_controller.saveLeague);
 yahoo_router.route("/league/allSaved").get(yahoo_controller.getAllSavedYahooLeague);
 yahoo_router.route("/league/:league_key").delete(yahoo_controller.removeLeague);
 yahoo_router.route("/league/:league_key").get(yahoo_controller.getLeague);
+yahoo_router.route("/league/:league_key/transactions").get(yahoo_controller.getTransactions);
 export default yahoo_router;

@@ -4,6 +4,7 @@ import { getRouteApi } from "@tanstack/react-router";
 export default function YahooLeaguePage() {
     const route = getRouteApi('/league/yahoo/$league_key');
     const { league_key } = route.useParams();
+    const { tab } = route.useSearch();
 
-    return <YahooLeague league_key={league_key} tab={0} />;
+    return <YahooLeague league_key={league_key} tab={tab ?? 0} />;
 }
