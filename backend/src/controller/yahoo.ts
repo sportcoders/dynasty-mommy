@@ -392,7 +392,7 @@ export async function getTransactions(req: ExpressRequest, res: Response, next: 
 
         const data = await api("GET", endpoint, tokens);
 
-        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions ? mapTransactions(data.league.transactions) : [] });
+        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions.transaction ? mapTransactions(data.league.transactions.transaction) : [] });
     }
     catch (e) {
         next(e);
