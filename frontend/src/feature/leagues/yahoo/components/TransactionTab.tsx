@@ -38,9 +38,10 @@ export default function TransactionTab({
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            {data ? data.map((week) => {
+            {data && data.length > 0 ? data.map((week, index) => {
                 return (
                     <TransactionAccordion
+                        key={index}
                         transaction={week}
                     />
                 );
