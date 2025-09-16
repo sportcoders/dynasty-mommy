@@ -6,21 +6,19 @@ import {
     Typography,
 } from "@mui/material";
 
-import type { League } from "@services/sleeper";
-
 import { useNavigate } from "@tanstack/react-router";
 import { type YahooLeague } from "@services/api/yahoo";
-import ListTest from "./ListTest";
 import useSaveLeague from "@feature/leagues/yahoo/hooks/useSaveLeague";
 import useDeleteLeague from "@feature/leagues/yahoo/hooks/useDeleteLeague";
 import useGetAllSavedYahooLeagues from "../hooks/useGetAllSavedYahooLeagues";
+import { DisplayLeaguesList, type UserSavedLeagueListDisplay } from "@components/DisplayLeaguesList";
 
-function mapYahooLeagueToLeague(yahooLeague: YahooLeague): League {
+function mapYahooLeagueToLeague(yahooLeague: YahooLeague): UserSavedLeagueListDisplay {
     return {
         league_id: yahooLeague.league_key,
         name: yahooLeague.name,
-        season: String(yahooLeague.season),
         avatar: yahooLeague.logo_url,
+        platform: "yahoo"
     };
 }
 export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; }) {
@@ -92,7 +90,7 @@ export default function YahooLeaguesList({ leagues }: { leagues: YahooLeague[]; 
                 </Box>
             ) : (
                 <Box>
-                    <ListTest leagues={yahooLeagueResult} displayAvatar={true} loggedIn={true} onLeagueClick={navigateToLeague}
+                    <DisplayLeaguesList leagues={yahooLeagueResult} displayAvatar={true} loggedIn={true} onLeagueClick={navigateToLeague}
                         saveDelete={savedLeagues ? {
                             saveLeague: handleSaveLeague,
                             deleteLeague: handleRemoveLeague,
