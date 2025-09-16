@@ -308,7 +308,6 @@ export async function unlinkYahoo(req: ExpressRequest, res: Response, next: Next
 
 const YahooSaveTeamParams = z.object({
     league: z.object({
-        team_key: z.string().optional(),
         league_key: z.string()
     })
 });
@@ -318,7 +317,7 @@ export async function saveLeague(req: ExpressRequest, res: Response, next: NextF
 
         const user_id = req.user?.user_id;
 
-        await AppDataSource.getRepository(YahooLeague).upsert({ userId: user_id, league_key: league.league_key, team_key: league.team_key }, ['userId', 'league_key']);
+        await AppDataSource.getRepository(YahooLeague).upsert({ userId: user_id, league_key: league.league_key, yahoo_token_userId: user_id }, ['userId', 'league_key']);
 
         res.status(HttpSuccess.OK).send({ detail: "successful save" });
     }
@@ -364,7 +363,6 @@ export async function getAllYahooLeagues(user_id: string, league_key_name: "leag
     const leagues = await AppDataSource.getRepository(YahooLeague).createQueryBuilder("league")
         .select([
             `league.league_key AS "${league_key_name}"`,
-            "league.team_key AS team_key",
             "'yahoo' AS platform"
         ])
         .where("league.userId = :user_id", { user_id })
@@ -394,7 +392,7 @@ export async function getTransactions(req: ExpressRequest, res: Response, next: 
 
         const data = await api("GET", endpoint, tokens);
 
-        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions ? mapTransactions(data.league.transactions) : [] });
+        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions.transaction ? mapTransactions(data.league.transactions.transaction) : [] });
     }
     catch (e) {
         next(e);

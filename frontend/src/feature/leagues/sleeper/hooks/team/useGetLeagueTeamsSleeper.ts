@@ -1,25 +1,8 @@
 // -------------------- Imports -------------------
-import { useEffect, useState } from "react";
+import { sleeper_getTeamInfo } from "@services/sleeper";
+import { useQuery } from "@tanstack/react-query";
 
-import { sleeper_getTeamInfo, sleeper_getAvatarThumbnail } from "@services/sleeper";
-import { type TeamInfo } from "@services/sleeper";
 
-/**
- * Fetches and returns a URL for a league avatar image given its avatar ID.
- *
- * @param avatar_id - The unique identifier for the avatar image.
- * @returns A promise that resolves to the object URL for the avatar image,
- * or null if the avatar could not be fetched.
- */
-const getAvatar = async (avatar_id: string) => {
-    const blob = await sleeper_getAvatarThumbnail(avatar_id);
-    if (!blob) {
-        return null;
-    }
-
-    const url = URL.createObjectURL(blob);
-    return url;
-};
 
 /**
  * Custom React hook that fetches all teams in a Sleeper league, including their avatars.
@@ -31,38 +14,10 @@ const getAvatar = async (avatar_id: string) => {
  * @returns An object containing the loading state, error message, and array of teams (with avatars).
  */
 export default function useGetLeagueTeamsSleeper(league_id: string) {
-    const [teams, setTeams] = useState<TeamInfo[] | null>(null);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const fetchTeams = async () => {
-            setError("");
-            setLoading(true);
-            const res = await sleeper_getTeamInfo(league_id);
-
-            if (!res || res.length === 0) {
-                setError('No teams found for this league ID.');
-                setLoading(false);
-                return;
-            }
-
-            const reqAvatars = await Promise.allSettled(res.map((team) => (team && team.avatar) && getAvatar(team.avatar)));
-            const resAvatars = reqAvatars.map((result) => result.status == 'fulfilled' ? result.value : "");
-            const teams_with_avatar = res.map((team, index) => ({ ...team, avatar: resAvatars[index] }));
-
-            setTeams(teams_with_avatar);
-            setLoading(false);
-        };
-
-        fetchTeams();
-
-        return () => {
-            if (teams)
-                teams.forEach((team) => team.avatar && URL.revokeObjectURL(team.avatar));
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [league_id]);
+    const { data: teams, isPending: loading, isError: error } = useQuery({
+        queryKey: ['sleeperLeagueTeams', league_id],
+        queryFn: () => sleeper_getTeamInfo(league_id)
+    });
 
     return { loading, error, teams };
 }
