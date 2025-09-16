@@ -9,6 +9,8 @@ import { useAppSelector } from "@app/hooks";
 import { useGetLeagues } from "../hooks/useGetLeagues";
 import useUnlinkAccount from "../hooks/useUnlinkAccount";
 import SelectPlatform from "@components/SelectPlatform";
+import { useState } from "react";
+import YahooUnlinkAccountAlert from "./YahooUnlinkAccountAlert";
 
 /**
  * Top-level component that manages the Yahoo Search feature.
@@ -22,6 +24,7 @@ export default function YahooLeagueSearch() {
     const username = useAppSelector((state) => state.auth.username);
     const { mutate: unlink } = useUnlinkAccount();
     const { data, loading, error } = useGetLeagues(!!username);
+    const [oepnAlert, setOpenAlert] = useState<boolean>(false);
     //need to check if user is logged in, if user is logged in we can fetch leagues without requesting login to yahoo
     //can only fetch leagues if we have refresh token for user stored
 
@@ -77,7 +80,7 @@ export default function YahooLeagueSearch() {
                     <YahooLeaguesList leagues={data} />
                 </Box>
                 <Button
-                    onClick={() => unlink()}
+                    onClick={() => setOpenAlert(true)}
                     variant="outlined"
                     color="error"
                     size="medium"
@@ -95,6 +98,7 @@ export default function YahooLeagueSearch() {
                 >
                     Remove Linked Account
                 </Button>
+                <YahooUnlinkAccountAlert open={oepnAlert} handleClose={() => setOpenAlert(false)} />
             </>}
 
             {data && !Array.isArray(data) && !!username && <Button
