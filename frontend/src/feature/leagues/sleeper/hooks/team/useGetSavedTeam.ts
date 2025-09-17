@@ -1,5 +1,5 @@
 // -------------------- Imports -------------------
-import { getSavedTeamSleeperLeague, type savedTeamResponse } from "@services/api/user";
+import { getSavedTeamSleeperLeague, type savedSleeperTeamResponse } from "@services/api/sleeper_league";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
  * - `isError`: A boolean that is `true` if the query failed.
  */
 export default function useGetSavedTeam(league_id: string, disabled: boolean) {
-    const { data, isFetching, isError } = useQuery<savedTeamResponse | null>({
+    const { data, isFetching, isError } = useQuery<savedSleeperTeamResponse | null>({
         queryKey: ['savedTeam', league_id],
         queryFn: async () => getSavedTeamSleeperLeague(league_id),
         enabled: !disabled,

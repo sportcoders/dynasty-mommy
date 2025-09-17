@@ -1,7 +1,7 @@
 // -------------------- Imports -------------------
 import { useNotification } from "@hooks/useNotification";
 
-import { saveSleeperLeague } from "@services/api/user";
+import { saveSleeperLeague } from "@services/api/sleeper_league";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
