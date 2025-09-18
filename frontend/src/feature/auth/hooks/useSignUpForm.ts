@@ -1,6 +1,8 @@
+import { useAppDispatch } from "@app/hooks";
 import { createUser } from "@services/api/user";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { login } from "../authSlice";
 
 export function useSignUpFrom() {
     const reEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -15,6 +17,8 @@ export function useSignUpFrom() {
     const [passwordError, setPasswordError] = useState("");
     const [usernameError, setUsernameError] = useState("");
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmailError("");
         if (!e.target.value.toLowerCase().match(reEmail))
@@ -40,7 +44,7 @@ export function useSignUpFrom() {
         const response = await createUser(username, email, password);
         if (response) {
             //headers are response, if no headers then no authentication
-            console.log(response);
+            dispatch(login(response.username));
             navigate({ to: '/' });
         } else setError("Internal Service Error, Please Try Again");
     };
