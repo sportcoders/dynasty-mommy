@@ -1,4 +1,4 @@
-import { Column, Entity, ForeignKey, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -21,26 +21,4 @@ export class User {
         nullable: false
     })
     password!: string;
-
-    @OneToMany(() => UserLeagues, (userLeague) => userLeague.user, { cascade: true })
-    leagues!: UserLeagues[];
-}
-
-@Entity()
-export class UserLeagues {
-    @PrimaryColumn()
-    userId!: string;
-
-    @ManyToOne(() => User, (user) => user.leagues)
-    @JoinColumn({ name: 'userId' })
-    user!: User;
-
-    @Column()
-    platform!: string;
-
-    @PrimaryColumn()
-    league_id!: string;
-
-    @Column({ nullable: true })
-    saved_user!: string;
 }
