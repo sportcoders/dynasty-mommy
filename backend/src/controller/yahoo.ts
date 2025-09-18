@@ -382,17 +382,37 @@ export async function getAllSavedYahooLeague(req: ExpressRequest, res: Response,
         next(e);
     }
 }
+/**
+ * Will get the 25 most recent transactinos by default
+ */
+const GetTransactionQueryParams = z.object({
+    page: z.coerce.number().min(1)
+});
 export async function getTransactions(req: ExpressRequest, res: Response, next: NextFunction) {
     try {
         const { league_key } = YahooLeagueParams.parse(req.params);
-        const endpoint = `/league/${league_key}/transactions`;
+        const { page } = GetTransactionQueryParams.parse(req.query);
+        //yahoo count starts at 1
+        const endpoint = `/league/${league_key}/transactions;count=${page * 25}`;
 
 
         const tokens = await getTokenForUser(req.user?.user_id);
 
         const data = await api("GET", endpoint, tokens);
 
-        res.status(HttpSuccess.OK).json({ transactions: data.league.transactions.transaction ? mapTransactions(data.league.transactions.transaction) : [] });
+        if (!data.league.transactions.transaction) {
+            res.status(HttpSuccess.OK).json({ transactions: [], count: 0, current_offset: 0 });
+        }
+        else {
+            const mappedTransactions = mapTransactions(data.league.transactions.transaction);
+            if (mappedTransactions.length < page * 25) {
+                res.status(HttpSuccess.OK).json({ transactions: mappedTransactions.slice((page - 1) * 25), hasMore: false });
+
+            }
+            else {
+                res.status(HttpSuccess.OK).json({ transactions: mappedTransactions.slice((page - 1) * 25, page * 25), hasMore: true });
+            }
+        }
     }
     catch (e) {
         next(e);
