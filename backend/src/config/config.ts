@@ -11,6 +11,7 @@ interface Config {
     URL: string;
     CONSUMER_KEY: string;
     CONSUMER_SECRET: string;
+    ESPN_SECRET_KEY: string;
 }
 
 const config: Config = {
@@ -21,7 +22,8 @@ const config: Config = {
     salt_rounds: Number(process.env.SALT_ROUNDS) || 10,
     URL: process.env.DB_URL || '',
     CONSUMER_KEY: process.env.CONSUMER_KEY || '',
-    CONSUMER_SECRET: process.env.CONSUMER_SECRET || ''
+    CONSUMER_SECRET: process.env.CONSUMER_SECRET || '',
+    ESPN_SECRET_KEY: process.env.ESPN_SECRET_KEY || ''
 };
 
 export default config;

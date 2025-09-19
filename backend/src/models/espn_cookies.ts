@@ -1,5 +1,6 @@
 import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from "typeorm";
 import { User } from "./user";
+import { encrypt, decrypt } from "../utils/crypto/crypto";
 
 @Entity()
 export class EspnCookies {
@@ -12,7 +13,12 @@ export class EspnCookies {
     swid!: string;
 
     // The espn_s2 cookie (long session token string)
-    @Column()
+    @Column({
+        transformer: {
+            to: (value: string) => encrypt(value),   // encrypt before saving
+            from: (value: string) => decrypt(value), // decrypt when loading
+        }
+    })
     espn_s2!: string;
 
     // Track updates to the cookies
