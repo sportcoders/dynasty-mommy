@@ -4,7 +4,6 @@ import { authenticate } from "../middleware/authenticate";
 const user_router = Router();
 user_router.use(authenticate);
 user_router.route("/leagues").get(user_controller.getUserLeagues);
-user_router.route("/isUserLeague/:league_id/:platform").get(user_controller.isUserLeague);
 user_router.route("/username").patch(user_controller.changeUsername);
 
 export default user_router;
