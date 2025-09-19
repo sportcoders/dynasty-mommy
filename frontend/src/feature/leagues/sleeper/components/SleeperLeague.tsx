@@ -33,6 +33,7 @@ import {
 } from "@mui/material";
 
 import type { League } from "@services/api/user";
+import { DisplayAvatar } from "@components/DisplayAvatar";
 
 // -------------------- Interfaces --------------------
 interface SleeperLeaguesHomePageProps {
@@ -253,14 +254,9 @@ export default function SleeperLeague({
           {/* Left side - League info */}
           <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
             <BackButton url="/" />
-            <Avatar
-              src={leagueInfo.avatar}
-              alt={`${leagueInfo.name} avatar`}
-              sx={{
-                width: 60,
-                height: 60,
-                boxShadow: theme.shadows[3],
-              }}
+            <DisplayAvatar
+              avatar_url={leagueInfo.avatar}
+              platform="sleeper"
             />
             <Typography variant="h3" component="h1" color="text.primary">
               {leagueInfo.name}

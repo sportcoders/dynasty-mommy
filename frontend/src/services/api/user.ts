@@ -1,7 +1,13 @@
 import { serverDelete, serverGet, serverPost } from "@services/sleeper";
+
 interface User {
     username: string;
 }
+export interface UserLeague {
+    platform: "sleeper" | "yahoo";
+    league_id: string;
+}
+
 export async function loginUser(email: string, password: string) {
     try {
         const user = await serverPost("/auth/login", {
@@ -14,6 +20,7 @@ export async function loginUser(email: string, password: string) {
         throw e;
     }
 }
+
 export async function createUser(
     username: string,
     email: string,
@@ -31,83 +38,13 @@ export async function createUser(
         throw e;
     }
 }
-export interface League {
-    platform: string;
-    league_id: string;
-}
-
-export async function removeLeagueFromUser(league: League) {
-    try {
-        await serverDelete(`/sleeper_league/${league.league_id}`);
-    } catch (e) {
-        console.error(e);
-        throw e;
-    }
-}
-
-export async function isUserLeague(league: League) {
-    try {
-        const response = await serverGet<savedTeamResponse>(`/sleeper_league/${league.league_id}`);
-        return !!response;
-    } catch (e) {
-        console.error(e);
-        throw e;
-    }
-}
-export interface UserLeagues {
-    leagues: League[];
-}
 
 export async function fetchUserLeagues() {
     try {
-        const response = await serverGet<UserLeagues>("/user/leagues");
+        const response = await serverGet<{ leagues: UserLeague[]; }>("/user/leagues");
         return response;
     } catch (e) {
         console.error(e);
         throw e;
     }
-}
-
-export async function saveSleeperLeague({ league_id, user_id }: savedTeam) {
-    try {
-        const response = await serverPost('/sleeper_league/', {
-            league: {
-                league_id: league_id,
-                user_id: user_id
-            }
-        });
-
-        return response;
-    }
-    catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-interface savedTeam {
-    league_id: string,
-    user_id?: string,
-    platform?: string;
-}
-export interface savedTeamResponse {
-    league_id: string,
-    saved_user: string,
-    platform?: string;
-}
-export async function getSavedTeams() {
-    try {
-        const response = await serverGet<savedTeamResponse[]>('/sleeper_league/');
-        return response;
-    }
-    catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-export async function getSavedTeamSleeperLeague(league_id: string) {
-    const response = await serverGet<savedTeamResponse>(`/sleeper_league/${league_id}`);
-    return response;
-
 }

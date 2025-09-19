@@ -211,9 +211,9 @@ export type YahooTransaction = {
     type: string;
 };
 
-export async function getTransactions(league_key: string) {
-    const response = await serverGet<{ transactions: { transaction: YahooTransaction[]; }; }>(`/yahoo/league/${league_key}/transactions`);
-    return response?.transactions.transaction ?? null;
+export async function getTransactions(league_key: string, page: number) {
+    const response = await serverGet<{ transactions: YahooTransaction[]; page: number, hasMore?: boolean; }>(`/yahoo/league/${league_key}/transactions?page=${page}`);
+    return response ?? null;
 
 }
 export interface YahooTransactionPlayer extends YahooPlayer {

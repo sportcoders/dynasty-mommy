@@ -1,7 +1,8 @@
 // -------------------- Imports --------------------
 import { useNotification } from "@hooks/useNotification";
+import { removeLeagueFromUser } from "@services/api/sleeper_league";
 
-import { removeLeagueFromUser, type League } from "@services/api/user";
+import { type UserLeague } from "@services/api/user";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -23,7 +24,7 @@ export default function useDeleteLeague() {
     const { showSuccess, showError } = useNotification();
 
     const { mutate, isPending, isError, isSuccess } = useMutation({
-        mutationFn: (league: League) => removeLeagueFromUser(league),
+        mutationFn: (league: UserLeague) => removeLeagueFromUser(league),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['userSavedLeagues'] });
 

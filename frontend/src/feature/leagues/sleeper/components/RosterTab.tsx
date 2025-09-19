@@ -22,6 +22,7 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
+import { DisplayAvatar } from "@components/DisplayAvatar";
 
 // -------------------- Interfaces --------------------
 interface RosterTabProps {
@@ -129,9 +130,10 @@ export default function RosterTab({ league_id }: RosterTabProps) {
                             },
                         }}
                     >
-                        <Avatar
-                            src={team.avatar || undefined}
-                            alt={`${team.display_name} avatar`}
+                        <DisplayAvatar
+                            avatar_url={team.avatar ?? undefined}
+                            platform="sleeper"
+                            size={40}
                         />
 
                         <Box

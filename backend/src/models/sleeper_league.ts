@@ -6,7 +6,7 @@ export class SleeperLeague {
     @PrimaryColumn()
     userId!: string;
 
-    @ManyToOne(() => User, (user) => user.leagues)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user!: User;
 

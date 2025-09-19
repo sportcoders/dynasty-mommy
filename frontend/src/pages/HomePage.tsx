@@ -1,4 +1,5 @@
 // -------------------- Imports --------------------
+import EspnLeagueSearch from "@feature/search/espn/EspnSearch";
 import SleeperSearch from "@feature/search/sleeper/components/SleeperSearch";
 import YahooLeagueSearch from "@feature/search/yahoo/components/YahooLeagueSearch";
 import { Route } from "@routes/index";
@@ -11,6 +12,7 @@ export default function Home() {
     switch (platform) {
         case "sleeper": return <SleeperSearch />;
         case "yahoo": return <YahooLeagueSearch />;
+        case "espn": return <EspnLeagueSearch />;
         default: return <SleeperSearch />;
     }
 

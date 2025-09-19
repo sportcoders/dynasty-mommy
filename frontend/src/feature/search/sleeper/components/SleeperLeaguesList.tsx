@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { useAppSelector } from "@app/hooks";
 
-import { DisplayLeaguesList } from "@components/DisplayLeaguesList";
+import { DisplayLeaguesList, type UserSavedLeagueListDisplay } from "@components/DisplayLeaguesList";
 import SelectSeasonDropDown from "@components/SelectSeasonDropDown";
 
 import useSaveSleeperLeague from "@feature/leagues/sleeper/hooks/team/useSaveTeam";
@@ -28,7 +28,7 @@ import {
 
 import { Route as LeagueRoute } from "@routes/leagues.$leagueId";
 
-import { sleeper_getUser } from "@services/sleeper";
+import { sleeper_getUser, type League } from "@services/sleeper";
 
 import { useRouter, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -205,7 +205,7 @@ export default function SleeperLeaguesList({
                     <DisplayLeaguesList
                         onLeagueClick={handleNavigateToLeague}
                         displayAvatar={true}
-                        leagues={leagues}
+                        leagues={leagues.map((league) => sleeperLeagueToListDisplay(league))}
                         loggedIn={!!username}
                         saveDelete={{
                             saveLeague,
@@ -217,4 +217,13 @@ export default function SleeperLeaguesList({
             )}
         </Paper>
     );
+}
+
+function sleeperLeagueToListDisplay(league: League): UserSavedLeagueListDisplay {
+    return {
+        league_id: league.league_id,
+        name: league.name,
+        avatar: league.avatar,
+        platform: "sleeper"
+    };
 }

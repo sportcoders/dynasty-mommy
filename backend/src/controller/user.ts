@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { User, UserLeagues } from "../models/user";
+import { User } from "../models/user";
 import { HttpSuccess, HttpError } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { AppDataSource } from "../app";
@@ -21,38 +21,6 @@ export async function getUserLeagues(req: Request, res: Response, next: NextFunc
         next(e);
     }
 }
-
-export async function isUserLeague(req: Request, res: Response, next: NextFunction) {
-    try {
-        const league = req.params;
-
-        if (!req.user || !req.user.email || !req.user.user_id) {
-            throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Unauthorized" });
-        }
-
-        const user = await AppDataSource.manager.findOneBy(User, { email: req.user.email });
-        if (user == null) {
-            throw new AppError({
-                statusCode: HttpError.NOT_FOUND,
-                message: "User not found",
-            });
-        }
-
-        const check = await AppDataSource.manager.findOneBy(UserLeagues, {
-            user: {
-                email: req.user.email
-            },
-            league_id: league.league_id,
-            platform: league.platform
-        });
-
-        res.status(HttpSuccess.OK).json(check ? true : false);
-
-    } catch (e) {
-        next(e);
-    }
-}
-
 
 export async function changeUsername(req: Request, res: Response, next: NextFunction) {
     try {

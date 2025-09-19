@@ -1,7 +1,12 @@
 import { AddCircle, RemoveCircle } from "@mui/icons-material";
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
-import type { League } from "@services/sleeper";
-import { DisplayAvatar } from "./DisplayAvatar";
+import { IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from "@mui/material";
+import { DisplayAvatar } from "@components/DisplayAvatar";
+import type { UserLeague } from "@services/api/user";
+
+export interface UserSavedLeagueListDisplay extends UserLeague {
+    name: string;
+    avatar?: string;
+}
 
 interface displayLeaguesListProps {
     /**
@@ -14,7 +19,7 @@ interface displayLeaguesListProps {
      *   optional parameter for styling, enables and disables displaying of avatar
      *   leave empty if avatar should not be displayed
      */
-    leagues: League[];
+    leagues: UserSavedLeagueListDisplay[];
     displayAvatar: boolean;
     onLeagueClick: (league_id: string) => void;
     loggedIn: boolean;
@@ -102,7 +107,7 @@ export function DisplayLeaguesList({ leagues,
                             <DisplayAvatar
                                 avatar_url={league.avatar}
                                 size={48}
-                                platform="sleeper"
+                                platform={league.platform}
                             />
                         </ListItemAvatar>
                     )}

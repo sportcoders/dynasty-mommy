@@ -1,4 +1,5 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { User } from "./user";
 
 @Entity()
 export class YahooToken {
@@ -13,4 +14,8 @@ export class YahooToken {
 
     @Column()
     refresh_token!: string;
+
+    @OneToOne(() => User, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: "userId" })
+    user!: User;
 }
