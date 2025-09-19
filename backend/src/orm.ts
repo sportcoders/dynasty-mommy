@@ -3,6 +3,7 @@ import { User } from "./models/user";
 import { SleeperLeague } from "./models/sleeper_league";
 import { YahooToken } from "./models/yahoo_tokens";
 import { YahooLeague } from "./models/yahoo_league";
+import { EspnCookies } from "./models/espn_cookies";
 
 export function createAppDataSource(url: string): DataSource {
     let options: DataSourceOptions;
@@ -31,6 +32,6 @@ export function createAppDataSource(url: string): DataSource {
             logging: true
         };
     }
-    options = { ...options, entities: [User, SleeperLeague, YahooToken, YahooLeague] };
+    options = { ...options, entities: [User, SleeperLeague, YahooToken, YahooLeague, EspnCookies] };
     return new DataSource(options);
 }
