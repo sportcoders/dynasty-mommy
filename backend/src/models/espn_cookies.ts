@@ -22,7 +22,7 @@ export class EspnCookies {
     espn_s2!: string;
 
     // Track updates to the cookies
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+    @Column()
     lastUpdated!: Date;
 
     // If a user is deleted from the User table, then its associated Espn Cookies will also delete
