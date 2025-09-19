@@ -20,14 +20,12 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
 };
 
 export const serverGet = async <T>(endpoint: string): Promise<T | null> => {
-    const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
-        credentials: "include",
-    }).catch(() => {
-        throw new ServerError(0, 'Server unavailable');
-    });
+
+    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`);
 
     if (response.status == 401) {
         store.dispatch(logout());
+        return null;
     }
     if (!response.ok) {
         throw new ServerError(response.status, response.statusText);
@@ -41,12 +39,7 @@ export const serverPost = async <T, U>(
     endpoint: string,
     data: U
 ): Promise<T> => {
-    const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-    });
+    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`, false, data);
     if (response.status == 401) {
         store.dispatch(logout());
     }
@@ -70,26 +63,6 @@ export const serverDelete = async <T>(endpoint: string): Promise<T | null> => {
     return response.json() as Promise<T>;
 };
 
-export const serverProtectedPost = async <T>(req: Request): Promise<T> => {
-    const response = await fetch(req);
-    if (response.status == 401) {
-        const newTokenReq = await fetch("REFRESHROUTE");
-        if (newTokenReq.status == 401) {
-            const dispatch = useAppDispatch();
-            dispatch(logout());
-            throw new ServerError(response.status, "Session Expired, Please Login Again");
-        }
-        const retryReq = await fetch(req);
-        return retryReq.json() as Promise<T>;
-    }
-
-    if (!response.ok) {
-        throw new ServerError(response.status, response.statusText);
-    }
-
-    return response.json() as Promise<T>;
-};
-
 export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${AVATAR_URL}${endpoint}`);
 
@@ -98,4 +71,23 @@ export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
     }
 
     return response.blob() as Promise<T>;
+};
+
+export const refetch = async (endpoint: string, refreshed = false, postData?: any): Promise<Response> => {
+    const response = await fetch(endpoint, {
+        method: postData !== undefined ? "POST" : "GET",
+        credentials: 'include',
+        body: postData !== undefined ? JSON.stringify(postData) : undefined,
+        headers: postData !== undefined ? { "Content-Type": "application/json" } : undefined,
+
+    });
+    if (response.status == 401 && !refreshed) {
+        //getting new access token
+        const refreshRes = await fetch(`${SERVER_BASE_URL}${import.meta.env.VITE_BACKEND_REFRESH}`, { credentials: 'include' });
+        if (refreshRes.status >= 500)
+            throw new ServerError(refreshRes.status, 'Token refresh failed');
+
+        return refetch(endpoint, true, postData);
+    }
+    return response;
 };

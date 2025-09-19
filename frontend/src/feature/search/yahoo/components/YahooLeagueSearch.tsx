@@ -7,7 +7,6 @@ import { start_oauth } from "@services/api/yahoo";
 import YahooLeaguesList from "./YahooLeaguesList";
 import { useAppSelector } from "@app/hooks";
 import { useGetLeagues } from "../hooks/useGetLeagues";
-import useUnlinkAccount from "../hooks/useUnlinkAccount";
 import SelectPlatform from "@components/SelectPlatform";
 import { useState } from "react";
 import YahooUnlinkAccountAlert from "./YahooUnlinkAccountAlert";
@@ -22,12 +21,10 @@ import YahooUnlinkAccountAlert from "./YahooUnlinkAccountAlert";
 export default function YahooLeagueSearch() {
     const navigate = useNavigate();
     const username = useAppSelector((state) => state.auth.username);
-    const { mutate: unlink } = useUnlinkAccount();
     const { data, loading, error } = useGetLeagues(!!username);
     const [oepnAlert, setOpenAlert] = useState<boolean>(false);
     //need to check if user is logged in, if user is logged in we can fetch leagues without requesting login to yahoo
     //can only fetch leagues if we have refresh token for user stored
-
 
     // Data fetching hooks
 
@@ -46,8 +43,6 @@ export default function YahooLeagueSearch() {
             sx={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                height: "90vh",
                 width: "100%",
             }}
         >
@@ -58,7 +53,7 @@ export default function YahooLeagueSearch() {
 
             <SelectPlatform platform="yahoo" />
 
-            {(data && Array.isArray(data)) && <>
+            {(username && data && Array.isArray(data)) && <>
                 <Box
                     sx={{
                         width: '60%',
@@ -87,7 +82,7 @@ export default function YahooLeagueSearch() {
                     sx={{
                         mt: 2,
                         px: 3,
-                        py: 1,
+                        mb: 1,
                         borderRadius: 3,
                         textTransform: 'none',
                         '&:hover': {
