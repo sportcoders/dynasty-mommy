@@ -3,8 +3,7 @@ import { NextFunction, Request as ExpressRequest, Response } from "express";
 import { AppDataSource } from "../app";
 import { EspnCookies } from "../models/espn_cookies";
 
-import { HttpError, HttpSuccess } from "../constants/constants";
-import { AppError } from "../errors/app_error";
+import { HttpSuccess } from "../constants/constants";
 
 export async function saveEspnCookies(req: ExpressRequest, res: Response, next: NextFunction) {
     try {

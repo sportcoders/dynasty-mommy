@@ -1,6 +1,5 @@
 export type ExtensionMessage =
-    | { type: "GET_COOKIES"; }
-    | { type: "SYNC_TEAM"; leagueId: string; }; // ✅ new message type
+    | { type: "GET_COOKIES"; }; // only message we send now
 
 
 export interface ESPNCookies {
