@@ -31,6 +31,7 @@ import {
 } from '@mui/material';
 
 import { Link, useLocation, useRouter } from '@tanstack/react-router';
+import { logoutUser } from '@services/api/user';
 
 /**
  * Navigation bar component with collapsible drawer and user authentication features.
@@ -70,7 +71,8 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
         });
     };
 
-    const handleSignOut = () => {
+    const handleSignOut = async () => {
+        await logoutUser();
         dispatch(logout());
     };
 

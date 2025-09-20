@@ -48,3 +48,7 @@ export async function fetchUserLeagues() {
         throw e;
     }
 }
+
+export async function logoutUser() {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, { method: "POST", credentials: "include" });
+}
