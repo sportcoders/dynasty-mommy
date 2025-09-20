@@ -9,6 +9,7 @@ import { AppDataSource } from "../app";
 import { YahooToken } from "../models/yahoo_tokens";
 import { YahooLeague } from "../models/yahoo_league";
 import { mapTransactions } from "../utils/yahoo/yahoo_transaction";
+import { decrypt, encrypt } from "../utils/symmetric_encryption";
 
 const YAHOO_REDIRECT_URI = "https://dynasty-mommy-775797418596.us-west1.run.app/yahoo/callback";
 const YAHOO_API_URL = `https://fantasysports.yahooapis.com/fantasy/v2`;
@@ -73,7 +74,8 @@ async function getTokenForUser(user_id?: string): Promise<YahooTokens> {
 
     const tokens = await AppDataSource.getRepository(YahooToken).findOneBy({ userId: user_id });
     if (!tokens) throw new AppError({ statusCode: HttpError.FORBIDDEN, message: "Yahoo Auth not completed" });
-
+    tokens.access_token = decrypt(tokens.access_token);
+    tokens.refresh_token = decrypt(tokens.refresh_token);
     //checking if access token is expired
     if (tokens.access_token_expiry < new Date(Date.now())) {
         const refreshed_token = await refreshAccessToken(tokens.refresh_token);
@@ -84,6 +86,8 @@ async function getTokenForUser(user_id?: string): Promise<YahooTokens> {
 }
 
 async function updateTokenForUser(user_id: string, tokens: YahooTokens) {
+    tokens.access_token = encrypt(tokens.access_token);
+    tokens.refresh_token = encrypt(tokens.refresh_token);
     await AppDataSource.getRepository(YahooToken).upsert({ ...tokens, access_token_expiry: new Date(Date.now() + (3600 * 1000)), userId: user_id }, ['userId']);
 }
 
