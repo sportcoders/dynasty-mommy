@@ -91,7 +91,7 @@ async function updateTokenForUser(user_id: string, tokens: YahooTokens) {
     await AppDataSource.getRepository(YahooToken).upsert({ ...tokens, access_token_expiry: new Date(Date.now() + (3600 * 1000)), userId: user_id }, ['userId']);
 }
 
-async function api(method: "GET" | "POST", url: string, token: YahooTokens, postData?: any,) {
+async function api(method: "GET" | "POST", url: string, token: YahooTokens, user_id?: string, postData?: any) {
 
     const response = await fetch(`${YAHOO_API_URL}${url}`, {
         method: method,
@@ -108,6 +108,7 @@ async function api(method: "GET" | "POST", url: string, token: YahooTokens, post
     if (data["yahoo:error"]) {
         if (/token_expired/i.test(data["yahoo:error"]['yahoo:description'])) {
             const newToken = await refreshAccessToken(token.refresh_token);
+            if (user_id) await updateTokenForUser(user_id, newToken);
             return api(method, url, newToken, postData);
         } else {
             throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: data.error.description || 'unable to refreh access token' });
@@ -283,7 +284,7 @@ export async function getLeagueAndTeams(req: ExpressRequest, res: Response, next
 
         const tokens = await getTokenForUser(req.user?.user_id);
 
-        const data = await api("GET", endpoint, tokens);
+        const data = await api("GET", endpoint, tokens, req.user?.user_id);
         const league = data.league;
         res.status(HttpSuccess.OK).json(league);
     }
@@ -402,7 +403,7 @@ export async function getTransactions(req: ExpressRequest, res: Response, next: 
 
         const tokens = await getTokenForUser(req.user?.user_id);
 
-        const data = await api("GET", endpoint, tokens);
+        const data = await api("GET", endpoint, tokens, req.user?.user_id);
 
         if (!data.league.transactions.transaction) {
             res.status(HttpSuccess.OK).json({ transactions: [], count: 0, current_offset: 0 });
