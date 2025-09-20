@@ -187,3 +187,9 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
         next(e);
     }
 }
+
+export async function logout(req: Request, res: Response, next: NextFunction) {
+    clearAccessCookies(res);
+    clearRefreshCookies(res);
+    res.status(HttpSuccess.OK).send();
+}
