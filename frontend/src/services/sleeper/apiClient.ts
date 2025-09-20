@@ -84,8 +84,10 @@ export const refetch = async (endpoint: string, refreshed = false, postData?: an
     if (response.status == 401 && !refreshed) {
         //getting new access token
         const refreshRes = await fetch(`${SERVER_BASE_URL}${import.meta.env.VITE_BACKEND_REFRESH}`, { credentials: 'include' });
-        if (refreshRes.status >= 500)
+        if (refreshRes.status != 200) {
+            store.dispatch(logout());
             throw new ServerError(refreshRes.status, 'Token refresh failed');
+        }
 
         return refetch(endpoint, true, postData);
     }
