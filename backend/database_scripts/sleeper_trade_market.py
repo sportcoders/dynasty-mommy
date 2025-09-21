@@ -4,6 +4,7 @@ import time
 from time import sleep
 from dotenv import load_dotenv
 import pymongo
+import pymongo.typings
 import requests
 import os
 import redis
@@ -60,51 +61,55 @@ def is_visited_user(user: str) -> bool:
     key = f"visited_user:{user}"
     return r.exists(key) == 1
 
-def main(minutes =60): 
+
+
+def main(minutes =5): 
     URI = os.getenv("DB_URI")
     client = pymongo.MongoClient(URI)
     db = client[DB_NAME]
     trade_market = db['sleeper_trade_market']
     db = db[COLLECTION_NAME]
-    seen_transactions = set()
+    end_time = time.time() + (minutes * 60)
+
     def transaction_in_db(transaction_id:str):
         return trade_market.count_documents({"_id": transaction_id}, limit=1) > 0
-    end_time = time.time() + (minutes * 60)
     def time_left():
         print(end_time - time.time())
         return time.time() < end_time
-    # while True and leagues:
+    
+    def handleLeagueUsers(league_id):
+        league_users = requests.get(f"https://api.sleeper.app/v1/league/{league_id}/users").json()
+        for i in league_users:
+            current_user = i['user_id']
+            if is_visited_user(current_user):
+                continue
+            users_enque(current_user)
+
+    def getLeagueTransactions(league_id):
+        league_transactions = requests.get(f"https://api.sleeper.app/v1/league/{league_id}/transactions/{round}").json()
+        transactions_for_league = []
+        for i in league_transactions:
+            transaction_id = i['transaction_id']
+            if transaction_in_db(transaction_id) or transaction_in_db(transaction_id): continue
+            if i['type']=='trade' and  not i['draft_picks'] and i['status'] =='complete' and i['adds']:
+                if(state['season'] == 'pre'):
+                    if i['status_updated'] < transaction_offseason_filter_oldest:##will only get transactions completed after this time
+                        continue
+                result = defaultdict(list)
+                for player, team in i['adds'].items():
+                    player_info = db.find_one({"id":player})
+                    result[team].append({"first_name":player_info['first_name'], "last_name": player_info['last_name']})
+                transactions_for_league.append({"_id":transaction_id, "status_updated":i['status_updated'], 'trades':list(result.values())})
+        if transactions_for_league:
+            trade_market.insert_many(transactions_for_league, ordered=False)
+
     while time_left():
         while not is_queue_empty() and time_left():
             current_league = leagues_pop()
             visited_league(current_league)
-            league_users = requests.get(f"https://api.sleeper.app/v1/league/{current_league}/users").json()
-            league_transactions = requests.get(f"https://api.sleeper.app/v1/league/{current_league}/transactions/{round}").json()
-            transactions_for_league = []
-            for i in league_transactions:
-                transaction_id = i['transaction_id']
-                if transaction_id in seen_transactions or transaction_in_db(transaction_id): continue
-                if i['type']=='trade' and  not i['draft_picks'] and i['status'] =='complete' and i['adds']:
-                    if(state['season'] == 'pre'):
-                        if i['status_updated'] < transaction_offseason_filter_oldest:##will only get transactions completed after this time
-                            continue
-                    result = defaultdict(list)
-                    for player, team in i['adds'].items():
-                        player_info = r.get(player)
-                        result[team].append(player_info)
-                        # player_info = db.find_one({"id":player})
-                        # result[team].append(f"{player_info['first_name']} {player_info['last_name']}")
-                    transactions_for_league.append({"_id":transaction_id, "status_updated":i['status_updated'], 'trades':list(result.values())})
-            if transactions_for_league:
-                trade_market.insert_many(transactions_for_league, ordered=False)
-                    
-            for i in league_users:
-                current_user = i['user_id']
-                if is_visited_user(current_user):
-                    continue
-                users_enque(current_user)
-        sleep(1)
-
+            getLeagueTransactions(current_league)
+            sleep(.01)
+            handleLeagueUsers(current_league)
         while not is_users_queue_empty() and time_left():
             current_user = users_pop()
             visited_user(current_user)
@@ -114,7 +119,7 @@ def main(minutes =60):
                 if is_visited_league(league_id):
                     continue
                 leagues_enque(league_id) 
-        sleep(1)
+            sleep(.01)
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser()
@@ -122,3 +127,4 @@ def main(minutes =60):
 #     args = parser.parse_args()
 
 #     main(args.minutes)
+main()
