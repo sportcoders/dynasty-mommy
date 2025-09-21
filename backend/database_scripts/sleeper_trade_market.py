@@ -63,7 +63,7 @@ def is_visited_user(user: str) -> bool:
 
 
 
-def main(minutes =5): 
+def main(minutes =60): 
     URI = os.getenv("DB_URI")
     client = pymongo.MongoClient(URI)
     db = client[DB_NAME]
@@ -74,7 +74,6 @@ def main(minutes =5):
     def transaction_in_db(transaction_id:str):
         return trade_market.count_documents({"_id": transaction_id}, limit=1) > 0
     def time_left():
-        print(end_time - time.time())
         return time.time() < end_time
     
     def handleLeagueUsers(league_id):
@@ -92,14 +91,20 @@ def main(minutes =5):
             transaction_id = i['transaction_id']
             if transaction_in_db(transaction_id) or transaction_in_db(transaction_id): continue
             if i['type']=='trade' and  not i['draft_picks'] and i['status'] =='complete' and i['adds']:
+                #not getting trades in which players are traded for draft picks
                 if(state['season'] == 'pre'):
                     if i['status_updated'] < transaction_offseason_filter_oldest:##will only get transactions completed after this time
                         continue
                 result = defaultdict(list)
                 for player, team in i['adds'].items():
                     player_info = db.find_one({"id":player})
-                    result[team].append({"first_name":player_info['first_name'], "last_name": player_info['last_name']})
-                transactions_for_league.append({"_id":transaction_id, "status_updated":i['status_updated'], 'trades':list(result.values())})
+                    result[team].append({"first_name":player_info['first_name'], "last_name": player_info['last_name'], "_id":player_info['id']})
+                trades = list(result.values())
+                if len(trades)< 2:
+                    #not saving trades where players are getting traded for waiver budget
+                    # print(f"league_id: {league_id}, transaction_id: {transaction_id}")
+                    continue
+                transactions_for_league.append({"_id":transaction_id, "status_updated":i['status_updated'], 'trades':trades})
         if transactions_for_league:
             trade_market.insert_many(transactions_for_league, ordered=False)
 
@@ -108,7 +113,7 @@ def main(minutes =5):
             current_league = leagues_pop()
             visited_league(current_league)
             getLeagueTransactions(current_league)
-            sleep(.01)
+            sleep(.002)
             handleLeagueUsers(current_league)
         while not is_users_queue_empty() and time_left():
             current_user = users_pop()
@@ -119,7 +124,7 @@ def main(minutes =5):
                 if is_visited_league(league_id):
                     continue
                 leagues_enque(league_id) 
-            sleep(.01)
+            sleep(.00015)
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser()
