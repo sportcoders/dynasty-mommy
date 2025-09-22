@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import useGetTradeMarket from "@app/feature/trade_market/hooks/useGetTradeMarket";
 import { useRouter } from "@tanstack/react-router";
@@ -6,6 +6,7 @@ import { useRouter } from "@tanstack/react-router";
 export default function SleeperTradeMarket({ searchText: initText }: { searchText?: string; }) {
     const [searchText, setSearchText] = useState(initText);
     const { data, loading, refetch } = useGetTradeMarket(searchText);
+    const theme = useTheme();
     const router = useRouter();
     if (loading)
         return (
@@ -25,8 +26,11 @@ export default function SleeperTradeMarket({ searchText: initText }: { searchTex
         refetch();
     };
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+        <Box sx={{ width: '100%' }}>
+            <Typography variant="h2" component="h1" color="primary" textAlign='center'>
+                Trade Market
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', my: 4, px: 5 }}>
                 <form onSubmit={handleSearch} style={{ display: 'flex', width: '100%', gap: '8px' }}>
                     <TextField
                         label='Search For A Player'
@@ -41,33 +45,44 @@ export default function SleeperTradeMarket({ searchText: initText }: { searchTex
                     </Button>
                 </form>
             </Box>
-            {data && data.length != 0 ?
-                <Table >
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Trades</TableCell>
-                            <TableCell>Receives</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data?.map((trade) => {
-                            return (
-                                <TableRow>
-                                    {trade.trades.map((team) => {
-                                        return (
-                                            <TableCell>
-                                                {team.map((players, index) => <Box key={`${trade._id} ${index}`} sx={{ display: 'block' }}>{players.first_name} {players.last_name}</Box>)}
-                                            </TableCell>
-                                        );
-                                    })}
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-                :
-                <Typography variant="h5" color="text.primary" textAlign="center" sx={{ m: 6 }}>No Trades Found</Typography>
-            }
-        </Container >
+            <TableContainer
+                sx={{
+                    px: 5,
+                    backgroundColor: theme.palette.background.default,
+                    color: theme.palette.text.primary,
+                    height: "80vh",
+                    overflowY: "scroll",
+                    scrollbarGutter: "stable",
+                }}
+            >
+                {data && data.length != 0 ?
+                    <Table stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Trades</TableCell>
+                                <TableCell>Receives</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody sx={{ mb: 4 }}>
+                            {data?.map((trade) => {
+                                return (
+                                    <TableRow>
+                                        {trade.trades.map((team) => {
+                                            return (
+                                                <TableCell >
+                                                    {team.map((players, index) => <Box key={`${trade._id} ${index}`} sx={{ display: 'block' }}>{players.first_name} {players.last_name}</Box>)}
+                                                </TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                    :
+                    <Typography variant="h5" color="text.primary" textAlign="center" sx={{ m: 6 }}>No Trades Found</Typography>
+                }
+            </TableContainer>
+        </Box>
     );
 }
