@@ -1,10 +1,9 @@
-import argparse
-from collections import defaultdict, deque
+from pybloom_live import ScalableBloomFilter
+from collections import defaultdict
 import time
 from time import sleep
 from dotenv import load_dotenv
 import pymongo
-import pymongo.typings
 import requests
 import os
 import redis
@@ -16,8 +15,7 @@ state = requests.get("https://api.sleeper.app/v1/state/nba").json()
 current_season = state['season']
 round = state['week']
 seconds_in_one_week = 7 * 24 * 60 * 60
-transaction_offseason_filter_oldest= time.time() - (seconds_in_one_week *2)
-
+transaction_offseason_filter_oldest= time.time() - (seconds_in_one_week *1)
 r = redis.Redis(
     host=os.getenv("REDIS_HOST"),
     port=os.getenv("REDIS_PORT"),
@@ -70,6 +68,11 @@ def main(minutes =60):
     trade_market = db['sleeper_trade_market']
     db = db[COLLECTION_NAME]
     end_time = time.time() + (minutes * 60)
+    transaction_ids = list(trade_market.find({}, {"_id":1}))
+    
+    bloomfilter = ScalableBloomFilter(initial_capacity=len(transaction_ids), error_rate=0.001, mode=ScalableBloomFilter.SMALL_SET_GROWTH)
+    for transaction in transaction_ids:
+        bloomfilter.add(transaction['_id'])
 
     def transaction_in_db(transaction_id:str):
         return trade_market.count_documents({"_id": transaction_id}, limit=1) > 0
@@ -89,8 +92,10 @@ def main(minutes =60):
         transactions_for_league = []
         for i in league_transactions:
             transaction_id = i['transaction_id']
-            if transaction_in_db(transaction_id) or transaction_in_db(transaction_id): continue
-            if i['type']=='trade' and  not i['draft_picks'] and i['status'] =='complete' and i['adds']:
+            if transaction_id in bloomfilter: 
+                if transaction_in_db(transaction_id):continue
+
+            if i['type']=='trade' and  not i['draft_picks'] and i['status'] =='complete' and i['adds'] and len(i['roster_ids']) == 2 and not i['waiver_budget']:
                 #not getting trades in which players are traded for draft picks
                 if(state['season'] == 'pre'):
                     if i['status_updated'] < transaction_offseason_filter_oldest:##will only get transactions completed after this time
@@ -105,6 +110,7 @@ def main(minutes =60):
                     # print(f"league_id: {league_id}, transaction_id: {transaction_id}")
                     continue
                 transactions_for_league.append({"_id":transaction_id, "status_updated":i['status_updated'], 'trades':trades})
+            bloomfilter.add(transaction_id)
         if transactions_for_league:
             trade_market.insert_many(transactions_for_league, ordered=False)
 
