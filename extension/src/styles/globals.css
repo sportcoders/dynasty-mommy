@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgb(59 130 246 / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgb(59 130 246 / 0.8);
+  }
+}
+
+@utility pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@utility spin-slow {
+  animation: spin 2s linear infinite;
+}
+
+@utility glass {
+  background: rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+@utility glass-dark {
+  background: rgb(0 0 0 / 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+}
