@@ -1,4 +1,4 @@
-name: Sleeper PlayerIDs Update
+name: Sleeper Trade Market
 
 on:
   schedule:
@@ -29,7 +29,7 @@ jobs:
         working-directory: ./backend/database_scripts
         run: | 
           python -m pip install --upgrade pip
-          pip install requests pymongo python-dotenv redis
+          pip install requests pymongo python-dotenv redis pybloom_live
 
       - name: Sleeper Trade Market Crawler
         working-directory: ./backend/database_scripts
