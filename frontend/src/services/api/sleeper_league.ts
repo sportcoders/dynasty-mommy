@@ -63,3 +63,24 @@ export async function getSavedTeamSleeperLeague(league_id: string) {
     return response;
 
 }
+type SleeperTradeMarket = {
+    _id: string,
+    status_updated: number,
+    trades: Trade[];
+};
+type Player = {
+    first_name: string;
+    last_name: string;
+};
+
+type Trade = Player[];
+export async function getTradeMarket({ searchText, limit }: { searchText?: string, limit?: number; } = {}) {
+    let params = "?";
+    if (searchText)
+        params += `searchText=${searchText}&`;
+    if (limit)
+        params += `limit=${limit}`;
+
+    const response = await serverGet<SleeperTradeMarket[]>(`/sleeper_trade_market${params}`);
+    return response;
+}
