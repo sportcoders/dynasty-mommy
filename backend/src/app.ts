@@ -12,6 +12,7 @@ import auth_router from './routes/auth';
 import sleeper_league_router from './routes/sleeper_league';
 import yahoo_router from './routes/yahoo';
 import sleeper_trade_market_router from './routes/sleeper_trade_market';
+import espn_router from './routes/espn';
 const corsOptions = {
     origin: ['http://localhost:5173', 'https://localhost:5173'],
     methods: ['GET', 'POST', 'OPTIONS', 'DELETE', 'PATCH'],
@@ -33,6 +34,7 @@ export function init_app(dataSource: DataSource) {
     app.use('/user', user_router);
     app.use('/sleeper_league', sleeper_league_router);
     app.use('/yahoo', yahoo_router);
+    app.use('/espn', espn_router);
     app.use('/sleeper_trade_market', sleeper_trade_market_router);
     app.get('/healthcheck', (req, res) => {
         res.status(200).json({ message: "Healthy" });
