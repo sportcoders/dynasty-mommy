@@ -1,16 +1,27 @@
 import { Box, Button, CircularProgress, Container, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import useGetTradeMarket from "../hooks/trade_market/useGetTradeMarket";
+import useGetTradeMarket from "@app/feature/trade_market/hooks/useGetTradeMarket";
+import { useRouter } from "@tanstack/react-router";
 
-export default function SleeperTradeMarket() {
-    const [searchText, setSearchText] = useState("");
+export default function SleeperTradeMarket({ searchText: initText }: { searchText?: string; }) {
+    const [searchText, setSearchText] = useState(initText);
     const { data, loading, refetch } = useGetTradeMarket(searchText);
-
+    const router = useRouter();
     if (loading)
-        return <CircularProgress />;
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+                <CircularProgress />
+            </Box>
+        );
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        router.navigate({
+            to: '/tradeMarket',
+            search: {
+                searchText: searchText
+            }
+        });
         refetch();
     };
     return (
