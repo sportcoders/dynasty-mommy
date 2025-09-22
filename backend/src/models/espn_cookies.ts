@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from "typeorm";
 import { User } from "./user";
-import { encrypt, decrypt } from "../utils/crypto/crypto";
+import { encrypt, decrypt } from "../utils/symmetric_encryption";
 
 @Entity()
 export class EspnCookies {

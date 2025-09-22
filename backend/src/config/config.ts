@@ -11,7 +11,7 @@ interface Config {
     URL: string;
     CONSUMER_KEY: string;
     CONSUMER_SECRET: string;
-    ESPN_SECRET_KEY: string;
+    SECRET_KEY: string;
 }
 
 const config: Config = {
@@ -23,7 +23,7 @@ const config: Config = {
     URL: process.env.DB_URL || '',
     CONSUMER_KEY: process.env.CONSUMER_KEY || '',
     CONSUMER_SECRET: process.env.CONSUMER_SECRET || '',
-    ESPN_SECRET_KEY: process.env.ESPN_SECRET_KEY || ''
+    SECRET_KEY: process.env.SECRET_KEY || ''
 };
 
 export default config;

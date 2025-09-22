@@ -1,6 +1,7 @@
 import crypto from 'crypto';
+import config from '../config/config';
 const algorithm = 'aes-256-gcm';
-const secretKey = crypto.createHash('sha256').update('SECRETKEY').digest();
+const secretKey = crypto.createHash('sha256').update(config.SECRET_KEY).digest();
 const ivLength = 16;
 
 export function encrypt(text: string) {
