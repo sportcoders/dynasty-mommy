@@ -41,6 +41,6 @@ export async function getTradeMarket(req: Request, res: Response, next: NextFunc
             };
         }
     }
-    const data = await Sleeper_Trade_Market.find(query).limit(limit);
+    const data = await Sleeper_Trade_Market.find(query).sort({ status_updated: -1 }).limit(limit);
     res.status(HttpSuccess.OK).json(data);
 }
