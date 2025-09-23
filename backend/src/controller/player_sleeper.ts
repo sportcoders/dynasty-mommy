@@ -2,7 +2,11 @@ import { HttpError, HttpSuccess } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import Player_Sleeper from "../models/player_sleeper";
 import { NextFunction, Request, Response } from 'express';
-
+import {
+    MongoNetworkError,
+    MongoServerSelectionError,
+    MongoNetworkTimeoutError
+} from 'mongodb';
 /**
  * 
  * @param ids array of ids from the url
@@ -35,7 +39,7 @@ export const getPlayersById = async function (req: Request, res: Response, next:
     }
     try {
         const player_ids = verifyIDs(ids.split("&"));
-        const players = await Player_Sleeper.find({ id: { $in: player_ids } }).lean();
+        const players = await retryDB(() => Player_Sleeper.find({ id: { $in: player_ids } }).lean());
         if (players.length == 0) {
             throw new AppError({ statusCode: HttpError.NOT_FOUND, message: "No Players found" });
             //log that ids were in valid format but does not exist in database
@@ -60,3 +64,18 @@ export const getPlayersById = async function (req: Request, res: Response, next:
         next(e);
     }
 };
+
+async function retryDB<T>(operation: () => Promise<T>, retries = 3, delay = 100) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await operation();
+        }
+        catch (e) {
+            if (i < retries && (e instanceof MongoNetworkError || e instanceof MongoServerSelectionError || e instanceof MongoNetworkTimeoutError))
+                await new Promise(res => setTimeout(res, delay));
+            else
+                throw e;
+        }
+    }
+    throw new AppError({ statusCode: HttpError.INTERNAL_SERVER_ERROR, message: "Could not query mongodb" });
+}
