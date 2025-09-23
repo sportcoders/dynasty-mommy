@@ -17,6 +17,7 @@ import {
     Person,
     Search,
     SportsBasketball,
+    SwapHoriz
 } from '@mui/icons-material';
 
 import {
@@ -83,6 +84,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     // -------------------- Navigation Configuration --------------------
     const drawerItems = [
         { text: 'Find League', icon: <Search />, link: '/', onClick: handleFindLeagueClick },
+        { text: 'Trade Market', icon: <SwapHoriz />, link: '/tradeMarket', onClick: () => { } },
     ];
 
     return (

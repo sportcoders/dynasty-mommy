@@ -32,8 +32,9 @@ import {
   type SelectChangeEvent,
 } from "@mui/material";
 
-import type { League } from "@services/api/user";
+import type { UserLeague as League } from "@services/api/user";
 import { DisplayAvatar } from "@components/DisplayAvatar";
+import SleeperTradeMarket from "@feature/trade_market/sleeper/TradeMarket";
 
 // -------------------- Interfaces --------------------
 interface SleeperLeaguesHomePageProps {
@@ -323,11 +324,32 @@ export default function SleeperLeague({
 
         {/* Third Tab */}
         <CustomTabPanel value={tab} id={2}>
-          <Typography variant="h6" color="text.primary" textAlign="center">
-            Content for third tab coming soon...
+          <Typography variant="h4" color="text.primary" textAlign="center">
+            Trending Players
           </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              height: '100vh',
+              width: '100%',
+              gap: 2,
+              mt: 2
+            }}
+          >
+            <iframe
+              src="https://sleeper.app/embed/players/nba/trending/add?lookback_hours=24&limit=25"
+              style={{ flex: 1, border: 'none', height: '100%' }}
+              title="Trending Additions"
+            />
+            <iframe
+              src="https://sleeper.app/embed/players/nba/trending/drop?lookback_hours=24&limit=25"
+              style={{ flex: 1, border: 'none', height: '100%' }}
+              title="Trending Drops"
+            />
+          </Box>
         </CustomTabPanel>
       </Box>
     </Box>
   );
-}
+};
