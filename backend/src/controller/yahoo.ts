@@ -35,7 +35,6 @@ async function token_from_code(code: string): Promise<YahooTokens> {
         code: code,
         grant_type: "authorization_code",
     };
-    const AUTH_HEADER = Buffer.from(`${config.CONSUMER_KEY}:${config.CONSUMER_SECRET}`, 'binary').toString(`base64`);
     const response = await fetch("https://api.login.yahoo.com/oauth2/get_token", {
         method: "POST",
         body: new URLSearchParams(body),
@@ -64,7 +63,7 @@ async function refreshAccessToken(refresh_token: string): Promise<YahooTokens> {
         },
     });
     if (!response.ok) {
-        throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Yahoo authorization failed" });
+        throw new AppError({ statusCode: HttpError.UNAUTHORIZED, message: "Failed Yahoo Refresh" });
     }
     return response.json();
 }
@@ -79,20 +78,20 @@ async function getTokenForUser(user_id?: string): Promise<YahooTokens> {
     //checking if access token is expired
     if (tokens.access_token_expiry < new Date(Date.now())) {
         const refreshed_token = await refreshAccessToken(tokens.refresh_token);
-        updateTokenForUser(user_id, refreshed_token);
+        await updateTokenForUser(user_id, refreshed_token);
         return refreshed_token;
     }
     return tokens;
 }
 
 async function updateTokenForUser(user_id: string, tokens: YahooTokens) {
-    tokens.access_token = encrypt(tokens.access_token);
-    tokens.refresh_token = encrypt(tokens.refresh_token);
-    await AppDataSource.getRepository(YahooToken).upsert({ ...tokens, access_token_expiry: new Date(Date.now() + (3600 * 1000)), userId: user_id }, ['userId']);
+    const tokenToEncrypt = { ...tokens, access_token_expiry: new Date(Date.now() + (3600 * 1000)), userId: user_id };
+    tokenToEncrypt.access_token = encrypt(tokens.access_token);
+    tokenToEncrypt.refresh_token = encrypt(tokens.refresh_token);
+    await AppDataSource.getRepository(YahooToken).upsert(tokenToEncrypt, ['userId']);
 }
 
 async function api(method: "GET" | "POST", url: string, token: YahooTokens, user_id?: string, postData?: any) {
-
     const response = await fetch(`${YAHOO_API_URL}${url}`, {
         method: method,
         headers: {
@@ -104,9 +103,8 @@ async function api(method: "GET" | "POST", url: string, token: YahooTokens, user
     const rawXml = await response.text();
 
     const data = parser.parse(rawXml);
-
     if (data["yahoo:error"]) {
-        if (/token_expired/i.test(data["yahoo:error"]['yahoo:description'])) {
+        if (/token_rejected/i.test(data["yahoo:error"]['yahoo:description'])) {
             const newToken = await refreshAccessToken(token.refresh_token);
             if (user_id) await updateTokenForUser(user_id, newToken);
             return api(method, url, newToken, postData);
@@ -159,9 +157,16 @@ export async function yahoo_callback(req: ExpressRequest, res: Response, next: N
 
     const user = jwt.verify(state, STATE_SECRET) as { user_id: string; };
     const user_id = user.user_id;
-
+    // try {
     const tokens = await token_from_code(code);
+
     await updateTokenForUser(user_id, tokens);
+    // }
+    // catch (e) {
+    //     if (e instanceof AppError && e.message === "Yahoo authorization failed") {
+    //         res.status(HttpError.BAD_REQUEST).json({ details:});
+    //     }
+    // }
 
     res.redirect("http://localhost:5173/?platform=yahoo&loggedIn=true");
 }
@@ -220,7 +225,6 @@ export async function getTeamsInLeague(req: ExpressRequest, res: Response, next:
         const user = req.user?.user_id;
 
         const tokens = await getTokenForUser(user);
-
         const teams = await getTeams(league_key, tokens);
 
 
