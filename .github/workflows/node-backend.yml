@@ -13,6 +13,12 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    env:
+      YAHOO_CONSUMER_KEY: yahooEnv.YAHOO_CONSUMER_KEY,
+      YAHOO_CONSUMER_SECRET: yahooEnv.YAHOO_CONSUMER_SECRET,
+      YAHOO_STATE_SECRET: yahooEnv.YAHOO_STATE_SECRET,
+      YAHOO_REDIRECT_URI: yahooEnv.YAHOO_REDIRECT_URI,
 
     defaults:
       run:
