@@ -1,7 +1,10 @@
 import { Router } from "express";
 import * as espn_controller from "../controller/espn";
 import { authenticate } from "../middleware/authenticate";
+import { espn_authenticate } from "../middleware/espn_authenticate";
 const espn_router = Router();
 espn_router.use(authenticate);
 espn_router.route("/cookies").post(espn_controller.saveEspnCookies);
+espn_router.route("/status").get(espn_controller.getESPNStatus);
+espn_router.use(espn_authenticate);
 export default espn_router;
