@@ -8,7 +8,7 @@ import { AppDataSource } from "../app";
 import { YahooToken } from "../models/yahoo_tokens";
 import { YahooLeague } from "../models/yahoo_league";
 import { mapTransactions } from "../utils/yahoo/yahoo_transaction";
-import { refreshAccessToken, updateTokenForUser } from "../middleware/yahooTokencheck";
+import { refreshAccessToken, updateTokenForUser } from "../middleware/yahooTokenCheck";
 import { YahooTokenRequest, YahooTokens } from "../types/yahoo";
 import { yahooConfig } from "../config/yahooConfig";
 
