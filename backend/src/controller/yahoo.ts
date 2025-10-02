@@ -1,6 +1,5 @@
 import { NextFunction, Request as ExpressRequest, Response } from "express";
 import { XMLParser } from "fast-xml-parser";
-import config from "../config/config";
 import z from "zod";
 import { HttpError, HttpSuccess } from "../constants/constants";
 import { AppError } from "../errors/app_error";
@@ -10,6 +9,13 @@ import { YahooToken } from "../models/yahoo_tokens";
 import { YahooLeague } from "../models/yahoo_league";
 import { mapTransactions } from "../utils/yahoo/yahoo_transaction";
 import { decrypt, encrypt } from "../utils/symmetric_encryption";
+import { yahooConfig } from "../config/yahooConfig";
+
+const YAHOO_REDIRECT_URI = yahooConfig.REDIRECT_URI;
+const YAHOO_API_URL = yahooConfig.API_URL;
+const STATE_SECRET = yahooConfig.STATE_SECRET;
+const default_yahoo_values = yahooConfig.defaultValues;
+const AUTH_HEADER = yahooConfig.authHeader;
 
 const YAHOO_REDIRECT_URI = "https://dynasty-mommy-775797418596.us-west1.run.app/yahoo/callback";
 const YAHOO_API_URL = `https://fantasysports.yahooapis.com/fantasy/v2`;
@@ -135,7 +141,7 @@ export async function request_oauth(req: ExpressRequest, res: Response, next: Ne
             { expiresIn: '5m' });
 
         const params = new URLSearchParams({
-            client_id: config.CONSUMER_KEY,
+            client_id: yahooConfig.CONSUMER_KEY,
             redirect_uri: YAHOO_REDIRECT_URI,
             response_type: 'code',
             language: 'en-us',
