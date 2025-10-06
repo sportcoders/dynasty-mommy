@@ -7,6 +7,7 @@ import { changeUsernameSchema } from "../schemas/user";
 import { checkUserId } from "../utils/checkUserId";
 import { getAllSleeperLeaguesUser } from "./sleeper_league";
 import { getAllYahooLeagues } from "./yahoo";
+import { user_not_found_error } from "../errors/user_not_found_error";
 
 export async function getUserLeagues(req: Request, res: Response, next: NextFunction) {
     try {
@@ -40,3 +41,10 @@ export async function changeUsername(req: Request, res: Response, next: NextFunc
     }
 }
 
+export async function getProfileInfo(req: Request, res: Response) {
+    const user = await AppDataSource.getRepository(User).findOne({ where: { id: req.user?.user_id }, select: ['email', 'username'] });
+
+    if (!user) throw user_not_found_error;
+
+    res.status(HttpSuccess.OK).json(user);
+}
