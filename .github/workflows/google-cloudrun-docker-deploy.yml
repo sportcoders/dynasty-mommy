@@ -85,8 +85,10 @@ jobs:
           env_vars: |
             DB_URI=${{secrets.DB_URI}}
             DB_URL=${{secrets.DB_URL}}
-            CONSUMER_KEY=${{secrets.CONSUMER_KEY}}
-            CONSUMER_SECRET=${{secrets.CONSUMER_SECRET}}
+            YAHOO_CONSUMER_KEY=${{secrets.YAHOO_CONSUMER_KEY}}
+            YAHOO_CONSUMER_SECRET=${{secrets.YAHOO_CONSUMER_SECRET}}
+            YAHOO_STATE_SECRET=${{secrets.YAHOO_STATE_SECRET}}
+            YAHOO_REDIRECT_URI=${{secrets.YAHOO_REDIRECT_URI}}
             SECRET_KEY=${{secrets.SECRET_KEY}}
             JWT_SECRET=${{secrets.JWT_SECRET}}
             NODE_ENV=production

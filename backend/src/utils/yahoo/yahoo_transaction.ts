@@ -2,8 +2,14 @@ import type { YahooTransaction, YahooTransactionPlayer } from "../../types/yahoo
 
 export function mapTransactions(data: YahooTransaction | YahooTransaction[]): YahooTransaction[] {
     const transactions = NormalizeToArray<YahooTransaction>(data);
-    for (let i = 0; i < transactions.length; i++) {
-        transactions[i].players.player = transactions[i].players.player ? NormalizeToArray<YahooTransactionPlayer>(transactions[i].players.player) : [];
+    for (let i = 0; i < transactions.length;) {
+        if (!transactions[i].players || !transactions[i].players.player) {
+            transactions.splice(i, 1);
+        }
+        else {
+            transactions[i].players.player = transactions[i].players.player ? NormalizeToArray<YahooTransactionPlayer>(transactions[i].players.player) : [];
+            i++;
+        }
     }
 
     return transactions;
