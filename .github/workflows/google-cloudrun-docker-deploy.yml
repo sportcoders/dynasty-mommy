@@ -90,6 +90,7 @@ jobs:
             YAHOO_STATE_SECRET=${{secrets.YAHOO_STATE_SECRET}}
             YAHOO_REDIRECT_URI=${{secrets.YAHOO_REDIRECT_URI}}
             SECRET_KEY=${{secrets.SECRET_KEY}}
+            JWT_SECRET=${{secrets.JWT_SECRET}}
             NODE_ENV=production
       - name: 'Delete old Docker images (keep latest 5)'
         run: |-
