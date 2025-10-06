@@ -52,3 +52,8 @@ export async function fetchUserLeagues() {
 export async function logoutUser() {
     await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, { method: "POST", credentials: "include" });
 }
+
+export async function getProfileInfo() {
+    const response = await serverGet<{ email: string, username: string; }>('/user/profile');
+    return response;
+}
