@@ -1,29 +1,28 @@
 import dotenv from 'dotenv';
+import z from 'zod';
 
 dotenv.config();
 
-interface Config {
-    port: number;
-    nodeEnv: string;
-    URI: string;
-    JWT_SECRET: string;
-    salt_rounds: number;
-    URL: string;
-    CONSUMER_KEY: string;
-    CONSUMER_SECRET: string;
-    SECRET_KEY: string;
-}
 
-const config: Config = {
-    port: Number(process.env.PORT) || 3000,
-    nodeEnv: process.env.NODE_ENV || 'development',
-    URI: process.env.DB_URI || '',
-    JWT_SECRET: process.env.JWT_SECRET || "JWT_SECRET",
-    salt_rounds: Number(process.env.SALT_ROUNDS) || 10,
-    URL: process.env.DB_URL || '',
-    CONSUMER_KEY: process.env.CONSUMER_KEY || '',
-    CONSUMER_SECRET: process.env.CONSUMER_SECRET || '',
-    SECRET_KEY: process.env.SECRET_KEY || ''
+const configSchema = z.object({
+    PORT: z.coerce.number().default(3000),
+    NODE_ENV: z.string().default('development'),
+    DB_URI: z.string(),
+    DB_URL: z.string(),
+    SALT_ROUNDS: z.coerce.number().default(10),
+    JWT_SECRET: z.string(),
+    SECRET_KEY: z.string(),
+});
+const env = configSchema.parse(process.env);
+
+const config = {
+    port: env.PORT,
+    nodeEnv: env.NODE_ENV,
+    URI: env.DB_URI,
+    JWT_SECRET: env.JWT_SECRET,
+    salt_rounds: env.SALT_ROUNDS,
+    SECRET_KEY: env.SECRET_KEY,
+    URL: env.DB_URL,
 };
 
 export default config;

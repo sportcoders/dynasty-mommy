@@ -88,6 +88,7 @@ jobs:
             CONSUMER_KEY=${{secrets.CONSUMER_KEY}}
             CONSUMER_SECRET=${{secrets.CONSUMER_SECRET}}
             SECRET_KEY=${{secrets.SECRET_KEY}}
+            JWT_SECRET=${{secrets.JWT_SECRET}}
             NODE_ENV=production
       - name: 'Delete old Docker images (keep latest 5)'
         run: |-
