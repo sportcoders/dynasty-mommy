@@ -81,6 +81,14 @@ export async function getESPNStatus(req: ExpressRequest, res: Response) {
     });
 }
 
+/**
+ * Saves ESPN League.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ *
+ * @returns A JSON response with a success message when league is saved
+ */
 export async function saveESPNLeague(req: ExpressRequest, res: Response) {
     const userId = req.user!.user_id;
 
