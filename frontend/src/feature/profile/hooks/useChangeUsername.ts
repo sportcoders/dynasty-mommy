@@ -17,8 +17,8 @@ export default function useChangeUsername() {
             dispatch(login(username));
             showSuccess("Username Changed");
         },
-        onError: () => {
-            showError("Error Changing Username");
+        onError: (error) => {
+            showError(error.message || "Error Changing Username");
         }
     });
     return { mutate, loading, error };

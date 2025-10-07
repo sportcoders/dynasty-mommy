@@ -10,7 +10,7 @@ export default function Profile() {
 
     const [username, setUsername] = useState(data?.username);
     const [email, setEmail] = useState(data?.email);
-    const { mutate: changeUsername } = useChangeUsername();
+    const { mutate: changeUsername, error: usernameError } = useChangeUsername();
     if (!data) return <Typography alignSelf='center' justifySelf='center'>User Not Found</Typography>;
     return (
         <Box sx={{ height: '100vh', overflowY: 'auto' }}>
@@ -65,6 +65,7 @@ export default function Profile() {
                         >
                             Change Username
                         </Button>
+                        {usernameError && <Typography color="error">{usernameError.message}</Typography>}
                     </Box>
 
                     <Divider sx={{ my: 4 }} />
