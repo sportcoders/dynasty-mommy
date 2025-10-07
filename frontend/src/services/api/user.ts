@@ -1,4 +1,4 @@
-import { serverDelete, serverGet, serverPost } from "@services/sleeper";
+import { serverDelete, serverGet, serverPatch, serverPost } from "@services/sleeper";
 
 interface User {
     username: string;
@@ -56,4 +56,7 @@ export async function logoutUser() {
 export async function getProfileInfo() {
     const response = await serverGet<{ email: string, username: string; }>('/user/profile');
     return response;
+}
+export async function changeUsername(username: string) {
+    await serverPatch('/user/username', { new_username: username });
 }

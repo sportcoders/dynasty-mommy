@@ -3,12 +3,14 @@ import { IconButton, TextField, InputAdornment, Container, Alert, Avatar, Box, B
 import { email } from "zod";
 import { useGetProfile } from "../hooks/useGetProfile";
 import { useState } from "react";
+import useChangeUsername from "../hooks/useChangeUsername";
 
 export default function Profile() {
     const { data } = useGetProfile();
 
     const [username, setUsername] = useState(data?.username);
     const [email, setEmail] = useState(data?.email);
+    const { mutate: changeUsername } = useChangeUsername();
     if (!data) return <Typography alignSelf='center' justifySelf='center'>User Not Found</Typography>;
     return (
         <Box sx={{ height: '100vh', overflowY: 'auto' }}>
@@ -54,7 +56,13 @@ export default function Profile() {
                             required
                             sx={{ mb: 2 }}
                         />
-                        <Button variant="contained" type="submit">
+                        <Button variant="contained" type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                if (!username) return;
+                                changeUsername(username);
+                            }}
+                        >
                             Change Username
                         </Button>
                     </Box>
