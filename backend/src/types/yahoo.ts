@@ -1,45 +1,12 @@
-type getTeamsAndLeagueResponse = {
-    allow_add_to_dl_extra_pos: number;
-    current_date: string;
-    current_week: number;
-    draft_status: "predraft" | string;
-    edit_key: string;
-    end_date: string;
-    end_week: number;
-    felo_tier: "bronze" | "silver" | "gold" | string;
-    game_code: string;
-    iris_group_chat_id: string;
-    is_cash_league: number;
-    is_highscore: string | number;
-    is_plus_league: number;
-    is_pro_league: number;
-    league_id: number;
-    league_key: string;
-    league_type: "public" | "private" | string;
-    league_update_timestamp: string;
-    logo_url: string;
-    matchup_week: number;
-    name: string;
-    num_teams: number;
-    renew: string;
-    renewed: string;
-    roster_type: string;
-    scoring_type: "headpoint" | "category" | string;
-    season: number;
-    short_invitation_url: string;
-    start_date: string;
-    start_week: number;
-    standings: {
-        teams: {
-            team:
-            YahooTeamWithStandings[];
-        };
-    };
-    teams: {
-        team: YahooTeam[];
-    };
-
+import { Request } from "express";
+export type YahooTokens = {
+    refresh_token: string;
+    access_token: string;
+    access_token_expiry?: Date;
 };
+export interface YahooTokenRequest extends Request {
+    yahooTokens?: YahooTokens;
+}
 interface YahooTeam {
     has_draft_grade: number;
     league_scoring_type: string;
