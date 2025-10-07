@@ -58,5 +58,13 @@ export async function getProfileInfo() {
     return response;
 }
 export async function changeUsername(username: string) {
-    await serverPatch('/user/username', { new_username: username });
+    try {
+        await serverPatch('/user/username', { new_username: username });
+    }
+    catch (e) {
+        if (e instanceof Error && e.message.match(/\b409\b.*\bConflict\b/i))
+            throw new Error("Username Already Taken");
+        else
+            throw new Error("Error Changing Username");
+    }
 }
