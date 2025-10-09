@@ -2,15 +2,34 @@ import { Email, Person, Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, TextField, InputAdornment, Container, Alert, Avatar, Box, Button, Divider, Paper, Typography } from "@mui/material";
 import { email } from "zod";
 import { useGetProfile } from "../hooks/useGetProfile";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useChangeUsername from "../hooks/useChangeUsername";
+import isLoggedIn from "@hooks/isLoggedIn";
+import { useNavigate } from "@tanstack/react-router";
 
 export default function Profile() {
     const { data } = useGetProfile();
-
     const [username, setUsername] = useState(data?.username);
     const [email, setEmail] = useState(data?.email);
     const { mutate: changeUsername, error: usernameError } = useChangeUsername();
+
+    const loggedIn = isLoggedIn();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!loggedIn)
+            navigate({ to: '/login' });
+        if (data) {
+            setUsername(data.username);
+            setEmail(data.email);
+        }
+    }, [data, loggedIn]);
+    useEffect(() => {
+        return () => {
+            setUsername('');
+            setEmail('');
+        };
+    }, []);
     if (!data) return <Typography alignSelf='center' justifySelf='center'>User Not Found</Typography>;
     return (
         <Box sx={{ height: '100vh', overflowY: 'auto' }}>
