@@ -289,6 +289,8 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {/* Username Display */}
                         <Typography
+                            component={Button}
+                            onClick={() => router.navigate({ to: "/profile" })}
                             variant="body1"
                             sx={{
                                 color: "primary.main",
