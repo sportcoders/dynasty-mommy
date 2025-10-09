@@ -1,4 +1,4 @@
-import { serverDelete, serverGet, serverPost } from "@services/sleeper";
+import { serverDelete, serverGet, serverPatch, serverPost } from "@services/sleeper";
 
 interface User {
     username: string;
@@ -51,4 +51,20 @@ export async function fetchUserLeagues() {
 
 export async function logoutUser() {
     await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, { method: "POST", credentials: "include" });
+}
+
+export async function getProfileInfo() {
+    const response = await serverGet<{ email: string, username: string; }>('/user/profile');
+    return response;
+}
+export async function changeUsername(username: string) {
+    try {
+        await serverPatch('/user/username', { new_username: username });
+    }
+    catch (e) {
+        if (e instanceof Error && e.message.match(/\b409\b.*\bConflict\b/i))
+            throw new Error("Username Already Taken");
+        else
+            throw new Error("Error Changing Username");
+    }
 }

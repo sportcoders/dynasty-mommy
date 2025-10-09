@@ -5,5 +5,6 @@ const user_router = Router();
 user_router.use(authenticate);
 user_router.route("/leagues").get(user_controller.getUserLeagues);
 user_router.route("/username").patch(user_controller.changeUsername);
+user_router.route("/profile").get(user_controller.getProfileInfo);
 
 export default user_router;

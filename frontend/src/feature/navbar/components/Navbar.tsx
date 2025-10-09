@@ -33,6 +33,7 @@ import {
 
 import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import { logoutUser } from '@services/api/user';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Navigation bar component with collapsible drawer and user authentication features.
@@ -56,6 +57,9 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
 
     const location = useLocation();
 
+    const queryClient = useQueryClient();
+
+
     // -------------------- Handlers --------------------
     const handleFindLeagueClick = () => {
         dispatch(resetSearch());
@@ -73,6 +77,7 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
     };
 
     const handleSignOut = async () => {
+        queryClient.invalidateQueries({ queryKey: ['DM_USER_PROFILE'] });
         await logoutUser();
         dispatch(logout());
     };
@@ -289,6 +294,8 @@ export default function NavBar({ drawerOpen, setDrawerOpen }: { drawerOpen: bool
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {/* Username Display */}
                         <Typography
+                            component={Button}
+                            onClick={() => router.navigate({ to: "/profile" })}
                             variant="body1"
                             sx={{
                                 color: "primary.main",
