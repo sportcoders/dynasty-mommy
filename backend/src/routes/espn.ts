@@ -8,4 +8,8 @@ espn_router.route("/cookies").post(espn_controller.saveESPNCookies);
 espn_router.route("/status").get(espn_controller.getESPNStatus);
 espn_router.route("/league").post(espn_controller.saveESPNLeague);
 espn_router.use(espn_authenticate);
+// Any routes that needs user auth and espn auth (need to check if espn auth works for the saved league ids)
+// getting user league info
+// getting roster/players
+// getting transactions
 export default espn_router;

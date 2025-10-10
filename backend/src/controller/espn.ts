@@ -7,6 +7,61 @@ import { HttpError, HttpSuccess } from "../constants/constants";
 import { AppError } from "../errors/app_error";
 import { EspnLeague } from "../models/espn_league";
 
+// Sub-type for FBA Type
+interface FBASubSeason {
+    abbrev: string;
+    active: boolean;
+    currentScoringPeriod: {
+        id: number;
+    };
+    display: boolean;
+    displayOrder: number;
+    endDate: number;
+    gameId: number;
+    id: number;
+    name: string;
+    startDate: number;
+}
+
+// Type for EPSN Fantasy Men's Basketball Response Object
+interface FBA {
+    abbrev: string;
+    active: boolean;
+    currentSeason: FBASubSeason;
+    currentSeasonId: number;
+    display: boolean;
+    displayOrder: number;
+    id: number;
+    name: string;
+    proSportAbbrev: string;
+    proSportName: string;
+}
+
+
+/**
+ * Gets the current season year of the ESPN Fantasy Basketball Season.
+ * 
+ * @param req - Express request object
+ * @param res - Express response object
+ * 
+ * @returns the current season year
+ */
+async function getCurrentESPNSeasonYear(req: ExpressRequest, res: Response) {
+    const url = "https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba";
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new AppError({ statusCode: HttpError.BAD_REQUEST, message: "Failed to fetch ESPN Fantasy Basketball Info" });
+    }
+
+    const data: FBA = await response.json();
+
+    const seasonYear = data.currentSeasonId;
+
+    res.status(HttpSuccess.OK).send({ seasonYear });
+}
+
 // async function api(method: "GET" | "POST", url: string, cookies: EspnCookies, user_id?: string, postData?: any) {
 //     const headers: Record<string, string> = {
 //         "Content-Type": "application/json",
@@ -36,7 +91,6 @@ import { EspnLeague } from "../models/espn_league";
  *
  * @param req - Express request object
  * @param res - Express response object
- * @param next - Express next function for error handling
  *
  * @returns A JSON response with a success message when cookies are saved
  */
@@ -108,5 +162,40 @@ export async function saveESPNLeague(req: ExpressRequest, res: Response) {
 
     res.status(HttpSuccess.OK).send({ message: "ESPN League saved successfully" });
 }
+
+/**
+ * Gets ESPN League Info. League Name, league settings, user teams, etc.
+ * 
+ * @remarks
+ * - To use this function there must be a user auth token and espn cookies
+ * - ESPN cookies must be valid for the given league id
+ * - season year will always be the current year
+ * - game will always be fba = fantasy men basketball
+ * 
+ * @param req - Express request object
+ * @param res - Express response object
+ *
+ * @returns A JSON response of the ESPN league info object
+ */
+export async function getESPNLeague(req: ExpressRequest, res: Response) {
+    const user = req.user;
+    const { league_id } = req.body;
+
+    const url = `https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba/seasons/2025/segments/0/leagues/${league_id}`;
+
+
+}
+
+/**
+ * Get rosters/players
+ * 
+ */
+
+
+/**
+ * Get transactions (waiver adds & drops + trades)
+ * 
+ */
+
 
 
