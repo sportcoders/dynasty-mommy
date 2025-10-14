@@ -183,6 +183,7 @@ function ChromeExtensionTab() {
         </Box>
     );
 }
+
 function CookieInputTab({ openInstructions }: { openInstructions: () => void; }) {
     return (
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
@@ -200,16 +201,16 @@ function CookieInputTab({ openInstructions }: { openInstructions: () => void; })
             </Button>
             <Box sx={{ display: 'flex', justifyContent: 'space-evenly', gap: 2 }} >
                 <TextField
-                    label="ESPN_s2 Cookie"
-                    placeholder="ESPN_s2 Cookie"
+                    label="espn_s2"
+                    placeholder="espn_s2"
                     sx={{ mb: 3 }}
-                    helperText="Paste your ESPN_s2 cookie"
+                    helperText="Paste your espn_s2 value"
                 />
                 <TextField
-                    label="ESPN SWID"
-                    placeholder="SWID Cookie"
+                    label="SWID"
+                    placeholder="SWID"
                     sx={{ mb: 3 }}
-                    helperText="Paste your SWID Cookie cookie"
+                    helperText="Paste your SWID value"
                 />
             </Box>
             <Button
