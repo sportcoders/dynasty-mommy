@@ -36,6 +36,7 @@ const modalDefaultProps = {
     boxShadow: 24,
     borderRadius: 2,
 };
+
 function TabPanel({ children, value, index }: TabPanelProps) {
     return (
         <div
@@ -89,7 +90,14 @@ export default function EspnCookieInstructions({
                         Choose your preferred method to connect your ESPN account
                     </Typography>
 
-                    <Paper elevation={0} sx={{ bgcolor: 'grey.50' }}>
+                    <Paper
+                        elevation={0}
+                        sx={(theme) => ({
+                            bgcolor: theme.palette.mode === 'dark'
+                                ? theme.palette.background.paper
+                                : theme.palette.grey[50],
+                        })}
+                    >
                         <Tabs
                             value={tabValue}
                             onChange={handleTabChange}
@@ -236,7 +244,11 @@ function EspnManualCookieInstructions({ open, close }: { open: boolean, close: (
                     </IconButton>
                 </Box>
 
-                <List sx={{ bgcolor: 'grey.50', borderRadius: 1, p: 0 }}>
+                <List sx={(theme) => ({
+                    bgcolor: theme.palette.background.default,
+                    borderRadius: 1,
+                    p: 0,
+                })}>
                     <ListItem sx={{ py: 2 }}>
                         <ListItemIcon sx={{ minWidth: 40 }}>
                             <Box sx={{
@@ -325,13 +337,13 @@ function EspnManualCookieInstructions({ open, close }: { open: boolean, close: (
                         </ListItemIcon>
                         <ListItemText
                             primary="Copy cookie values"
-                            secondary="Find and copy the required cookie values (espn_s2, SWID, etc.)"
+                            secondary="Find and copy the required cookie values (espn_s2, SWID)"
                         />
                     </ListItem>
                 </List>
 
-                <Box sx={{ mt: 3, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
-                    <Typography variant="body2" color="info.dark">
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'info.main', borderRadius: 1 }}>
+                    <Typography variant="body2" color="info.contrastText">
                         <strong>Tip:</strong> Look for cookies named "espn_s2" and "SWID" - these are typically the most important ones for authentication.
                     </Typography>
                 </Box>
