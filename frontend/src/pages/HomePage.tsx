@@ -1,5 +1,5 @@
 // -------------------- Imports --------------------
-import EspnLeagueSearch from "@feature/search/espn/EspnSearch";
+import EspnLeagueSearch from "@feature/search/espn/components/EspnSearch";
 import SleeperSearch from "@feature/search/sleeper/components/SleeperSearch";
 import YahooLeagueSearch from "@feature/search/yahoo/components/YahooLeagueSearch";
 import { Route } from "@routes/index";

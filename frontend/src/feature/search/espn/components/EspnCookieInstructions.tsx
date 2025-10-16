@@ -223,6 +223,7 @@ function CookieInputTab({ openInstructions }: { openInstructions: () => void; })
         </Box>
     );
 }
+
 function EspnManualCookieInstructions({ open, close }: { open: boolean, close: () => void; }) {
     return (
         <Modal open={open} onClose={close}>
