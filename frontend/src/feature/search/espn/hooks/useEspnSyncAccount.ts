@@ -5,11 +5,11 @@ import type { EspnCookiePayload } from "@services/espn/types";
 import { useNotification } from "@hooks/useNotification";
 
 /**
- * Custom React hook that retrieves ESPN sync status.
+ * Custom React hook that syncs ESPN account using manual cookie entry.
  * 
- * @param payload - ESPN Cookie Type (espn_s2, SWID)
+ * @param onSuccessCallback - Success callback function when query is a success
  * 
- * @returns An object containing the sync status, loading status, and error status
+ * @returns An object containing sync account call, loading state, error state, and success state
  */
 export default function useEspnSyncAccount(onSuccessCallback?: () => void) {
     const queryClient = useQueryClient();

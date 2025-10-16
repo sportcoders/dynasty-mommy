@@ -18,6 +18,8 @@ interface StatusResponse {
 
 /**
  * Checks if user has ESPN authentication cookies in the database.
+ * 
+ * @returns true if Espn synced, otherwise false
  */
 export async function getEspnStatus(): Promise<boolean> {
     const response = await serverGet<StatusResponse>('/espn/status');
