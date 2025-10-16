@@ -21,7 +21,7 @@ export const sleeper_apiGet = async <T>(endpoint: string): Promise<T> => {
 
 export const serverGet = async <T>(endpoint: string): Promise<T | null> => {
 
-    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`);
+    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`, "GET");
 
     if (response.status == 401) {
         store.dispatch(logout());
@@ -39,7 +39,7 @@ export const serverPost = async <T, U>(
     endpoint: string,
     data: U
 ): Promise<T> => {
-    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`, false, data);
+    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`, "POST", false, data);
     if (response.status == 401) {
         store.dispatch(logout());
     }
@@ -49,7 +49,16 @@ export const serverPost = async <T, U>(
 
     return response.json() as Promise<T>;
 };
+export const serverPatch = async <T, U>(endpoint: string, data: U): Promise<T | null> => {
+    const response = await refetch(`${SERVER_BASE_URL}${endpoint}`, "PATCH", false, data
+    );
+    if (response.status == 204) return null;
+    if (!response.ok) {
+        throw new ServerError(response.status, response.statusText);
+    }
 
+    return response.json() as Promise<T>;
+};
 export const serverDelete = async <T>(endpoint: string): Promise<T | null> => {
     const response = await fetch(`${SERVER_BASE_URL}${endpoint}`, {
         method: "DELETE",
@@ -72,13 +81,13 @@ export const sleeper_avatarGet = async <T>(endpoint: string): Promise<T> => {
 
     return response.blob() as Promise<T>;
 };
-
-export const refetch = async (endpoint: string, refreshed = false, postData?: any): Promise<Response> => {
+type HTTP_METHODS = "POST" | "PATCH" | "GET";
+export const refetch = async (endpoint: string, method: HTTP_METHODS, refreshed = false, data?: any): Promise<Response> => {
     const response = await fetch(endpoint, {
-        method: postData !== undefined ? "POST" : "GET",
+        method: method,
         credentials: 'include',
-        body: postData !== undefined ? JSON.stringify(postData) : undefined,
-        headers: postData !== undefined ? { "Content-Type": "application/json" } : undefined,
+        body: data !== undefined ? JSON.stringify(data) : undefined,
+        headers: data !== undefined ? { "Content-Type": "application/json" } : undefined,
 
     });
     if (response.status == 401 && !refreshed) {
@@ -89,7 +98,7 @@ export const refetch = async (endpoint: string, refreshed = false, postData?: an
             throw new ServerError(refreshRes.status, 'Token refresh failed');
         }
 
-        return refetch(endpoint, true, postData);
+        return refetch(endpoint, method, true, data);
     }
     return response;
 };
