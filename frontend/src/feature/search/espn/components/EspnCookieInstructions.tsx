@@ -12,12 +12,15 @@ import {
     ListItemIcon,
     TextField,
     Divider,
+    FormControl,
 } from "@mui/material";
 import { useState } from "react";
 import ExtensionIcon from '@mui/icons-material/Extension';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import useEspnSyncAccount from "../hooks/useEspnSyncAccount";
+import { useNotification } from "@hooks/useNotification";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -125,7 +128,10 @@ export default function EspnCookieInstructions({
                         </TabPanel>
 
                         <TabPanel value={tabValue} index={1}>
-                            <CookieInputTab openInstructions={() => setInstructionsOpen(true)} />
+                            <CookieInputTab
+                                openInstructions={() => setInstructionsOpen(true)}
+                                handleClose={handleClose}
+                            />
                         </TabPanel>
                     </Paper>
                 </Box>
@@ -184,41 +190,74 @@ function ChromeExtensionTab() {
     );
 }
 
-function CookieInputTab({ openInstructions }: { openInstructions: () => void; }) {
+function CookieInputTab({
+    openInstructions,
+    handleClose
+}: {
+    openInstructions: () => void;
+    handleClose: () => void;
+}) {
+    const [espn_s2, setEspnS2] = useState("");
+    const [swid, setSwid] = useState("");
+    const { mutate, isPending: loading } = useEspnSyncAccount(() => {
+        handleClose();
+    });
+    const { showError } = useNotification();
+
+    async function handleSaveCookies(e: React.FormEvent) {
+        e.preventDefault();
+
+        if (!espn_s2 || !swid) return showError("Please enter both espn_s2 and SWID.");
+
+        mutate({ espn_s2: espn_s2, swid: swid });
+    }
+
     return (
-        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
+        <Box
+            sx={{
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
+            }}
+        >
             <Typography variant="h6" gutterBottom>
                 Manual Cookie Entry
             </Typography>
 
-            <Button
-                variant="outlined"
-                size="small"
-                sx={{ mb: 3 }}
-                onClick={openInstructions}
-            >
+            <Button variant="outlined" size="small" onClick={openInstructions}>
                 View Instructions
             </Button>
-            <Box sx={{ display: 'flex', justifyContent: 'space-evenly', gap: 2 }} >
-                <TextField
-                    label="espn_s2"
-                    placeholder="espn_s2"
-                    sx={{ mb: 3 }}
-                    helperText="Paste your espn_s2 value"
-                />
-                <TextField
-                    label="SWID"
-                    placeholder="SWID"
-                    sx={{ mb: 3 }}
-                    helperText="Paste your SWID value"
-                />
+
+            <Box sx={{ display: "flex", gap: 2, width: "100%" }}>
+                <FormControl fullWidth>
+                    <TextField
+                        label="espn_s2"
+                        value={espn_s2}
+                        onChange={(e) => setEspnS2(e.target.value)}
+                        variant="outlined"
+                    />
+                </FormControl>
+
+                <FormControl fullWidth>
+                    <TextField
+                        label="SWID"
+                        value={swid}
+                        onChange={(e) => setSwid(e.target.value)}
+                        variant="outlined"
+                    />
+                </FormControl>
             </Box>
+
             <Button
                 variant="contained"
                 size="large"
                 fullWidth
+                disabled={loading}
+                onClick={handleSaveCookies}
             >
-                Save Cookies
+                {loading ? "Saving..." : "Save Cookies"}
             </Button>
         </Box>
     );

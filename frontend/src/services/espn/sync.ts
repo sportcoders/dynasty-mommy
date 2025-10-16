@@ -1,10 +1,5 @@
 import { serverGet, serverPost } from "@services/sleeper";
-
-// Espn Cookie Type 
-interface EspnCookiePayload {
-    swid: string,
-    espn_s2: string,
-}
+import type { EspnCookiePayload } from "./types";
 
 /**
  * Saves or updates a user's ESPN authentication cookies in the database via manual input from UI form.

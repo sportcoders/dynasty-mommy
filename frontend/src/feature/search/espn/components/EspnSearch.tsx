@@ -14,7 +14,6 @@ export default function EspnLeagueSearch() {
     const handleOpen = () => setOpenInstructions(true);
     const handleClose = () => setOpenInstructions(false);
     const { status, loading, error } = useEspnSyncStatus();
-    console.log(status);
 
     return (
         <Stack
@@ -60,7 +59,7 @@ export default function EspnLeagueSearch() {
                         </Alert>
                     )}
 
-                    {!loading && !error && status && (
+                    {!loading && !error && (
                         status ? (
                             <EspnLeagueForm />
                         ) : (
