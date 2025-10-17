@@ -1,6 +1,6 @@
 import { useAppSelector } from "@app/hooks";
 import SelectPlatform from "@components/SelectPlatform";
-import { Stack, Typography, Button, CircularProgress, Alert } from "@mui/material";
+import { Stack, Typography, Button, CircularProgress } from "@mui/material";
 import { useNavigate } from "@tanstack/react-router";
 import EspnCookieInstructions from "./EspnCookieInstructions";
 import { useState } from "react";
@@ -54,9 +54,9 @@ export default function EspnLeagueSearch() {
                     {loading && <CircularProgress color="primary" />}
 
                     {error && (
-                        <Alert severity="error">
+                        <Typography variant="body2" color="error">
                             Failed to load ESPN sync status. Please try again.
-                        </Alert>
+                        </Typography>
                     )}
 
                     {!loading && !error && (

@@ -165,7 +165,7 @@ export async function saveEspnLeague(req: EspnRequest, res: Response) {
 
     await leagueRepo.save({
         userId: userId,
-        leagueId: league_id
+        leagueId: league_id,
     });
 
     res.status(HttpSuccess.OK).json({ message: "ESPN League saved successfully" });

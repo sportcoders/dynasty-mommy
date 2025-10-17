@@ -16,12 +16,4 @@ export class EspnLeague {
     @ManyToOne(() => User, { onDelete: "CASCADE" })
     @JoinColumn({ name: "userId" })
     user!: User;
-
-    // TODO: If ESPN unlinks from user, then delete its associated Espn Leagues will also delete
-    // Different users can link the same ESPN account
-    // Unique composite key: userId & leagueId & SWID
-    // When user unlinks, SWID changes or is not defined.
-    @ManyToOne(() => EspnCookies, { onDelete: "CASCADE" })
-    @JoinColumn({ name: "cookieUserId", referencedColumnName: "userId" })
-    cookie!: EspnCookies;
 }

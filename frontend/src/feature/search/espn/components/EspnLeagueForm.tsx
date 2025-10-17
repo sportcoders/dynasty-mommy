@@ -1,6 +1,21 @@
 import { Box, Button, FormControl, Paper, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import { showError } from "@services/notificationService";
+import useEspnSaveLeague from "../hooks/useEspnSaveLeague";
 
 export default function EspnLeagueForm() {
+    const [leagueId, setLeagueId] = useState<string>("");
+
+    const { mutate, isPending } = useEspnSaveLeague();
+
+    function handleSaveLeague(e: React.FormEvent) {
+        e.preventDefault();
+
+        if (!leagueId) return showError("Please enter a league id");
+
+        mutate({ league_id: leagueId });
+    }
+
     return (
         <Paper
             elevation={3}
@@ -30,8 +45,8 @@ export default function EspnLeagueForm() {
                         label="ESPN League ID"
                         required
                         variant="outlined"
-                        // onChange={handleTextChange}
-                        // value={searchText}
+                        onChange={(e) => setLeagueId(e.target.value)}
+                        value={leagueId}
                         sx={{
                             flex: 2,
                             "& .MuiOutlinedInput-root": { borderRadius: 2 },
@@ -41,10 +56,11 @@ export default function EspnLeagueForm() {
 
                 {/* Submit Button */}
                 <Button
-                    // onClick={handleSubmit}
+                    onClick={handleSaveLeague}
                     variant="contained"
                     size="large"
                     fullWidth
+                    disabled={isPending}
                     sx={{
                         py: 1.5,
                         borderRadius: 2,
